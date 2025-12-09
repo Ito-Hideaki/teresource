@@ -1,0 +1,392 @@
+import { cellPosRotate4Way } from "../../util";
+
+
+/** @enum {number} */
+export const BLOCK_COLORS = {
+    RED: 0,
+    ORANGE: 1,
+    YELLOW: 2,
+    GREEN: 3,
+    SKY: 4,
+    BLUE: 5,
+    PURPLE: 6,
+    GREY: 7,
+    BLACK: 8,
+    VOID: 9,
+}
+
+/**
+ * @typedef { {size:number, map:number[][], origin:{x:number,y:number}} } MinoShape
+ */
+
+
+/** Contains mino's color, shape and rotation */
+export class Mino {
+
+    /** @type {MinoShape[]} */
+    static #ROT0SHAPE = [
+        {
+            size: 3,
+            origin: {
+                x: 1,
+                y: 1,
+            },
+            map: [  //Z
+                [1, 1, 0],
+                [0, 1, 1],
+                [0, 0, 0],
+            ]
+        }, { //L
+            size: 3,
+            origin: {
+                x: 1,
+                y: 1,
+            },
+            map: [
+                [0, 0, 1],
+                [1, 1, 1],
+                [0, 0, 0],
+            ]
+        }, { //O
+            size: 2,
+            origin: {
+                x: 0,
+                y: 1,
+            },
+            map: [
+                [1, 1],
+                [1, 1],
+            ]
+        }, { //S
+            size: 3,
+            origin: {
+                x: 1,
+                y: 1,
+            },
+            map: [
+                [0, 1, 1],
+                [1, 1, 0],
+                [0, 0, 0],
+            ]
+        }, { //I
+            size: 4,
+            origin: {
+                x: 1,
+                y: 1,
+            },
+            map: [
+                [0, 0, 0, 0],
+                [1, 1, 1, 1],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+            ]
+        }, { //J
+            size: 3,
+            origin: {
+                x: 1,
+                y: 1,
+            },
+            map: [
+                [1, 0, 0],
+                [1, 1, 1],
+                [0, 0, 0],
+            ]
+        }, { //T
+            size: 3,
+            origin: {
+                x: 1,
+                y: 1,
+            },
+            map: [
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 0, 0],
+            ]
+        }
+    ];
+
+    /** @param {MinoShape} shape @param {number} rotation 実数、オイラー角 @return {MinoShape}*/
+    static #rotateShape = function(shape, rotation) {
+        const rot4way = (rotation / 90) % 4;
+        const copied = structuredClone(shape);
+        shape.map.forEach((arr, sRow) => arr.forEach((val, sColumn) => {
+            const offset = (shape.size -  1)/ 2;
+            const rotatedCoordinate = cellPosRotate4Way(sColumn - offset, sRow - offset, rot4way);
+            rotatedCoordinate.column += offset;
+            rotatedCoordinate.row += offset;
+            copied.map[rotatedCoordinate.row][rotatedCoordinate.column] = val;
+        }));
+        return copied;
+    }
+
+    #type;
+    /** 0, 90, 180, 270 clockwise @type number */
+    #rotation;
+    /** @type { MinoShape } */
+    #shape;
+
+    /**
+     * @param {number} type
+     * @param {number} rotation 0, 90, 180, 270 clockwise
+     * */
+    constructor(type, rotation = 0) {
+        this.#type = type;
+        this.#rotation = rotation;
+        this.#shape = Mino.#rotateShape(Mino.#ROT0SHAPE[type], rotation);
+    }
+
+    /** @return {Mino} duplicated mino */
+    duplicate(type = undefined, rotation = undefined) {
+        return new Mino(type ?? this.#type, rotation ?? this.#rotation);
+    }
+
+    get type() {
+        return this.#type;
+    }
+
+    /**
+     * @return { MinoShape }
+     * */
+    get shape() {
+        return this.#shape;
+    }
+
+    /** @return {number} 0, 90, 180, 270 clockwise */
+    get rotation() {
+        return this.#rotation;
+    }
+
+    /** Returns mino duplicated then rotated
+     * @param {number} rotation 0, 90, 180, 270 clockwise
+     */
+    copyRotated(rotation) {
+        return this.duplicate(undefined, (this.#rotation + rotation)%360);
+    }
+
+    /**
+     * @param {{
+     *     isActive: boolean
+     * }} $
+     * @return {{table: Cell[][], topLeft: { column: number, row: number } }} topLeft: relative topleft cell position of the table*/
+    convertToTable($ = {}) {
+        const table = [];
+        this.#shape.map.forEach(array => {
+            const tableRow = [];
+            array.forEach(value => {
+                const cell = new Cell(value, this.#type, { isActive: $.isActive });
+                tableRow.push(cell);
+            });
+            table.push(tableRow);
+        });
+        const topLeft = {};
+        topLeft.row = -this.#shape.origin.y;
+        topLeft.column = -this.#shape.origin.x;
+        return { table, topLeft };
+    }
+}
+
+/** Represents each cell that consists board */
+export class Cell {
+
+    #isBlock;
+    #isActive;
+    /** @type {BLOCK_COLORS} */
+    #color;
+
+    /**
+     * @param {Boolean} isBlock
+     * @param {BLOCK_COLORS} color
+     * @param {{
+     * isActive: boolean
+     * }} $
+     */
+    constructor(isBlock, color = BLOCK_COLORS.VOID, $ = {}) {
+        this.#isBlock = isBlock;
+        this.#isActive = $.isActive ?? false;
+        this.#color = color;
+    }
+
+    get isBlock() { return this.#isBlock }
+    get isActive() { return this.#isActive }
+    get color() { return this.#color }
+}
+
+
+/** 
+ * @param {Cell} boardCell
+ * @param {Cell} minoCell
+ */
+function getCompositionResultCell(boardCell, minoCell) {
+    if (!minoCell.isBlock) return boardCell;
+    return minoCell;
+}
+
+
+/** Represents board size in cell, rowCount and columnCount */
+export class BoardSize {
+    #rowCount;
+    #columnCount;
+    get rowCount() { return this.#rowCount };
+    get columnCount() { return this.#columnCount };
+    constructor(rowCount = 40, columnCount = 10) {
+        this.#rowCount = rowCount;
+        this.#columnCount = columnCount;
+    }
+}
+
+
+/** Place where the all cells exists. Playfield. Does mino composition and collision verdict */
+export class Board {
+
+    /** @type { Cell[][] } */
+    #table;
+
+    get rowCount() { return this.#table.length; }
+    get columnCount() { return this.#table[0].length; }
+
+    /**
+     *  @param { Board } board board to duplicate from
+     * @param { BoardSize } boardSize used to create table
+    */
+    constructor(board = undefined, boardSize = undefined) {
+        if (board) {
+            this.#table = board.duplicateTable();
+        } else {
+            const size = boardSize ?? new BoardSize();
+            this.#table = new Array(size.rowCount).fill().map(() => {
+                return new Array(size.columnCount).fill().map(
+                    () => new Cell(false)
+                )
+            });
+        }
+    }
+
+
+    /** Composite given mino table to its table.
+     * @param {Cell[][]} minoTable cell table to composite
+     * @param {number} row table topLeft cellPos
+     * @param {number} column table topLeft cellPos
+     * @return {Board} this
+     */
+    compositeMinoTable(minoTable, row, column) {
+        minoTable.forEach((array, sRow) => {
+            array.forEach((cell, sColumn) => {
+                const cellRow = row + sRow;
+                const cellColumn = column + sColumn;
+                if (this.isCellPosOutOfTable(cellRow, cellColumn)) return;
+
+                const resultCell = getCompositionResultCell(this.#table[cellRow][cellColumn], cell);
+                this.#table[cellRow][cellColumn] = resultCell;
+            });
+        });
+        return this;
+    }
+
+
+    isCellPosOutOfTable(row, column) {
+        return (row < 0
+            || this.rowCount <= row
+            || column < 0
+            || this.columnCount <= column);
+    }
+
+
+    /**
+     * @param {number} row @param {number} column @return {Cell}
+    */
+    getCell(row, column) {
+        if (this.isCellPosOutOfTable(row, column)) throw "Given cellPos is out of the range of the board";
+        return this.#table[row][column];
+    }
+
+    /** Returns duplicated table. @return { Cell[][] }  */
+    duplicateTable() {
+        const table = [];
+        this.#table.forEach((array, row) => {
+            const newArray = [];
+            array.forEach((value, column) => {
+                newArray.push(value);
+            })
+            table.push(newArray);
+        })
+        return table;
+    }
+
+    /** Returns if the given mino collides width walls or the board.
+     * @param {Mino} mino
+     * @param {number} row mino cellPos row
+     * @param {number} column mino cellPos column
+     * @return {boolean}
+     */
+    doesMinoCollides(mino, row, column) {
+        let collides = false;
+        mino.shape.map.forEach((array, sRow) => {
+            array.forEach((value, sColumn) => {
+                if (!value) return;
+                const cellRow = row + sRow - mino.shape.origin.y;
+                const cellColumn = column + sColumn - mino.shape.origin.x;
+                if (
+                    this.isCellPosOutOfTable(cellRow, cellColumn)
+                    || this.#table[cellRow][cellColumn].isBlock
+                ) {
+                    collides = true;
+                }
+            });
+        });
+        return collides;
+    }
+
+
+    /** Returns the possible horizontal movement in given range, not colliding with any walls or blocks
+     * @param {number} columnChange columnの変位
+     * @param {Mino} mino
+     * @param {number} row
+     * @param {number} column
+     * @return {number} movement amount */
+    tryMoveMinoHorizontally(columnChange, mino, row, column) {
+        if (columnChange == 0) return 0;
+        columnChange = Math.floor(columnChange);
+        const direction = columnChange > 0 ? 1 : -1;
+
+        let columnMoved = 0;
+        while (columnChange != columnMoved) {
+            if (this.doesMinoCollides(
+                mino,
+                row,
+                column + columnMoved + direction)
+            ) break;
+            columnMoved += direction;
+        }
+
+        return columnMoved;
+    }
+
+
+    /** Returns the possible vertical movement in given range, not colliding with any walls or blocks
+ * @param {number} rowChange rowの変位
+ * @param {Mino} mino
+ * @param {number} row
+ * @param {number} column
+ * @return {number} movement amount */
+    tryMoveMinoVertically(rowChange, mino, row, column) {
+        if (rowChange == 0) return 0;
+        rowChange = Math.floor(rowChange);
+        const direction = rowChange > 0 ? 1 : -1;
+
+        let rowMoved = 0;
+        while (rowChange != rowMoved) {
+            if (this.doesMinoCollides(
+                mino,
+                row + rowMoved + direction,
+                column)
+            ) break;
+            rowMoved += direction;
+        }
+
+        return rowMoved;
+    }
+
+    duplicate() {
+        return new Board(this);
+    }
+}
