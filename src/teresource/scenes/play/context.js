@@ -1,9 +1,11 @@
-import { Board } from "./mechanics";
+import { Board, BoardSize } from "./mechanics";
 import { CurrentMinoManager, MinoQueueManager } from "./minomanager";
 import { BoardControlState } from "./boardcontroller";
 
 /** @param {{}} source @return GameContext */
 export class GameContext {
+    /** @type BoardSize */
+    boardSize
     /** @type Board */
     board
     /** @type {CurrentMinoManager} */
@@ -16,6 +18,7 @@ export class GameContext {
     constructor(source) {
         const keys = [
             "board",
+            "boardSize",
             "currentMinoManager",
             "minoQueueManager",
             "boardControlState"
