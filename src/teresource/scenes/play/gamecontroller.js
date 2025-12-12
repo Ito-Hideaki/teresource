@@ -3,6 +3,7 @@ import { ControlOrder, BoardControlState, BoardController, createBoardControlRes
 import { CurrentMinoManager, MinoQueueManager, Bag } from "./minomanager";
 import { Board, BoardSize } from "./mechanics";
 import { ViewController } from "./viewcontroller";
+import { GameContext } from "./context";
 
 /** Represents the game attached to each player */
 export class GameController {
@@ -10,7 +11,8 @@ export class GameController {
     #boardController
     #viewController
     #scene
-    #controlOrder
+    /** @type {GameContext} */
+    #gameContext
     #controlOrderProvider
     /** @type {import("./boardcontroller").BoardControlResult} */
     #lastBoardControlResult
@@ -26,10 +28,13 @@ export class GameController {
         const boardSize = new BoardSize();
         const currentMinoManager = new CurrentMinoManager();
         const board = new Board(undefined, boardSize);
+        const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN));
         const boardControlState = new BoardControlState();
-        this.#controlOrder = new ControlOrder();
+        this.#gameContext = new GameContext({
+            board, boardSize, currentMinoManager, minoQueueManager, boardControlState
+        });
         this.#controlOrderProvider = new ControlOrderProvider();
-        this.#boardController = new BoardController(currentMinoManager, board, boardControlState, new MinoQueueManager(new Bag(Bag.TYPES.SEVEN)));
+        this.#boardController = new BoardController(this.#gameContext);
         //Create elements of the scene
         this.#viewController = new ViewController(this.#scene, {
             boardSize, board, currentMinoManager

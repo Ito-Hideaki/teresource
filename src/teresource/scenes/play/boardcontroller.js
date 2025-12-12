@@ -2,6 +2,7 @@
 
 import { CurrentMinoManager, MinoQueueManager } from "./minomanager";
 import { Board } from "./mechanics";
+import { GameContext } from "./context";
 
 export class ControlOrder {
 
@@ -80,25 +81,23 @@ export function createBoardControlResult() {
 export class BoardController {
 
     /** @typedef {{horizontalMinoMove: number, verticalMinoMove: number }} minoMoves */
-
+    /** @type {CurrentMinoManager} */
     #currentMinoManager;
+    /** @type {Board} */
     #board;
-    /** @type BoardControlState */
+    /** @type {BoardControlState} */
     #state;
-    /** @type MinoQueueManager */
+    /** @type {MinoQueueManager} */
     #minoQueueManager;
 
     /**
-     *  @param { CurrentMinoManager } currentMinoManager
-     *  @param { Board } board
-     *  @param { BoardControlState } state
-     *  @param { MinoQueueManager } minoQueueManager
+     *  @param { GameContext } context
     */
-    constructor(currentMinoManager, board, state, minoQueueManager) {
-        this.#currentMinoManager = currentMinoManager;
-        this.#board = board;
-        this.#state = state;
-        this.#minoQueueManager = minoQueueManager;
+    constructor(context) {
+        this.#currentMinoManager = context.currentMinoManager;
+        this.#board = context.board;
+        this.#state = context.boardControlState;
+        this.#minoQueueManager = context.minoQueueManager;
     }
 
     /** advance time
