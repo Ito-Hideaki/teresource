@@ -282,7 +282,7 @@ export class BoardController {
     }
 }
 
-class LeftRightStrongJudge {
+class HorizontalLastPriorityJudge {
     /** @type {boolean} */
     #leftIsStrong = false;
 
@@ -329,7 +329,7 @@ export class ControlOrderProvider {
     /** frames until the mino can move horizontally again @type {number} */
     ARRTimerF = 0;
 
-    #leftRightStrongJudge;
+    #horizontalJudge;
 
     autoShiftEnabled() {
         return this.DASTimerF <= 0 && (this.leftMoveDown || this.rightMoveDown);
@@ -337,7 +337,7 @@ export class ControlOrderProvider {
 
     constructor() {
         this.#controlOrder = new ControlOrder();
-        this.#leftRightStrongJudge = new LeftRightStrongJudge();
+        this.#horizontalJudge = new HorizontalLastPriorityJudge();
     }
 
     #resetDAS() {
@@ -350,7 +350,7 @@ export class ControlOrderProvider {
     setNewPlayerInput(flag) {
         this.#controlOrder.setTrue(flag);
         this.#setNewPlayerInput_receiveHorizontal(flag);
-        this.#leftRightStrongJudge.setNewPlayerInput(flag);
+        this.#horizontalJudge.setNewPlayerInput(flag);
     }
 
     /** @param {number} flag controlOrderFlag */
@@ -394,7 +394,7 @@ export class ControlOrderProvider {
         const isFirstPressedFrame = this.#controlOrder.get(CO.START_MOVE_LEFT | CO.START_MOVE_RIGHT);
         if (this.ARRTimerF <= 0) {
             if(isFirstPressedFrame || this.autoShiftEnabled()) {
-                const flag = this.#leftRightStrongJudge.judgeToFlag(this.leftMoveDown, this.rightMoveDown);
+                const flag = this.#horizontalJudge.judgeToFlag(this.leftMoveDown, this.rightMoveDown);
                 this.#controlOrder.setTrue(flag); 
             }
         }
