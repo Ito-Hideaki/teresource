@@ -27,3 +27,9 @@ BoardController ボード・ミノ・操作の状態を読み込み、時間を�
 ・性質
 ・色
 ・スキン
+
+コンテクスト　GameContext
+Board
+CurrentMinoManager
+BoardControlState
+MinoQueue
