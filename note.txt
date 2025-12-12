@@ -28,8 +28,10 @@ BoardController ボード・ミノ・操作の状態を読み込み、時間を�
 ・色
 ・スキン
 
-コンテクスト　GameContext
-Board
-CurrentMinoManager
-BoardControlState
-MinoQueue
+リファクタリング
+BoardController
+newMino()はもっと上の階層の働きなので外す
+config(ゲーム中に変化しない設定)を定義してGameContextから引っ張る
+GameController
+View更新はお前の仕事ではないのでどうにかする
+ライフサイクルを整理する
