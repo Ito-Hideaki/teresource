@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "../../util";
 import { GameContext } from "./context";
+import { BoardSize } from "./mechanics";
 
 const utkg = new UniqueTextureKeyGenerator("boarddeco");
 
@@ -50,7 +51,7 @@ export class BoardDeco {
         );
     }
 
-
+    /** @type {BoardSize} */
     #boardSize;
     #cellWidth;
     /** @type {Phaser.GameObjects.Image} */
