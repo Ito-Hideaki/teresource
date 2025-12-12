@@ -1,8 +1,7 @@
 import Phaser from "phaser";
-import { Board, BoardSize } from "./mechanics";
 import { BoardView, BoardViewSettings } from "./boardview";
 import { BoardDeco } from "./boarddeco";
-import { CurrentMinoManager } from "./minomanager";
+import { GameContext } from "./context";
 
 /** Represents the game view for each player */
 export class ViewController {
@@ -17,18 +16,12 @@ export class ViewController {
     }
 
     /** @param {Phaser.Scene} scene
-     * @param {{
-     *     boardSize: BoardSize,
-     *     board: Board,
-     *     currentMinoManager: CurrentMinoManager
-     * }} $
+     * @param {GameContext} context
      */
-    constructor(scene, $) {
+    constructor(scene, gContext) {
         this.#boardContainer = scene.add.container();
-        this.#boardDeco = new BoardDeco(scene, 30, $.boardSize, this.#boardContainer);
-        this.#boardView = new BoardView(scene, 30, {
-            board: $.board,
-            currentMinoManager: $.currentMinoManager,
+        this.#boardDeco = new BoardDeco(scene, 30, gContext, this.#boardContainer);
+        this.#boardView = new BoardView(scene, 30, gContext, {
             boardContainer: this.#boardContainer,
             boardViewSettings: new BoardViewSettings({ })
         });

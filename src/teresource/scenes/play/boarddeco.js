@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "../../util";
-import { BoardSize } from "./mechanics";
+import { GameContext } from "./context";
 
 const utkg = new UniqueTextureKeyGenerator("boarddeco");
 
@@ -72,13 +72,13 @@ export class BoardDeco {
 
     /**
      * @param {Phaser.Scene} scene
-     * @param {BoardSize} boardSize
+     * @param { GameContext } gContext
      * @param {Phaser.GameObjects.Container} boardContainer
      */
-    constructor(scene, cellWidth, boardSize, boardContainer) {
+    constructor(scene, cellWidth, gContext, boardContainer) {
         this.#scene = scene;
         this.#cellWidth = cellWidth;
-        this.#boardSize = boardSize;
+        this.#boardSize = gContext.boardSize;
         this.#boardContainer = boardContainer;
 
         this.#init();

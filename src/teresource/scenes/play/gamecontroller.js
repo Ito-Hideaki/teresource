@@ -36,9 +36,7 @@ export class GameController {
         this.#controlOrderProvider = new ControlOrderProvider();
         this.#boardController = new BoardController(this.#gameContext);
         //Create elements of the scene
-        this.#viewController = new ViewController(this.#scene, {
-            boardSize, board, currentMinoManager
-        });
+        this.#viewController = new ViewController(this.#scene, this.#gameContext);
         this.#viewController.x = this.#scene.width / 2;
         this.#viewController.y = this.#scene.height / 2;
 

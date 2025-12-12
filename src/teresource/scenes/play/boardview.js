@@ -1,8 +1,9 @@
 import Phaser from "phaser";
 import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "../../util";
-import { BLOCK_COLORS, Cell, Board } from "./mechanics";
+import { Cell, Board } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
 import { generateCellTextureKey, cellImgSkins, cellGraphicSkins } from "./viewmechanics";
+import { GameContext } from "./context";
 
 const utkg = new UniqueTextureKeyGenerator("boardview");
 
@@ -70,8 +71,10 @@ export class BoardView {
     /** Draws the board graphics. @type Phaser.GameObjects.Image */
     #image
     #cellWidth
+    /** @type {Board} */
     #board
     #scene
+    /** @type {CurrentMinoManager} */
     #currentMinoManager
     #boardContainer
     /** @type {BoardViewSettings} */
@@ -93,18 +96,17 @@ export class BoardView {
     /**
      *  @param { Phaser.Scene } scene
      *  @param { number } cellWidth
+     *  @param { GameContext } gContext
      *  @param { {
-     * board: Board,
-     * currentMinoManager: CurrentMinoManager,
      * boardContainer: Phaser.GameObjects.Container,
      * boardViewSettings: BoardViewSettings
      * } } $
     */
-    constructor(scene, cellWidth, $) {
+    constructor(scene, cellWidth, gContext, $) {
         this.#scene = scene;
         this.#cellWidth = cellWidth;
-        this.#board = $.board;
-        this.#currentMinoManager = $.currentMinoManager;
+        this.#board = gContext.board;
+        this.#currentMinoManager = gContext.currentMinoManager;
         this.#boardContainer = $.boardContainer;
         this.#boardViewSettings = $.boardViewSettings;
 
