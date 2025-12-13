@@ -235,30 +235,82 @@ export class BoardSize {
 }
 
 
+export class Board {
+    /** @type {any[][]} */
+    table;
+
+    get rowCount() { return this.table.length; }
+    get columnCount() { return this.table[0].length; }
+
+    /**
+     *  @param { Board } board bBoard to duplicate from
+     * @param { BoardSize } boardSize used to create table
+     * @param { Function } elementFactory
+    */
+    constructor(board = undefined, boardSize = undefined, elementFactory) {
+        if (board) {
+            this.table = board.duplicateTable();
+        } else {
+            const size = boardSize ?? new BoardSize();
+            this.table = new Array(size.rowCount).fill().map(() => {
+                return new Array(size.columnCount).fill().map(
+                    elementFactory
+                )
+            });
+        }
+    }
+
+    /** Returns duplicated table. @return { Cell[][] }  */
+    duplicateTable() {
+        const table = [];
+        this.table.forEach((array, row) => {
+            const newArray = [];
+            array.forEach((value, column) => {
+                newArray.push(value);
+            })
+            table.push(newArray);
+        })
+        return table;
+    }
+
+    isCellPosOutOfTable(row, column) {
+        return (row < 0
+            || this.rowCount <= row
+            || column < 0
+            || this.columnCount <= column);
+    }
+
+    /** Returns duplicated table. @return { any[][] }  */
+    duplicateTable() {
+        const table = [];
+        this.table.forEach((array, row) => {
+            const newArray = [];
+            array.forEach((value, column) => {
+                newArray.push(value);
+            })
+            table.push(newArray);
+        })
+        return table;
+    }
+
+    duplicate() {
+        return new Board(this);
+    }
+}
+
+
 /** Place where the all cells exists. Playfield. Does mino composition and collision verdict */
-export class CellBoard {
+export class CellBoard extends Board {
 
     /** @type { Cell[][] } */
-    #table;
-
-    get rowCount() { return this.#table.length; }
-    get columnCount() { return this.#table[0].length; }
+    table;
 
     /**
      *  @param { CellBoard } cellBoard cellBoard to duplicate from
      * @param { BoardSize } boardSize used to create table
     */
     constructor(cellBoard = undefined, boardSize = undefined) {
-        if (cellBoard) {
-            this.#table = cellBoard.duplicateTable();
-        } else {
-            const size = boardSize ?? new BoardSize();
-            this.#table = new Array(size.rowCount).fill().map(() => {
-                return new Array(size.columnCount).fill().map(
-                    () => new Cell(false)
-                )
-            });
-        }
+        super(cellBoard, boardSize, () => new Cell(false));
     }
 
 
@@ -275,19 +327,11 @@ export class CellBoard {
                 const cellColumn = column + sColumn;
                 if (this.isCellPosOutOfTable(cellRow, cellColumn)) return;
 
-                const resultCell = getCompositionResultCell(this.#table[cellRow][cellColumn], cell);
-                this.#table[cellRow][cellColumn] = resultCell;
+                const resultCell = getCompositionResultCell(this.table[cellRow][cellColumn], cell);
+                this.table[cellRow][cellColumn] = resultCell;
             });
         });
         return this;
-    }
-
-
-    isCellPosOutOfTable(row, column) {
-        return (row < 0
-            || this.rowCount <= row
-            || column < 0
-            || this.columnCount <= column);
     }
 
 
@@ -296,21 +340,11 @@ export class CellBoard {
     */
     getCell(row, column) {
         if (this.isCellPosOutOfTable(row, column)) throw "Given cellPos is out of the range of the board";
-        return this.#table[row][column];
+        return this.table[row][column];
     }
 
     /** Returns duplicated table. @return { Cell[][] }  */
-    duplicateTable() {
-        const table = [];
-        this.#table.forEach((array, row) => {
-            const newArray = [];
-            array.forEach((value, column) => {
-                newArray.push(value);
-            })
-            table.push(newArray);
-        })
-        return table;
-    }
+    duplicateTable() { return super.duplicateTable() }
 
     /** Returns if the given mino collides width walls or the board.
      * @param {Mino} mino
@@ -327,7 +361,7 @@ export class CellBoard {
                 const cellColumn = column + sColumn - mino.shape.origin.x;
                 if (
                     this.isCellPosOutOfTable(cellRow, cellColumn)
-                    || this.#table[cellRow][cellColumn].isBlock
+                    || this.table[cellRow][cellColumn].isBlock
                 ) {
                     collides = true;
                 }
