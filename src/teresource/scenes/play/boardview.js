@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "../../util";
-import { Cell, CellBoard } from "./mechanics";
+import { Board, BoardSize, Cell, CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
 import { generateCellTextureKey, cellImgSkins, cellGraphicSkins } from "./viewmechanics";
 import { GameContext } from "./context";
@@ -16,6 +16,27 @@ export class BoardViewSettings {
     }
     get(key) {
         return this.#settings[key];
+    }
+}
+
+class CellImage extends Phaser.GameObjects.Image {
+    /** 
+     * @param {Phaser.Scene} scene
+     * @param {number} x
+     * @param {number} y
+     * @param {Phaser.Textures.Texture} texture
+     */
+    constructor(scene, x, y, texture) {
+        super(scene, x, y, texture);
+    }
+}
+
+class ImageBoard extends Board {
+    /** @type {CellImage[][]} */
+    table;
+    /** @param {BoardSize} boardSize */
+    constructor(boardSize) {
+        super(boardSize, () => undefined);
     }
 }
 
@@ -168,10 +189,6 @@ export class BoardView {
     }
 
     update() {
-        /** @type HTMLCanvasElement */
-        const canvas = this.#image.texture.canvas;
-        /** @type CanvasRenderingContext2D */
-        const ctx = canvas.getContext("2d");
 
         /** duplicated board for drawing */
         const compositedBoard = (() => {
@@ -183,16 +200,5 @@ export class BoardView {
                 this.#currentMinoManager.column + topLeft.column
             );
         })();
-
-        ctx.clearRect(-10, -10, 10000, 100000);
-
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-
-        this.#fillBoard(ctx, this.#cellWidth, compositedBoard);
-
-        ctx.restore();
-
-        this.#image.texture.refresh();
     }
 }

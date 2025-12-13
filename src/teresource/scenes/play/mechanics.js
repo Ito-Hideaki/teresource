@@ -243,34 +243,16 @@ export class Board {
     get columnCount() { return this.table[0].length; }
 
     /**
-     *  @param { Board } board bBoard to duplicate from
      * @param { BoardSize } boardSize used to create table
      * @param { Function } elementFactory
     */
-    constructor(board = undefined, boardSize = undefined, elementFactory) {
-        if (board) {
-            this.table = board.duplicateTable();
-        } else {
-            const size = boardSize ?? new BoardSize();
-            this.table = new Array(size.rowCount).fill().map(() => {
-                return new Array(size.columnCount).fill().map(
-                    elementFactory
-                )
-            });
-        }
-    }
-
-    /** Returns duplicated table. @return { Cell[][] }  */
-    duplicateTable() {
-        const table = [];
-        this.table.forEach((array, row) => {
-            const newArray = [];
-            array.forEach((value, column) => {
-                newArray.push(value);
-            })
-            table.push(newArray);
-        })
-        return table;
+    constructor(boardSize, elementFactory) {
+        const size = boardSize ?? new BoardSize();
+        this.table = new Array(size.rowCount).fill().map(() => {
+            return new Array(size.columnCount).fill().map(
+                elementFactory
+            )
+        });
     }
 
     isCellPosOutOfTable(row, column) {
@@ -293,8 +275,11 @@ export class Board {
         return table;
     }
 
+    /** @return {Board} */
     duplicate() {
-        return new Board(this);
+        const b = new Board(new BoardSize(this.rowCount, this.columnCount), () => false);
+        b.table = this.duplicateTable();
+        return b;
     }
 }
 
@@ -302,15 +287,11 @@ export class Board {
 /** Place where the all cells exists. Playfield. Does mino composition and collision verdict */
 export class CellBoard extends Board {
 
-    /** @type { Cell[][] } */
-    table;
-
     /**
-     *  @param { CellBoard } cellBoard cellBoard to duplicate from
      * @param { BoardSize } boardSize used to create table
     */
-    constructor(cellBoard = undefined, boardSize = undefined) {
-        super(cellBoard, boardSize, () => new Cell(false));
+    constructor(boardSize) {
+        super(boardSize, () => new Cell(false));
     }
 
 
@@ -342,9 +323,6 @@ export class CellBoard extends Board {
         if (this.isCellPosOutOfTable(row, column)) throw "Given cellPos is out of the range of the board";
         return this.table[row][column];
     }
-
-    /** Returns duplicated table. @return { Cell[][] }  */
-    duplicateTable() { return super.duplicateTable() }
 
     /** Returns if the given mino collides width walls or the board.
      * @param {Mino} mino
@@ -420,7 +398,10 @@ export class CellBoard extends Board {
         return rowMoved;
     }
 
+    /** @return {CellBoard} */
     duplicate() {
-        return new CellBoard(this);
+        const b = new CellBoard(new BoardSize(this.rowCount, this.columnCount));
+        b.table = this.duplicateTable();
+        return b;
     }
 }
