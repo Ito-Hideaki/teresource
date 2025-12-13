@@ -27,7 +27,8 @@ export class GameFactory {
         return {
             gameController,
             gameContext,
-            viewController
+            viewController,
+            controlOrderProvider
         }
     }
 }

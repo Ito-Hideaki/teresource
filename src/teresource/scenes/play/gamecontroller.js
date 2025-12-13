@@ -17,38 +17,6 @@ export class GameController {
         this.#controlOrderProvider = $.controlOrderProvider;
         this.#boardController = $.boardController;
 
-        // this.#scene.input.keyboard.on("keydown", e => {
-        //     if (e.repeat) {
-        //         e.preventDefault(); return;
-        //     }
-        //     //list of controlOrders assigned to a perticulay key
-        //     const controlOrderList = {
-        //         "ArrowLeft" : ControlOrder.START_MOVE_LEFT,
-        //         "ArrowRight": ControlOrder.START_MOVE_RIGHT,
-        //         "ArrowDown" : ControlOrder.START_SOFT_DROP,
-        //         "KeyX"      : ControlOrder.ROTATE_CLOCK_WISE,
-        //         "KeyZ"      : ControlOrder.ROTATE_COUNTER_CLOCK,
-        //         "Space"     : ControlOrder.HARD_DROP,
-        //     }
-        //     if (Object.keys(controlOrderList).includes(e.code)) {
-        //         e.preventDefault();
-        //         this.#controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
-        //     }
-        // });
-
-        // this.#scene.input.keyboard.on("keyup", e => {
-        //     //list of controlOrders assigned to a perticulay key
-        //     const controlOrderList = {
-        //         "ArrowLeft" : ControlOrder.STOP_MOVE_LEFT,
-        //         "ArrowRight": ControlOrder.STOP_MOVE_RIGHT,
-        //         "ArrowDown" : ControlOrder.STOP_SOFT_DROP,
-        //     }
-        //     if (Object.keys(controlOrderList).includes(e.code)) {
-        //         e.preventDefault();
-        //         this.#controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
-        //     }
-        // })
-
         this.#lastBoardControlResult = new createBoardControlResult();
     }
 
