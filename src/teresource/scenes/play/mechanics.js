@@ -236,7 +236,7 @@ export class BoardSize {
 
 
 /** Place where the all cells exists. Playfield. Does mino composition and collision verdict */
-export class Board {
+export class CellBoard {
 
     /** @type { Cell[][] } */
     #table;
@@ -245,12 +245,12 @@ export class Board {
     get columnCount() { return this.#table[0].length; }
 
     /**
-     *  @param { Board } board board to duplicate from
+     *  @param { CellBoard } cellBoard cellBoard to duplicate from
      * @param { BoardSize } boardSize used to create table
     */
-    constructor(board = undefined, boardSize = undefined) {
-        if (board) {
-            this.#table = board.duplicateTable();
+    constructor(cellBoard = undefined, boardSize = undefined) {
+        if (cellBoard) {
+            this.#table = cellBoard.duplicateTable();
         } else {
             const size = boardSize ?? new BoardSize();
             this.#table = new Array(size.rowCount).fill().map(() => {
@@ -266,7 +266,7 @@ export class Board {
      * @param {Cell[][]} minoTable cell table to composite
      * @param {number} row table topLeft cellPos
      * @param {number} column table topLeft cellPos
-     * @return {Board} this
+     * @return {CellBoard} this
      */
     compositeMinoTable(minoTable, row, column) {
         minoTable.forEach((array, sRow) => {
@@ -387,6 +387,6 @@ export class Board {
     }
 
     duplicate() {
-        return new Board(this);
+        return new CellBoard(this);
     }
 }

@@ -1,7 +1,7 @@
 // @ts-check
 
 import { CurrentMinoManager, MinoQueueManager } from "./minomanager";
-import { Board } from "./mechanics";
+import { CellBoard } from "./mechanics";
 import { GameContext } from "./context";
 
 export class ControlOrder {
@@ -83,8 +83,8 @@ export class BoardController {
     /** @typedef {{horizontalMinoMove: number, verticalMinoMove: number }} minoMoves */
     /** @type {CurrentMinoManager} */
     #currentMinoManager;
-    /** @type {Board} */
-    #board;
+    /** @type {CellBoard} */
+    #cellBoard;
     /** @type {BoardControlState} */
     #state;
     /** @type {MinoQueueManager} */
@@ -95,7 +95,7 @@ export class BoardController {
     */
     constructor(context) {
         this.#currentMinoManager = context.currentMinoManager;
-        this.#board = context.board;
+        this.#cellBoard = context.cellBoard;
         this.#state = context.boardControlState;
         this.#minoQueueManager = context.minoQueueManager;
     }
@@ -153,7 +153,7 @@ export class BoardController {
      */
     #update_lockDown(deltaTime) {
         const minoMng = this.#currentMinoManager;
-        if (this.#board.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
+        if (this.#cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
             this.#state.lockDownCount += deltaTime;
             if (this.#state.lockDownCount > 0.5) {
                 return true;
@@ -177,7 +177,7 @@ export class BoardController {
     /** @param {number} deltaTime */
     #update_advanceFallingProgress(deltaTime) {
         const minoMng = this.#currentMinoManager;
-        if (this.#board.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
+        if (this.#cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
             this.#state.fallingProgress = 0;
         } else {
             this.#state.fallingProgress += deltaTime * 60 * 0.02 * (this.#state.softDrop ? 20 : 1);
@@ -234,7 +234,7 @@ export class BoardController {
         }
 
         const rotatedMino = minoMng.mino.copyRotated(angle);
-        if (this.#board.doesMinoCollides(rotatedMino, minoMng.row, minoMng.column)) {
+        if (this.#cellBoard.doesMinoCollides(rotatedMino, minoMng.row, minoMng.column)) {
 
         } else {
             minoMng.rotateMino(angle);
@@ -247,7 +247,7 @@ export class BoardController {
         const { table, topLeft } = minoMng.mino.convertToTable();
         const row = minoMng.row + topLeft.row;
         const column = minoMng.column + topLeft.column;
-        this.#board.compositeMinoTable(table, row, column);
+        this.#cellBoard.compositeMinoTable(table, row, column);
         minoMng.place();
     }
 
@@ -266,7 +266,7 @@ export class BoardController {
     #moveMinoVertically(move) {
         const minoMng = this.#currentMinoManager;
         const mino = this.#currentMinoManager.mino;
-        const resultMove = this.#board.tryMoveMinoVertically(move, mino, minoMng.row, minoMng.column);
+        const resultMove = this.#cellBoard.tryMoveMinoVertically(move, mino, minoMng.row, minoMng.column);
         minoMng.row += resultMove;
         return resultMove;
     }
@@ -275,7 +275,7 @@ export class BoardController {
     #moveMinoHorizontally(move) {
         const minoMng = this.#currentMinoManager;
         const mino = this.#currentMinoManager.mino;
-        const resultMove = this.#board.tryMoveMinoHorizontally(move, mino, minoMng.row, minoMng.column);
+        const resultMove = this.#cellBoard.tryMoveMinoHorizontally(move, mino, minoMng.row, minoMng.column);
         minoMng.column += resultMove;
         return resultMove;
     }

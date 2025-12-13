@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "../../util";
-import { Cell, Board } from "./mechanics";
+import { Cell, CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
 import { generateCellTextureKey, cellImgSkins, cellGraphicSkins } from "./viewmechanics";
 import { GameContext } from "./context";
@@ -71,8 +71,8 @@ export class BoardView {
     /** Draws the board graphics. @type Phaser.GameObjects.Image */
     #image
     #cellWidth
-    /** @type {Board} */
-    #board
+    /** @type {CellBoard} */
+    #cellBoard
     #scene
     /** @type {CurrentMinoManager} */
     #currentMinoManager
@@ -81,7 +81,7 @@ export class BoardView {
     #boardViewSettings
 
     get #boardWidth() {
-        return this.#cellWidth * this.#board.rowCount;
+        return this.#cellWidth * this.#cellBoard.rowCount;
     }
 
     /** @param {number} num */
@@ -105,7 +105,7 @@ export class BoardView {
     constructor(scene, cellWidth, gContext, $) {
         this.#scene = scene;
         this.#cellWidth = cellWidth;
-        this.#board = gContext.board;
+        this.#cellBoard = gContext.cellBoard;
         this.#currentMinoManager = gContext.currentMinoManager;
         this.#boardContainer = $.boardContainer;
         this.#boardViewSettings = $.boardViewSettings;
@@ -153,16 +153,16 @@ export class BoardView {
     /** Draw filling of the each block of the board.
      * @param {CanvasRenderingContext2D} ctx
      * @param {number} cellWidth
-     * @param {Board} board
+     * @param {CellBoard} cellBoard
     */
-    #fillBoard(ctx, cellWidth, board) {
+    #fillBoard(ctx, cellWidth, cellBoard) {
         //top: row = 0 & y = -30; bottom: row = 39 & y = 9;
-        for (let row = 0; row < board.rowCount; row++) {
-            const y = getRelativeY(row, cellWidth, board.rowCount);
+        for (let row = 0; row < cellBoard.rowCount; row++) {
+            const y = getRelativeY(row, cellWidth, cellBoard.rowCount);
             //left: column = 0 & x = -5; right: column = 9 & x = 4;
-            for (let column = 0; column < board.columnCount; column++) {
-                const x = getRelativeX(column, cellWidth, board.columnCount);
-                this.#fillCell(ctx, x, y, board.getCell(row, column));
+            for (let column = 0; column < cellBoard.columnCount; column++) {
+                const x = getRelativeX(column, cellWidth, cellBoard.columnCount);
+                this.#fillCell(ctx, x, y, cellBoard.getCell(row, column));
             }
         }
     }
@@ -175,9 +175,9 @@ export class BoardView {
 
         /** duplicated board for drawing */
         const compositedBoard = (() => {
-            if (this.#currentMinoManager.isPlaced) return this.#board.duplicate();
+            if (this.#currentMinoManager.isPlaced) return this.#cellBoard.duplicate();
             const { table, topLeft } = this.#currentMinoManager.mino.convertToTable({ isActive: true });
-            return this.#board.duplicate().compositeMinoTable(
+            return this.#cellBoard.duplicate().compositeMinoTable(
                 table,
                 this.#currentMinoManager.row + topLeft.row,
                 this.#currentMinoManager.column + topLeft.column

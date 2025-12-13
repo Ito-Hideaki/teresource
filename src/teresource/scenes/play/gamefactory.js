@@ -1,5 +1,5 @@
 import { CurrentMinoManager, Bag, MinoQueueManager } from "./minomanager";
-import { BoardSize, Board } from "./mechanics";
+import { BoardSize, CellBoard } from "./mechanics";
 import { ControlOrderProvider, BoardController, BoardControlState } from "./boardcontroller";
 import { GameContext } from "./context";
 import { ViewController } from "./viewcontroller";
@@ -10,11 +10,11 @@ export class GameFactory {
     static create(scene) {
         const boardSize = new BoardSize();
         const currentMinoManager = new CurrentMinoManager();
-        const board = new Board(undefined, boardSize);
+        const cellBoard = new CellBoard(undefined, boardSize);
         const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN));
         const boardControlState = new BoardControlState();
         const gameContext = new GameContext({
-            board, boardSize, currentMinoManager, minoQueueManager, boardControlState
+            cellBoard, boardSize, currentMinoManager, minoQueueManager, boardControlState
         });
         const controlOrderProvider = new ControlOrderProvider();
         const boardController = new BoardController(gameContext);
