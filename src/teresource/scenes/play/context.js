@@ -16,15 +16,10 @@ export class GameContext {
     boardControlState
 
     constructor(source) {
-        const keys = [
-            "cellBoard",
-            "boardSize",
-            "currentMinoManager",
-            "minoQueueManager",
-            "boardControlState"
-        ];
-        for (let key of keys) {
-            this[key] = source[key];
-        }
+        this.cellBoard          = source.cellBoard;
+        this.boardSize          = source.boardSize;
+        this.currentMinoManager = source.currentMinoManager;
+        this.minoQueueManager   = source.minoQueueManager;
+        this.boardControlState  = source.boardControlState;
     }
 }
