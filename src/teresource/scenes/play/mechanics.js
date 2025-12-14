@@ -12,7 +12,6 @@ export const BLOCK_COLORS = {
     PURPLE: 6,
     GREY: 7,
     BLACK: 8,
-    VOID: 9,
 }
 
 /**
@@ -200,7 +199,7 @@ export class Cell {
      * isActive: boolean
      * }} $
      */
-    constructor(isBlock, color = BLOCK_COLORS.VOID, $ = {}) {
+    constructor(isBlock, color = BLOCK_COLORS.RED, $ = {}) {
         this.#isBlock = isBlock;
         this.#isActive = $.isActive ?? false;
         this.#color = color;
