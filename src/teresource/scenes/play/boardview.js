@@ -1,30 +1,35 @@
 import Phaser from "phaser";
-import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "#util";
+import { getRelativeX, getRelativeY } from "#util";
 import { Board, BoardSize, Cell, CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
-import { generateCellTextureKey, cellImgSkins, cellGraphicSkins } from "./viewmechanics";
-import { GameViewContext } from "./context";
-
-const utkg = new UniqueTextureKeyGenerator("boardview");
+import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, generateCellSheetTextureFrameKey } from "./viewmechanics";
+import { GameViewContext, GameContext } from "./context";
+import { CellSheetParent } from "./customtexture";
 
 class CellImage extends Phaser.GameObjects.Image {
-    /** 
+    /**
      * @param {Phaser.Scene} scene
      * @param {number} x
      * @param {number} y
-     * @param {Phaser.Textures.Texture} texture
+     * @param {CellSheetParent} cellSheetParent
      */
-    constructor(scene, x, y, texture) {
-        super(scene, x, y, texture);
+    constructor(scene, x, y, cellSheetParent) {
+        super(scene, x, y, cellSheetParent.texture);
+        this.setOrigin(0, 0);
+        const defaultFrame = generateCellSheetTextureFrameKey({ isActive: true, color: "red" });
+        this.setFrame(defaultFrame);
     }
 }
 
 class ImageBoard extends Board {
-    /** @type {CellImage[][]} */
-    table;
     /** @param {BoardSize} boardSize */
     constructor(boardSize) {
         super(boardSize, () => undefined);
+    }
+
+    /** @return {CellImage[][]} */
+    getTable() {
+        return this.table;
     }
 }
 
@@ -35,9 +40,9 @@ export class BoardView {
 
 
 
-
-    /** Draws the board graphics. @type Phaser.GameObjects.Image */
     #image
+    /** Board of Cell images. @type {ImageBoard} */
+    #imageBoard
     #cellWidth
     /** @type {CellBoard} */
     #cellBoard
@@ -70,6 +75,7 @@ export class BoardView {
      * } } $
     */
     constructor(scene, cellWidth, gvContext, $) {
+        /** @type {GameContext} */
         const gContext = gvContext.gameContext;
         this.#scene = scene;
         this.#cellWidth = cellWidth;
@@ -77,15 +83,30 @@ export class BoardView {
         this.#currentMinoManager = gContext.currentMinoManager;
         this.#boardContainer = $.boardContainer;
 
-        this.#init();
+        this.#initImageBoard(scene, cellWidth, gvContext, $.boardContainer);
     }
 
-    #init() {
-        //Create image
-        const canvasTextureKey = utkg.get();
-        this.#scene.textures.createCanvas(canvasTextureKey, this.#boardWidth * 1.25, this.#boardWidth * 2.25);
-        this.#image = this.#scene.add.image(0, 0, canvasTextureKey);
-        this.#boardContainer.add(this.#image);
+    /**
+     *  @param { Phaser.Scene } scene
+     *  @param { number } cellWidth
+     *  @param { GameViewContext } gvContext
+     */
+    #initImageBoard(scene, cellWidth, gvContext) {
+        //Create imageBoard
+        const boardSize = gvContext.gameContext.boardSize;
+        this.#imageBoard = new ImageBoard(boardSize);
+        this.#imageBoard.table.forEach((array, row) => {
+            array.forEach((_, column) => {
+                //generate cellImage for each cell of the board
+                const x = getRelativeX(column, cellWidth, boardSize.columnCount);
+                const y = getRelativeY(row, cellWidth, boardSize.rowCount);
+                const cellImage = new CellImage(scene, x, y, gvContext.cellSheetParent);
+                this.#imageBoard.table[row][column] = cellImage;
+                //add cellImage to scene and container
+                scene.add.existing(cellImage);
+                this.#boardContainer.add(cellImage);
+            })
+        })
     }
 
     /**Draw cell with image
