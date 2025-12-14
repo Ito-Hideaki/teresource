@@ -35,10 +35,14 @@ export class CellTextureParent {
         return generateCellTextureKey(parseCellViewParams);
     }
 
+    static generateTextureKey(skin) {
+        return `celltexture_${skin}`;
+    }
+
     /** @param {Phaser.Scene} scene @param {string} skin  */
     constructor(scene, skin) {
         const cellWidth = 30;
-        const key = utkg.get();
+        const key = CellTextureParent.generateTextureKey();
         this.texture = scene.textures.createCanvas(key, getRequiredTextureWidth(cellWidth), getRequiredTextureHeight(cellWidth));
         if(this.texture === null) throw "wtf";
         this.texture.cellTextureParent = this;
