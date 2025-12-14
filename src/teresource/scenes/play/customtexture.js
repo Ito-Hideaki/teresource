@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { calcSkinCellViewParams, cellColorStr, generateCellTextureKey, gobis, parseCellViewParams } from "./viewmechanics";
+import { calcSkinCellViewParams, cellColorStr, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellTextureKey, gobis, parseCellViewParams, generateCellSheetTextureKey, generateCellSheetTextureFrameKey } from "./viewmechanics";
 
 /**  @param {import("./viewmechanics").ParsedCellViewParams} parsedCellViewParams */
 function getFramePosition(parsedCellViewParams) {
@@ -24,31 +24,33 @@ function getRequiredTextureHeight(cellWidth) {
     return cellWidth * gobis.length;
 }
 
-export class CellTextureParent {
-
-    /** @param {import("./viewmechanics").ParsedCellViewParams} parsedCellViewParams @return {string}*/
-    static getFrameKey(parsedCellViewParams) {
-        parsedCellViewParams.skin = "skin";
-        return generateCellTextureKey(parseCellViewParams);
-    }
-
-    static generateTextureKey(skin) {
-        return `celltexture_${skin}`;
-    }
+/** if the given skin is fromImgs skins, draws out new texture using preloaded textures.
+ *  if the given skin is fromSheet skins, just use it as its texture.
+ */
+export class CellSheetParent {
 
     /** @param {Phaser.Scene} scene @param {string} skin  */
     constructor(scene, skin) {
         const cellWidth = 30;
-        const key = CellTextureParent.generateTextureKey(skin);
-        this.texture = scene.textures.createCanvas(key, getRequiredTextureWidth(cellWidth), getRequiredTextureHeight(cellWidth));
-        if(this.texture === null) throw "wtf";
-        this.texture.cellTextureParent = this;
-        this.skin = skin;
-        this.scene = scene;
+        const key = generateCellSheetTextureKey(skin);
 
-        this.draw(cellWidth);
+        if (cellImgSkins_fromImgs.includes(skin)) {
+            this.texture = scene.textures.createCanvas(key, getRequiredTextureWidth(cellWidth), getRequiredTextureHeight(cellWidth));
+            if (this.texture === null) throw "wtf";
+            this.texture.cellTextureParent = this;
+            this.skin = skin;
+            this.scene = scene;
 
-        this.texture.refresh();
+            this.draw(cellWidth);
+
+            this.texture.refresh();
+        }
+        else if (cellImgSkins_fromSheet.includes(skin)) {
+            this.texture = scene.textures.get(generateCellSheetTextureKey(skin));
+        }
+        else {
+            throw ("no such skin");
+        }
     }
 
     draw(cellWidth) {
@@ -66,7 +68,7 @@ export class CellTextureParent {
         const frameImg = this.scene.textures.get(textureKey).getSourceImage();
         ctx.drawImage(frameImg, framePos.x, framePos.y, cellWidth, cellWidth);
 
-        const frameKey = CellTextureParent.getFrameKey(parsedCellViewParams);
+        const frameKey = generateCellSheetTextureFrameKey(parsedCellViewParams);
         this.texture.add(frameKey, 0, framePos.x, framePos.y, cellWidth, cellWidth);
     }
 }

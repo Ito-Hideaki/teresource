@@ -10,9 +10,18 @@ export const cellColorStr = [
     "black"
 ]
 
-export const cellImgSkins = [
+export const cellImgSkins_fromSheet = [
+    "nine",
+];
+
+export const cellImgSkins_fromImgs = [
     "default",
     "tikin",
+]
+
+export const cellImgSkins = [
+    ...cellImgSkins_fromImgs,
+    ...cellImgSkins_fromSheet,
 ]
 
 export const cellGraphicSkins = [
@@ -38,6 +47,7 @@ export const gobis = [
     isActive: boolean
 }} ParsedCellViewParams parsed certain params about cell image
  * */
+
 
 /**
  * @param {CellViewParams} $
@@ -97,14 +107,14 @@ export function calcSkinCellViewParams(skin) {
     return arr;
 }
 
-/** All possible CellViewParams but without graphic rendering skin.
- *  Can be used to load cell images.
- * @return {CellViewParams[]} */
-export function calcAllImgCellViewParams() {
-    const arr = [];
-    cellImgSkins.forEach(skin => {
-        const skinArr = calcSkinCellViewParams(skin);
-        arr.push(...skinArr);
-    });
-    return arr;
+
+/** @param {ParsedCellViewParams} parsedCellViewParams @return {string}*/
+export function generateCellSheetTextureFrameKey(parsedCellViewParams) {
+    parsedCellViewParams.skin = "skin";
+    return generateCellSheetTextureKey(parseCellViewParams);
+}
+
+/** @param {string} skin @return {string}*/
+export function generateCellSheetTextureKey(skin) {
+    return `cellsheet_${skin}`;
 }
