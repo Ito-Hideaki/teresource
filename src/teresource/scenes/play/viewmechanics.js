@@ -19,6 +19,11 @@ export const cellGraphicSkins = [
     "rect",
 ]
 
+export const gobis = [
+    "n",
+    "a"
+]
+
 /**
  * @typedef {{
  * skin: string | undefined,
@@ -47,7 +52,7 @@ function parseCellViewParams($) {
     $.color ??= "red";
     $.gobi ??= "n";
     $.isActive ??= false;
-    if($.gobi === "a") {
+    if ($.gobi === "a") {
         $.isActive = true;
     }
     return $;
@@ -76,20 +81,30 @@ export function generateCellTextureUrl($) {
     return `/image/cell/${p.skin}/${p.color}_${createStatusGobi(p)}.png`;
 }
 
+/** All possible CellViewParams of a skin.
+ * @param {string} skin
+ * @return {CellViewParams[]} */
+export function calcSkinCellViewParams(skin) {
+    const arr = [];
+    for (let i = 0; i < 7; i++) {
+        const color = cellColorStr[i];
+        gobis.forEach(gobi => {
+            /** @type {CellViewParams} */
+            const params = { skin, color, gobi };
+            arr.push(params);
+        });
+    }
+    return arr;
+}
+
 /** All possible CellViewParams but without graphic rendering skin.
  *  Can be used to load cell images.
  * @return {CellViewParams[]} */
 export function calcAllImgCellViewParams() {
     const arr = [];
     cellImgSkins.forEach(skin => {
-        for(let i = 0; i < 7; i++) {
-            const color = cellColorStr[i];
-            ["n", "a"].forEach(gobi => {
-                /** @type {CellViewParams} */
-                const params = { skin, color, gobi };
-                arr.push(params);
-            });
-        }
+        const skinArr = calcSkinCellViewParams(skin);
+        arr.push(...skinArr);
     });
     return arr;
 }
