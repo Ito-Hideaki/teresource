@@ -1,8 +1,5 @@
 import Phaser from "phaser";
-import { UniqueTextureKeyGenerator } from "#util";
 import { calcSkinCellViewParams, cellColorStr, generateCellTextureKey, gobis, parseCellViewParams } from "./viewmechanics";
-
-const utkg = new UniqueTextureKeyGenerator("celltexture");
 
 /**  @param {import("./viewmechanics").ParsedCellViewParams} parsedCellViewParams */
 function getFramePosition(parsedCellViewParams) {
@@ -42,7 +39,7 @@ export class CellTextureParent {
     /** @param {Phaser.Scene} scene @param {string} skin  */
     constructor(scene, skin) {
         const cellWidth = 30;
-        const key = CellTextureParent.generateTextureKey();
+        const key = CellTextureParent.generateTextureKey(skin);
         this.texture = scene.textures.createCanvas(key, getRequiredTextureWidth(cellWidth), getRequiredTextureHeight(cellWidth));
         if(this.texture === null) throw "wtf";
         this.texture.cellTextureParent = this;
