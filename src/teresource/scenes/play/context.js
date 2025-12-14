@@ -37,13 +37,17 @@ export class GameContext {
 export class GameViewContext {
     /** @type {CellSheetParent} */
     cellSheetParent
+    /** @type {GameContext} */
+    gameContext
 
     /** 
      * @param {{
-     * cellSheetParent: CellSheetParent
+     * cellSheetParent: CellSheetParent,
+     * gameContext    : GameContext
      * }} source
      * */
     constructor(source) {
         this.cellSheetParent = source.cellSheetParent;
+        this.gameContext     = source.gameContext;
     }
 }

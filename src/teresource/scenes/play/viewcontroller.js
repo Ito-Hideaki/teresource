@@ -1,7 +1,8 @@
 import Phaser from "phaser";
-import { BoardView, BoardViewSettings } from "./boardview";
+import { BoardView } from "./boardview";
 import { BoardDeco } from "./boarddeco";
-import { GameContext } from "./context";
+import { GameViewContext } from "./context";
+import { PlayScene } from "../play";
 
 /** Represents the game view for each player */
 export class ViewController {
@@ -15,15 +16,15 @@ export class ViewController {
         this.#boardContainer.y = y;
     }
 
-    /** @param {Phaser.Scene} scene
-     * @param {GameContext} context
+    /**
+     *  @param {PlayScene} scene
+     * @param {GameViewContext} gvContext
      */
-    constructor(scene, gContext) {
+    constructor(scene, gvContext) {
         this.#boardContainer = scene.add.container();
-        this.#boardDeco = new BoardDeco(scene, 30, gContext, this.#boardContainer);
-        this.#boardView = new BoardView(scene, 30, gContext, {
+        this.#boardDeco = new BoardDeco(scene, 30, gvContext, this.#boardContainer);
+        this.#boardView = new BoardView(scene, 30, gvContext, {
             boardContainer: this.#boardContainer,
-            boardViewSettings: new BoardViewSettings({ })
         });
     }
 

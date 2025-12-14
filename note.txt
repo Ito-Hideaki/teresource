@@ -8,6 +8,8 @@
 
 Table→Cell[][]で表したブロックの集合
 
+PlaySceneに固有のメンバ変数や関数を下位から参照しない
+
 コンフィグ
 バッグの方式
 スピンの方式
@@ -34,3 +36,4 @@ config(ゲーム中に変化しない設定)を定義してGameContextから引�
 ViewController
 作成時にスキンに応じてテクスチャを生成する
 settingsはただのオブジェクトにする
+scene.width scene.height 削除

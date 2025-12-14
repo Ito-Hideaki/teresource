@@ -3,21 +3,9 @@ import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "#util";
 import { Board, BoardSize, Cell, CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
 import { generateCellTextureKey, cellImgSkins, cellGraphicSkins } from "./viewmechanics";
-import { GameContext } from "./context";
+import { GameViewContext } from "./context";
 
 const utkg = new UniqueTextureKeyGenerator("boardview");
-
-export class BoardViewSettings {
-    #settings = {
-        skin: "default"
-    }
-    constructor($ = {}) {
-        Object.assign(this.#settings, $);
-    }
-    get(key) {
-        return this.#settings[key];
-    }
-}
 
 class CellImage extends Phaser.GameObjects.Image {
     /** 
@@ -43,48 +31,7 @@ class ImageBoard extends Board {
 /** Draws all the cells of the board */
 export class BoardView {
 
-    /**
-     *
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {number} x left coordinate of the cell
-     * @param {number} y top coordinate of the cell
-     * @param {number} cellWidth
-     * @param {Cell} cell
-     */
-    static #fillCellWithRect(ctx, x, y, cellWidth, cell) {
-        const colorCodes = [
-            "#f22",
-            "#f91",
-            "#ff1",
-            "#5f1",
-            "#1ff",
-            "#13f",
-            "#a1f",
-            "#888",
-            "#111",
-            "#0000",
-        ]
-        const inactiveColorCodes = [
-            "rgba(212, 26, 26, 1)",
-            "rgba(212, 130, 22, 1)",
-            "rgba(213, 213, 22, 1)",
-            "rgba(77, 212, 24, 1)",
-            "rgba(23, 215, 215, 1)",
-            "rgba(27, 54, 212, 1)",
-            "rgba(149, 25, 215, 1)",
-            "#888",
-            "#111",
-            "#0000",
-        ]
-        if (cell.isBlock) {
-            if (cell.isActive) {
-                ctx.fillStyle = colorCodes[cell.color];
-            } else {
-                ctx.fillStyle = inactiveColorCodes[cell.color];
-            }
-            ctx.fillRect(x, y, cellWidth, cellWidth);
-        }
-    }
+
 
 
 
@@ -98,8 +45,8 @@ export class BoardView {
     /** @type {CurrentMinoManager} */
     #currentMinoManager
     #boardContainer
-    /** @type {BoardViewSettings} */
-    #boardViewSettings
+    /** @type {string} */
+    #skin
 
     get #boardWidth() {
         return this.#cellWidth * this.#cellBoard.rowCount;
@@ -117,19 +64,18 @@ export class BoardView {
     /**
      *  @param { Phaser.Scene } scene
      *  @param { number } cellWidth
-     *  @param { GameContext } gContext
+     *  @param { GameViewContext } gvContext
      *  @param { {
      * boardContainer: Phaser.GameObjects.Container,
-     * boardViewSettings: BoardViewSettings
      * } } $
     */
-    constructor(scene, cellWidth, gContext, $) {
+    constructor(scene, cellWidth, gvContext, $) {
+        const gContext = gvContext.gameContext;
         this.#scene = scene;
         this.#cellWidth = cellWidth;
         this.#cellBoard = gContext.cellBoard;
         this.#currentMinoManager = gContext.currentMinoManager;
         this.#boardContainer = $.boardContainer;
-        this.#boardViewSettings = $.boardViewSettings;
 
         this.#init();
     }
@@ -159,12 +105,11 @@ export class BoardView {
     }
 
     #fillCell(ctx, x, y, cell) {
-        const skin = this.#boardViewSettings.get("skin");
+        const skin = this.#skin;
         if (cellImgSkins.includes(skin)) {
             this.#fillCellImg(ctx, x, y, cell);
         } else if (cellGraphicSkins.includes(skin)) {
             if (skin === "rect") {
-                BoardView.#fillCellWithRect(ctx, x, y, this.#cellWidth, cell);
             }
         } else {
             throw `Skin "${skin}" was not found`;
