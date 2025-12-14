@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "../../util";
+import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "#util";
 import { GameContext } from "./context";
 import { BoardSize } from "./mechanics";
 

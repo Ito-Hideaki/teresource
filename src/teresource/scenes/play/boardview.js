@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "../../util";
+import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "#util";
 import { Board, BoardSize, Cell, CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
 import { generateCellTextureKey, cellImgSkins, cellGraphicSkins } from "./viewmechanics";

@@ -1,7 +1,7 @@
 // @ts-check
 
 import { Mino } from './mechanics';
-import { shuffle } from "./../../util";
+import { shuffle } from "#util";
 
 /** States of the mino currently handled by the player */
 export class CurrentMinoManager {

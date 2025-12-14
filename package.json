@@ -16,5 +16,8 @@
   },
   "dependencies": {
     "phaser": "^3.90.0"
+  },
+  "imports": {
+    "#util" : "./src/teresource/util.js"
   }
 }
