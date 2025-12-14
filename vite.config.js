@@ -4,6 +4,7 @@ import { resolve } from 'path';
 export default defineConfig(({ command }) => {
     if (command === "build") {
         return {
+            base: "/teresource/",
             resolve: {
                 alias: {
                     phaser: resolve('./src/phaser-shim.js'),
