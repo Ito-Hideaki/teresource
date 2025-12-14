@@ -1,9 +1,10 @@
 import Phaser from "phaser";
 import { GameController } from "./play/gamecontroller";
 import { ViewController } from "./play/viewcontroller";
-import {  calcAllImgCellViewParams, generateCellTextureKey, generateCellTextureUrl } from "./play/viewmechanics";
+import { calcAllImgCellViewParams, cellGraphicSkins, cellImgSkins, generateCellTextureKey, generateCellTextureUrl, parseCellViewParams } from "./play/viewmechanics";
 import { GameFactory } from "./play/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/boardcontroller";
+import { CellTextureParent } from "./play/customtexture";
 
 
 
@@ -29,16 +30,24 @@ export class PlayScene extends Phaser.Scene {
     }
 
     preload() {
-        const allCellViewParams =  calcAllImgCellViewParams();
+        /** First-level textures */
+        const allCellViewParams = calcAllImgCellViewParams();
         allCellViewParams.forEach(cellViewParams => {
-            const key = generateCellTextureKey(cellViewParams);
-            const url = generateCellTextureUrl(cellViewParams);
+            const parsedCellViewParams = parseCellViewParams(cellViewParams);
+            const key = generateCellTextureKey(parsedCellViewParams);
+            const url = generateCellTextureUrl(parsedCellViewParams);
             console.log(url);
             this.load.image(key, url);
         });
     }
 
     create() {
+        /* Second-level textures */
+        [...cellImgSkins].forEach(skin => {
+            new CellTextureParent(this, skin);
+        });
+        document.body.appendChild(this.textures.get(CellTextureParent.generateTextureKey("tikin")).getSourceImage());
+
         /** @type number */
         this.width = this.game.canvas.width;
         /** @type number */
@@ -55,12 +64,12 @@ export class PlayScene extends Phaser.Scene {
             }
             //list of controlOrders assigned to a perticulay key
             const controlOrderList = {
-                "ArrowLeft" : ControlOrder.START_MOVE_LEFT,
+                "ArrowLeft": ControlOrder.START_MOVE_LEFT,
                 "ArrowRight": ControlOrder.START_MOVE_RIGHT,
-                "ArrowDown" : ControlOrder.START_SOFT_DROP,
-                "KeyX"      : ControlOrder.ROTATE_CLOCK_WISE,
-                "KeyZ"      : ControlOrder.ROTATE_COUNTER_CLOCK,
-                "Space"     : ControlOrder.HARD_DROP,
+                "ArrowDown": ControlOrder.START_SOFT_DROP,
+                "KeyX": ControlOrder.ROTATE_CLOCK_WISE,
+                "KeyZ": ControlOrder.ROTATE_COUNTER_CLOCK,
+                "Space": ControlOrder.HARD_DROP,
             }
             if (Object.keys(controlOrderList).includes(e.code)) {
                 e.preventDefault();
@@ -71,9 +80,9 @@ export class PlayScene extends Phaser.Scene {
         this.input.keyboard.on("keyup", e => {
             //list of controlOrders assigned to a perticulay key
             const controlOrderList = {
-                "ArrowLeft" : ControlOrder.STOP_MOVE_LEFT,
+                "ArrowLeft": ControlOrder.STOP_MOVE_LEFT,
                 "ArrowRight": ControlOrder.STOP_MOVE_RIGHT,
-                "ArrowDown" : ControlOrder.STOP_SOFT_DROP,
+                "ArrowDown": ControlOrder.STOP_SOFT_DROP,
             }
             if (Object.keys(controlOrderList).includes(e.code)) {
                 e.preventDefault();
