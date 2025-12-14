@@ -87,10 +87,9 @@ function createStatusGobi(p) {
 }
 
 /**
- * @param {ParsedCellViewParams} $
+ * @param {ParsedCellViewParams} p
  * */
-export function generateCellTextureKey($) {
-    const p = parseCellViewParams($);
+export function generateCellTextureKey(p) {
     return `cell_${p.skin}_${p.color}_${createStatusGobi(p)}`;
 }
 
