@@ -5,6 +5,7 @@ import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fr
 import { GameFactory } from "./play/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/boardcontroller";
 import { CellSheetParent } from "./play/customtexture";
+import { viteURLify } from "#util";
 
 
 
@@ -37,13 +38,13 @@ export class PlayScene extends Phaser.Scene {
                 const parsedCellViewParams = parseCellViewParams(cellViewParams);
                 const key = generateCellTextureKey(parsedCellViewParams);
                 const url = generateCellTextureUrl(parsedCellViewParams);
-                this.load.image(key, url);
+                this.load.image(key, viteURLify(url));
             })
         })
         cellImgSkins_fromSheet.forEach(skin => {
             const key = generateCellSheetTextureKey(skin);
             const url = generateCellSheetTextureUrl(skin);
-            this.load.image(key, url);
+            this.load.image(key, viteURLify(url));
         })
     }
 
