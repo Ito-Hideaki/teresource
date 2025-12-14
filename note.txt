@@ -37,3 +37,4 @@ ViewController
 作成時にスキンに応じてテクスチャを生成する
 settingsはただのオブジェクトにする
 scene.width scene.height 削除
+cellSheetTextureにGhostなどのために複数のsourceImageを使う
