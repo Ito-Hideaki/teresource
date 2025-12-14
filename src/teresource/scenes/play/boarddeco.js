@@ -92,9 +92,7 @@ export class BoardDeco {
         this.#scene.textures.createCanvas(canvasTextureKey, this.#boardWidth * 1.25, this.#boardWidth * 2.25);
         this.#image = this.#scene.add.image(0, 0, canvasTextureKey);
         this.#boardContainer.add(this.#image);
-    }
 
-    update() {
         /** @type HTMLCanvasElement */
         const canvas = this.#image.texture.canvas;
         /** @type CanvasRenderingContext2D */
@@ -111,5 +109,9 @@ export class BoardDeco {
         ctx.restore();
 
         this.#image.texture.refresh();
+    }
+
+    update() {
+
     }
 }
