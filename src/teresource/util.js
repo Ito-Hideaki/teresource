@@ -80,10 +80,8 @@ export function cellPosRotate4Way(column, row, rotation) {
     return { row, column };
 }
 
-/** add a base URL that changes depending on the build mode @param {string} url */
+/** adjust url depending on the build mode @param {string} url */
 export function viteURLify(url) {
-    /** @type {string} */
-    let base = import.meta.env.BASE_URL;
-    if(base[0] === '/') base = base.slice(1);
-    return `${base}${url}`;
+    if(import.meta.env.PROD) return url.slice(1);
+    else return url;
 }
