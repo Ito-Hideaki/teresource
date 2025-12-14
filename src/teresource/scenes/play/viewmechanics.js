@@ -71,10 +71,10 @@ export function parseCellViewParams($) {
 }
 
 /** @param {Cell} cell @return {ParsedCellViewParams} */
-function parseCellViewParams_fromCell(cell) {
+export function parseCellViewParamsFromCell(cell) {
     const $ = {};
     $.skin = "skin";
-    $.color = cell.color;
+    $.color = cellColorStr[cell.color];
     $.isActive = cell.isActive;
     return $;
 }
@@ -128,12 +128,6 @@ export function calcSkinCellViewParams(skin) {
 export function generateCellSheetTextureFrameKey(parsedCellViewParams) {
     parsedCellViewParams.skin = "skin";
     return generateCellSheetTextureKey(parseCellViewParams);
-}
-
-/** @param {Cell} cell @return {string} */
-export function generateCellSheetTextureFrameKey_fromCell(cell) {
-    const parsedCellViewParams = parseCellViewParams_fromCell(cell);
-    return generateCellSheetTextureKey(parsedCellViewParams);
 }
 
 /** @param {string} skin @return {string}*/
