@@ -1,10 +1,10 @@
 import Phaser from "phaser";
 import { GameController } from "./play/gamecontroller";
 import { ViewController } from "./play/viewcontroller";
-import { calcAllImgCellViewParams, cellGraphicSkins, cellImgSkins, generateCellTextureKey, generateCellTextureUrl, parseCellViewParams } from "./play/viewmechanics";
+import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl, parseCellViewParams } from "./play/viewmechanics";
 import { GameFactory } from "./play/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/boardcontroller";
-import { CellTextureParent } from "./play/customtexture";
+import { CellSheetParent } from "./play/customtexture";
 
 
 
@@ -31,22 +31,28 @@ export class PlayScene extends Phaser.Scene {
 
     preload() {
         /** First-level textures */
-        const allCellViewParams = calcAllImgCellViewParams();
-        allCellViewParams.forEach(cellViewParams => {
-            const parsedCellViewParams = parseCellViewParams(cellViewParams);
-            const key = generateCellTextureKey(parsedCellViewParams);
-            const url = generateCellTextureUrl(parsedCellViewParams);
-            console.log(url);
+        cellImgSkins_fromImgs.forEach(skin => {
+            const cellViewParamsList = calcSkinCellViewParams(skin);
+            cellViewParamsList.forEach(cellViewParams => {
+                const parsedCellViewParams = parseCellViewParams(cellViewParams);
+                const key = generateCellTextureKey(parsedCellViewParams);
+                const url = generateCellTextureUrl(parsedCellViewParams);
+                this.load.image(key, url);
+            })
+        })
+        cellImgSkins_fromSheet.forEach(skin => {
+            const key = generateCellSheetTextureKey(skin);
+            const url = generateCellSheetTextureUrl(skin);
             this.load.image(key, url);
-        });
+        })
     }
 
     create() {
         /* Second-level textures */
-        [...cellImgSkins].forEach(skin => {
-            new CellTextureParent(this, skin);
+        cellImgSkins.forEach(skin => {
+            new CellSheetParent(this, skin);
         });
-        document.body.appendChild(this.textures.get(CellTextureParent.generateTextureKey("tikin")).getSourceImage());
+        document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
 
         /** @type number */
         this.width = this.game.canvas.width;

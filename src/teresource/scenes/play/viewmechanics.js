@@ -91,6 +91,11 @@ export function generateCellTextureUrl($) {
     return `/image/cell/${p.skin}/${p.color}_${createStatusGobi(p)}.png`;
 }
 
+/** @param {string} skin */
+export function generateCellSheetTextureUrl(skin) {
+    return `/image/cellsheet/${skin}.png`;
+}
+
 /** All possible CellViewParams of a skin.
  * @param {string} skin
  * @return {CellViewParams[]} */
