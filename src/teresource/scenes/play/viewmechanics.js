@@ -127,7 +127,7 @@ export function calcSkinCellViewParams(skin) {
 /** @param {ParsedCellViewParams} parsedCellViewParams @return {string}*/
 export function generateCellSheetTextureFrameKey(parsedCellViewParams) {
     parsedCellViewParams.skin = "skin";
-    return generateCellSheetTextureKey(parseCellViewParams);
+    return generateCellTextureKey(parsedCellViewParams);
 }
 
 /** @param {string} skin @return {string}*/
