@@ -1,3 +1,5 @@
+import { Cell } from "./mechanics";
+
 export const cellColorStr = [
     "red",
     "orange",
@@ -68,6 +70,15 @@ export function parseCellViewParams($) {
     return $;
 }
 
+/** @param {Cell} cell @return {ParsedCellViewParams} */
+function parseCellViewParams_fromCell(cell) {
+    const $ = {};
+    $.skin = "skin";
+    $.color = cell.color;
+    $.isActive = cell.isActive;
+    return $;
+}
+
 /** @param {ParsedCellViewParams} p @return string an alphabet */
 function createStatusGobi(p) {
     let statusGobi = "n";
@@ -117,6 +128,12 @@ export function calcSkinCellViewParams(skin) {
 export function generateCellSheetTextureFrameKey(parsedCellViewParams) {
     parsedCellViewParams.skin = "skin";
     return generateCellSheetTextureKey(parseCellViewParams);
+}
+
+/** @param {Cell} cell @return {string} */
+export function generateCellSheetTextureFrameKey_fromCell(cell) {
+    const parsedCellViewParams = parseCellViewParams_fromCell(cell);
+    return generateCellSheetTextureKey(parsedCellViewParams);
 }
 
 /** @param {string} skin @return {string}*/
