@@ -43,7 +43,7 @@ export const gobis = [
  * @param {CellViewParams} $
  * @return {ParsedCellViewParams}
  * */
-function parseCellViewParams($) {
+export function parseCellViewParams($) {
     $.skin ??= "default";
     if (typeof $.color === "number") {
         $.color = Math.floor($.color) % cellColorStr.length;
@@ -66,7 +66,7 @@ function createStatusGobi(p) {
 }
 
 /**
- * @param {CellViewParams} $
+ * @param {ParsedCellViewParams} $
  * */
 export function generateCellTextureKey($) {
     const p = parseCellViewParams($);
@@ -74,7 +74,7 @@ export function generateCellTextureKey($) {
 }
 
 /**
- * @param {CellViewParams} $
+ * @param {ParsedCellViewParams} $
  * */
 export function generateCellTextureUrl($) {
     const p = parseCellViewParams($);
