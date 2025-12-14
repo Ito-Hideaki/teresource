@@ -1,16 +1,55 @@
 <!doctype html>
 <html">
+
   <head>
     <meta charset="UTF-8" />
     <title>TeReSource</title>
     <style>
       canvas {
-        image-rendering:pixelated;
+        image-rendering: pixelated;
+      }
+      table, td {
+        border: 3px solid black;
+      }
+
+      td {
+        padding: 5px;
       }
     </style>
   </head>
+
   <body>
-    <div id="game-container" style="background: linear-gradient(0.25turn, #222, #999, #222); margin: 10px 0px; overflow-x: hidden;"></div>
+    <h1>Teresource</h1>
+    <h3>操作</h3>
+    <table>
+      <tr>
+        <td>← 左矢印キー</td>
+        <td>ミノを左に移動</td>
+      </tr>
+      <tr>
+        <td>→ 右矢印キー</td>
+        <td>ミノを右に移動</td>
+      </tr>
+      <tr>
+        <td>↓ 下矢印キー</td>
+        <td>高速落下</td>
+      </tr>
+      <tr>
+        <td>スペースキー</td>
+        <td>設置</td>
+      </tr>
+      <tr>
+        <td>Z</td>
+        <td>ミノを90°左回転</td>
+      </tr>
+      <tr>
+        <td>X</td>
+        <td>ミノを90°右回転</td>
+      </tr>
+    </table>
+    <div id="game-container"
+      style="background: linear-gradient(0.25turn, #222, #999, #222); margin: 10px 0px; overflow-x: hidden;"></div>
     <script type="module" src="src/teresource.js"></script>
   </body>
-</html>
+
+  </html>
