@@ -112,7 +112,7 @@ export function generateCellSheetTextureUrl(skin) {
  * @return {CellViewParams[]} */
 export function calcSkinCellViewParams(skin) {
     const arr = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < cellColorStr.length; i++) {
         const color = cellColorStr[i];
         gobis.forEach(gobi => {
             /** @type {CellViewParams} */
