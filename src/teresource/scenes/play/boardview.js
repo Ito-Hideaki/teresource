@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { getRelativeX, getRelativeY } from "#util";
 import { Board, BoardSize, Cell, CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
-import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, generateCellSheetTextureFrameKey } from "./viewmechanics";
+import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, generateCellSheetTextureFrameKey, parseCellViewParamsFromCell } from "./viewmechanics";
 import { GameViewContext, GameContext } from "./context";
 import { CellSheetParent } from "./customtexture";
 
@@ -16,8 +16,14 @@ class CellImage extends Phaser.GameObjects.Image {
     constructor(scene, x, y, cellSheetParent) {
         super(scene, x, y, cellSheetParent.texture);
         this.setOrigin(0, 0);
-        const defaultFrame = generateCellSheetTextureFrameKey({ isActive: true, color: "red" });
-        this.setFrame(defaultFrame);
+
+        this.setView({ isActive: false, color: "black" });
+    }
+
+    /** @param {import("./viewmechanics").ParsedCellViewParams} parsedCellViewParams */
+    setView(parsedCellViewParams) {
+        const frame = generateCellSheetTextureFrameKey(parsedCellViewParams);
+        this.setFrame(frame);
     }
 }
 
@@ -166,5 +172,15 @@ export class BoardView {
                 this.#currentMinoManager.column + topLeft.column
             );
         })();
+
+        compositedBoard.table.forEach((array, row) => {
+            array.forEach((/** @type {Cell} */cell, column) => {
+                /** @type {CellImage} */
+                const cellImage = this.#imageBoard.table[row][column];
+                const parsedCellViewParams = parseCellViewParamsFromCell(cell);
+                if(!cell.isBlock && !parsedCellViewParams.isActive) parsedCellViewParams.color = "black"; //temporary aid
+                cellImage.setView(parsedCellViewParams);
+            });
+        })
     }
 }
