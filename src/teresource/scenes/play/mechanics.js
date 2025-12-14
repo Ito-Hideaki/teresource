@@ -1,4 +1,4 @@
-import { cellPosRotate4Way } from "../../util";
+import { cellPosRotate4Way } from "#util";
 
 
 /** @enum {number} */
