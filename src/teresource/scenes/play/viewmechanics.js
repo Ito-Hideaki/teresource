@@ -40,13 +40,15 @@ export const gobis = [
  * skin: string | undefined,
  * color: number | string | undefined,
  * isActive: boolean | undefined,
+ * isBlock: boolean,
  * gobi: string | undefined,
  * }} CellViewParams uncertain params about cell image
 
  * @typedef {{
     skin: string,
     color: string,
-    isActive: boolean
+    isActive: boolean,
+    isBlock: boolean,
 }} ParsedCellViewParams parsed certain params about cell image
  * */
 
@@ -76,10 +78,11 @@ export function parseCellViewParamsFromCell(cell) {
     $.skin = "skin";
     $.color = cellColorStr[cell.color];
     $.isActive = cell.isActive;
+    $.isBlock = cell.isBlock;
     return $;
 }
 
-/** @param {ParsedCellViewParams} p @return string an alphabet */
+/** Gobi is a letter of the combined cell status, e.g. isActive. Does not include wholy invisible states. @param {ParsedCellViewParams} p @return string an alphabet */
 function createStatusGobi(p) {
     let statusGobi = "n";
     if (p.isActive) statusGobi = "a";
