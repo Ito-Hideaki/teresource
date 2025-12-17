@@ -21,11 +21,9 @@ export class ViewController {
      * @param {GameViewContext} gvContext
      */
     constructor(scene, gvContext) {
-        this.#boardContainer = scene.add.container();
-        this.#boardDeco = new BoardDeco(scene, 30, gvContext, this.#boardContainer);
-        this.#boardView = new BoardView(scene, 30, gvContext, {
-            boardContainer: this.#boardContainer,
-        });
+        this.#boardContainer = gvContext.boardContainer;
+        this.#boardDeco = new BoardDeco(scene, 30, gvContext);
+        this.#boardView = new BoardView(scene, 30, gvContext);
     }
 
     /** @param {number} deltaTime */

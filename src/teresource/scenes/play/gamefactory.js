@@ -26,7 +26,12 @@ export class GameFactory {
         console.log(gameContext);
 
         const skin = "nine";
-        const gameViewContext = new GameViewContext({ cellSheetParent: scene.cellSheetParentIndex[skin], gameContext });
+        const boardContainer = scene.add.container();
+        const gameViewContext = new GameViewContext({
+            cellSheetParent: scene.cellSheetParentIndex[skin],
+            gameContext,
+            boardContainer
+        });
         const viewController = new ViewController(scene, gameViewContext);
         viewController.x = scene.width / 2;
         viewController.y = scene.height / 2;

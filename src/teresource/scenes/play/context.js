@@ -39,15 +39,19 @@ export class GameViewContext {
     cellSheetParent
     /** @type {GameContext} */
     gameContext
+    /** @type {Phaser.GameObjects.Container} */
+    boardContainer
 
     /** 
      * @param {{
      * cellSheetParent: CellSheetParent,
-     * gameContext    : GameContext
+     * gameContext    : GameContext,
+     * boardContainer : Phaser.GameObjects.Container
      * }} source
      * */
     constructor(source) {
         this.cellSheetParent = source.cellSheetParent;
         this.gameContext     = source.gameContext;
+        this.boardContainer  = source.boardContainer;
     }
 }

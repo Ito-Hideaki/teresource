@@ -55,7 +55,6 @@ export class BoardView {
     #scene
     /** @type {CurrentMinoManager} */
     #currentMinoManager
-    #boardContainer
     /** @type {string} */
     #skin
 
@@ -76,20 +75,16 @@ export class BoardView {
      *  @param { Phaser.Scene } scene
      *  @param { number } cellWidth
      *  @param { GameViewContext } gvContext
-     *  @param { {
-     * boardContainer: Phaser.GameObjects.Container,
-     * } } $
     */
-    constructor(scene, cellWidth, gvContext, $) {
+    constructor(scene, cellWidth, gvContext) {
         /** @type {GameContext} */
         const gContext = gvContext.gameContext;
         this.#scene = scene;
         this.#cellWidth = cellWidth;
         this.#cellBoard = gContext.cellBoard;
         this.#currentMinoManager = gContext.currentMinoManager;
-        this.#boardContainer = $.boardContainer;
 
-        this.#initImageBoard(scene, cellWidth, gvContext, $.boardContainer);
+        this.#initImageBoard(scene, cellWidth, gvContext);
     }
 
     /**
@@ -110,7 +105,7 @@ export class BoardView {
                 this.#imageBoard.table[row][column] = cellImage;
                 //add cellImage to scene and container
                 scene.add.existing(cellImage);
-                this.#boardContainer.add(cellImage);
+                gvContext.boardContainer.add(cellImage);
             })
         })
     }
