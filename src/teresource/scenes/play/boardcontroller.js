@@ -377,7 +377,7 @@ export class ControlOrderProvider {
     /** Require ControlResults to set cooldown properly @param {BoardControlResult} controlResult */
     receiveControlResult(controlResult) {
         if (controlResult.horizontalMinoMove) {
-            this.ARRTimerF = 1;
+            this.ARRTimerF = 2;
         }
     }
 
