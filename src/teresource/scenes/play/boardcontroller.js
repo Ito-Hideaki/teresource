@@ -92,21 +92,17 @@ class RotationHandler {
         this.#currentMinoManager = gameContext.currentMinoManager;
     }
 
-    /** Try mino rotation and return the resulting translation from the current position @param {number} controlRotationFlag @return {{row: number, column: number } | false} */
-    simulateRotation(controlRotationFlag) {
+    /** Try mino rotation and return the resulting translation from the current position @param {number} angle @return {{row: number, column: number } | false} */
+    simulateRotation(angle) {
         const minoMng = this.#currentMinoManager;
-
-        let angle = 0;
-        if (controlRotationFlag & CO.ROTATE_CLOCK_WISE) angle = 90;
-        else if (controlRotationFlag & CO.ROTATE_COUNTER_CLOCK) angle = 270;
 
         const rotationMap = this.#rotationSystem.getMapFromMino(minoMng.mino, angle);
         const rotatedMino = minoMng.mino.copyRotated(angle);
 
-        for(let i = 0; i < rotationMap.length; i++) {
+        for (let i = 0; i < rotationMap.length; i++) {
             const movedRow = minoMng.row + rotationMap[i].row;
             const movedColumn = minoMng.column + rotationMap[i].column;
-            if(!this.#cellBoard.doesMinoCollides(rotatedMino, movedRow, movedColumn)) {
+            if (!this.#cellBoard.doesMinoCollides(rotatedMino, movedRow, movedColumn)) {
                 return structuredClone(rotationMap[i]);
             }
         }
@@ -127,6 +123,8 @@ export class BoardController {
     #state;
     /** @type {MinoQueueManager} */
     #minoQueueManager;
+    /** @type {RotationHandler} */
+    #rotationHandler;
 
     /**
      *  @param { GameContext } context
@@ -136,6 +134,7 @@ export class BoardController {
         this.#cellBoard = context.cellBoard;
         this.#state = context.boardControlState;
         this.#minoQueueManager = context.minoQueueManager;
+        this.#rotationHandler = new RotationHandler(context);
     }
 
     /** advance time
@@ -264,18 +263,16 @@ export class BoardController {
     /** @param {number} controlRotationFlag ROTATE_CLOCK_WISE & ROTATE_COUNTER_CLOCK*/
     #update_rotateMino(controlRotationFlag) {
         const minoMng = this.#currentMinoManager;
-        let angle = 0;
-        if (controlRotationFlag & CO.ROTATE_CLOCK_WISE) angle = 90;
-        else if (controlRotationFlag & CO.ROTATE_COUNTER_CLOCK) angle = 270;
-        else {
-            return;
-        }
 
-        const rotatedMino = minoMng.mino.copyRotated(angle);
-        if (this.#cellBoard.doesMinoCollides(rotatedMino, minoMng.row, minoMng.column)) {
+        let rotation = 0;
+        if (controlRotationFlag & CO.ROTATE_CLOCK_WISE) rotation = 90;
+        else if (controlRotationFlag & CO.ROTATE_COUNTER_CLOCK) rotation = 270;
 
-        } else {
-            minoMng.rotateMino(angle);
+        const resultTranslation = this.#rotationHandler.simulateRotation(rotation);
+        if (resultTranslation) {
+            minoMng.rotateMino(rotation);
+            minoMng.row += resultTranslation.row;
+            minoMng.column += resultTranslation.column;
             this.#state.lockDownCount = 0;
         }
     }
@@ -342,7 +339,7 @@ class HorizontalLastPriorityJudge {
      *  @param {boolean} rightInput
      * @return {number} flag */
     judgeToFlag(leftInput, rightInput) {
-        if(leftInput && rightInput) {
+        if (leftInput && rightInput) {
             return this.#leftIsStrong ? CO.MOVE_LEFT : CO.MOVE_RIGHT;
         } else {
             return CO.MOVE_LEFT * +leftInput + CO.MOVE_RIGHT * +rightInput;
@@ -395,12 +392,12 @@ export class ControlOrderProvider {
     /** @param {number} flag controlOrderFlag */
     #setNewPlayerInput_receiveHorizontal(flag) {
         const flagOrder = new ControlOrder(flag);
-        if (flagOrder.get(CO.START_MOVE_LEFT)) this.leftMoveDown  = true;
-        if (flagOrder.get(CO.STOP_MOVE_LEFT))   this.leftMoveDown  = false;
+        if (flagOrder.get(CO.START_MOVE_LEFT)) this.leftMoveDown = true;
+        if (flagOrder.get(CO.STOP_MOVE_LEFT)) this.leftMoveDown = false;
         if (flagOrder.get(CO.START_MOVE_RIGHT)) this.rightMoveDown = true;
-        if (flagOrder.get(CO.STOP_MOVE_RIGHT))  this.rightMoveDown = false;
+        if (flagOrder.get(CO.STOP_MOVE_RIGHT)) this.rightMoveDown = false;
 
-        if(flagOrder.get(CO.START_MOVE_LEFT + CO.START_MOVE_RIGHT)) {
+        if (flagOrder.get(CO.START_MOVE_LEFT + CO.START_MOVE_RIGHT)) {
             this.#resetDAS();
         }
     }
@@ -432,9 +429,9 @@ export class ControlOrderProvider {
     #provide_doHorizontalControl() {
         const isFirstPressedFrame = this.#controlOrder.get(CO.START_MOVE_LEFT | CO.START_MOVE_RIGHT);
         if (this.ARRTimerF <= 0) {
-            if(isFirstPressedFrame || this.autoShiftEnabled()) {
+            if (isFirstPressedFrame || this.autoShiftEnabled()) {
                 const flag = this.#horizontalJudge.judgeToFlag(this.leftMoveDown, this.rightMoveDown);
-                this.#controlOrder.setTrue(flag); 
+                this.#controlOrder.setTrue(flag);
             }
         }
     }
