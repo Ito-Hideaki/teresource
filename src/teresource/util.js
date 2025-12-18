@@ -85,3 +85,10 @@ export function viteURLify(url) {
     if(import.meta.env.PROD) return url.slice(1);
     else return url;
 }
+
+/** @param {number} value @param {number} max @param {number} min */
+export function normalizeRotationInRange(value, max, min = 0) {
+    if(max <= min) throw "max must be larger than min";
+    const range = max - min;
+    return (((value-min) %range) + range) % range;
+}
