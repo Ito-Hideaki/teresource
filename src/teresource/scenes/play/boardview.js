@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { getRelativeX, getRelativeY } from "#util";
 import { Board, BoardSize, Cell, CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
-import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, generateCellSheetTextureFrameKey, parseCellViewParamsFromCell } from "./viewmechanics";
+import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, generateCellSheetTextureFrameKey, createCellViewParamsFromCell } from "./viewmechanics";
 import { GameViewContext, GameContext } from "./context";
 import { CellSheetParent } from "./customtexture";
 
@@ -17,12 +17,12 @@ class CellImage extends Phaser.GameObjects.Image {
         super(scene, x, y, cellSheetParent.texture);
         this.setOrigin(0, 0);
 
-        this.setView({ isActive: false, color: "black" });
+        this.setView({ color: "black", gobi: "n" });
     }
 
-    /** @param {import("./viewmechanics").ParsedCellViewParams} parsedCellViewParams */
-    setView(parsedCellViewParams) {
-        const frame = generateCellSheetTextureFrameKey(parsedCellViewParams);
+    /** @param {import("./viewmechanics").CellViewParams} cellViewParams */
+    setView(cellViewParams) {
+        const frame = generateCellSheetTextureFrameKey(cellViewParams);
         this.setFrame(frame);
     }
 }
@@ -103,6 +103,7 @@ export class BoardView {
                 const y = getRelativeY(row, cellWidth, boardSize.rowCount);
                 const cellImage = new CellImage(scene, x, y, gvContext.cellSheetParent);
                 this.#imageBoard.table[row][column] = cellImage;
+
                 //add cellImage to scene and container
                 scene.add.existing(cellImage);
                 gvContext.boardContainer.add(cellImage);
@@ -172,9 +173,9 @@ export class BoardView {
             array.forEach((/** @type {Cell} */cell, column) => {
                 /** @type {CellImage} */
                 const cellImage = this.#imageBoard.table[row][column];
-                const parsedCellViewParams = parseCellViewParamsFromCell(cell);
-                if(!cell.isBlock && !parsedCellViewParams.isActive) parsedCellViewParams.color = "black"; //temporary aid
-                cellImage.setView(parsedCellViewParams);
+                const cellViewParams = createCellViewParamsFromCell(cell);
+                if(!cell.isBlock && !cellViewParams.isActive) cellViewParams.color = "black"; //temporary aid
+                cellImage.setView(cellViewParams);
             });
         })
     }

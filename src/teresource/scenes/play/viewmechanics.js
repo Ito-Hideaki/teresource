@@ -30,78 +30,50 @@ export const cellGraphicSkins = [
     "rect",
 ]
 
-export const gobis = [
+export const visibleGobis = [
     "n",
     "a"
 ]
 
 /**
- * @typedef {{
- * skin: string | undefined,
- * color: number | string | undefined,
- * isActive: boolean | undefined,
- * isBlock: boolean,
- * gobi: string | undefined,
- * }} CellViewParams uncertain params about cell image
 
  * @typedef {{
     skin: string,
     color: string,
-    isActive: boolean,
-    isBlock: boolean,
-}} ParsedCellViewParams parsed certain params about cell image
+    gobi: string,
+}} CellViewParams all of params which decide cell image
  * */
 
 
-/**
- * @param {CellViewParams} $
- * @return {ParsedCellViewParams}
- * */
-export function parseCellViewParams($) {
-    $.skin ??= "default";
-    if (typeof $.color === "number") {
-        $.color = Math.floor($.color) % cellColorStr.length;
-        $.color = cellColorStr[$.color];
-    }
-    $.color ??= "red";
-    $.gobi ??= "n";
-    $.isActive ??= false;
-    if ($.gobi === "a") {
-        $.isActive = true;
-    }
-    return $;
-}
 
-/** @param {Cell} cell @return {ParsedCellViewParams} */
-export function parseCellViewParamsFromCell(cell) {
+/** @param {Cell} cell @param {string} skin @return {CellViewParams} */
+export function createCellViewParamsFromCell(cell, skin = "skin") {
     const $ = {};
-    $.skin = "skin";
+    $.skin = skin;
     $.color = cellColorStr[cell.color];
-    $.isActive = cell.isActive;
-    $.isBlock = cell.isBlock;
+    $.gobi = createStatusGobi(cell);
     return $;
 }
 
-/** Gobi is a letter of the combined cell status, e.g. isActive. Does not include wholy invisible states. @param {ParsedCellViewParams} p @return string an alphabet */
-function createStatusGobi(p) {
+/** Gobi is an alphabet of the combined cell status, e.g. isActive. Does not include wholy invisible states. @param {Cell} cell @return {string} an alphabet */
+function createStatusGobi(cell) {
     let statusGobi = "n";
-    if (p.isActive) statusGobi = "a";
+    if (cell.isActive) statusGobi = "a";
     return statusGobi;
 }
 
 /**
- * @param {ParsedCellViewParams} p
+ * @param {CellViewParams} p
  * */
 export function generateCellTextureKey(p) {
-    return `cell_${p.skin}_${p.color}_${createStatusGobi(p)}`;
+    return `cell_${p.skin}_${p.color}_${p.gobi}`;
 }
 
 /**
- * @param {ParsedCellViewParams} $
+ * @param {CellViewParams} p
  * */
-export function generateCellTextureUrl($) {
-    const p = parseCellViewParams($);
-    return `/image/cell/${p.skin}/${p.color}_${createStatusGobi(p)}.png`;
+export function generateCellTextureUrl(p) {
+    return `/image/cell/${p.skin}/${p.color}_${p.gobi}.png`;
 }
 
 /** @param {string} skin */
@@ -116,7 +88,7 @@ export function calcSkinCellViewParams(skin) {
     const arr = [];
     for (let i = 0; i < cellColorStr.length; i++) {
         const color = cellColorStr[i];
-        gobis.forEach(gobi => {
+        visibleGobis.forEach(gobi => {
             /** @type {CellViewParams} */
             const params = { skin, color, gobi };
             arr.push(params);
@@ -126,10 +98,10 @@ export function calcSkinCellViewParams(skin) {
 }
 
 
-/** @param {ParsedCellViewParams} parsedCellViewParams @return {string}*/
-export function generateCellSheetTextureFrameKey(parsedCellViewParams) {
-    parsedCellViewParams.skin = "skin";
-    return generateCellTextureKey(parsedCellViewParams);
+/** @param {CellViewParams} cellViewParams @return {string} */
+export function generateCellSheetTextureFrameKey(cellViewParams) {
+    cellViewParams.skin = "skin";
+    return generateCellTextureKey(cellViewParams);
 }
 
 /** @param {string} skin @return {string}*/

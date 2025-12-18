@@ -1,18 +1,17 @@
 import Phaser from "phaser";
-import { calcSkinCellViewParams, cellColorStr, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellTextureKey, gobis, parseCellViewParams, generateCellSheetTextureKey, generateCellSheetTextureFrameKey } from "./viewmechanics";
+import { calcSkinCellViewParams, cellColorStr, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellTextureKey, visibleGobis, generateCellSheetTextureKey, generateCellSheetTextureFrameKey } from "./viewmechanics";
 
-/**  @param {import("./viewmechanics").ParsedCellViewParams} parsedCellViewParams */
-function getFramePosition(parsedCellViewParams) {
+/**  @param {import("./viewmechanics").CellViewParams} cellViewParams */
+function getFramePosition(cellViewParams) {
     let column = 0;
-    column += cellColorStr.indexOf(parsedCellViewParams.color);
-    let row = 0;
-    if (parsedCellViewParams.isActive) row += 1;
+    column += cellColorStr.indexOf(cellViewParams.color);
+    let row = visibleGobis.indexOf(cellViewParams.gobi);
     return { column, row };
 }
 
-/** @param {number} cellWidth @param {import("./viewmechanics").ParsedCellViewParams} parsedCellViewParams @return { x: number, y: number } */
-function getFrameXY(cellWidth, parsedCellViewParams) {
-    const pos = getFramePosition(parsedCellViewParams);
+/** @param {number} cellWidth @param {import("./viewmechanics").CellViewParams} cellViewParams @return {{ x: number, y: number }} */
+function getFrameXY(cellWidth, cellViewParams) {
+    const pos = getFramePosition(cellViewParams);
     return { x: pos.column * cellWidth, y: pos.row * cellWidth };
 }
 
@@ -21,7 +20,7 @@ function getRequiredTextureWidth(cellWidth) {
 }
 
 function getRequiredTextureHeight(cellWidth) {
-    return cellWidth * gobis.length;
+    return cellWidth * visibleGobis.length;
 }
 
 /** if the given skin is fromImgs skins, draws out new texture using preloaded textures.
@@ -42,22 +41,20 @@ export class CellSheetParent {
         const cellWidth = 30;
         const key = generateCellSheetTextureKey(skin);
         const cellViewParamsList = calcSkinCellViewParams(this.skin);
-        const parsedCellViewParamsList = cellViewParamsList.map(params => parseCellViewParams(params));
 
         if (cellImgSkins_fromImgs.includes(skin)) {
             this.texture = scene.textures.createCanvas(key, getRequiredTextureWidth(cellWidth), getRequiredTextureHeight(cellWidth));
             if (this.texture === null) throw "wtf";
-            this.texture.cellTextureParent = this;
-            parsedCellViewParamsList.forEach(parsedCellViewParams => {
-                this.drawFrame(cellWidth, parsedCellViewParams);
-                this.createFrame(cellWidth, parsedCellViewParams);
+            cellViewParamsList.forEach(cellViewParams => {
+                this.drawFrame(cellWidth, cellViewParams);
+                this.createFrame(cellWidth, cellViewParams);
             });
             this.texture.refresh();
         }
         else if (cellImgSkins_fromSheet.includes(skin)) {
             this.texture = scene.textures.get(generateCellSheetTextureKey(skin));
-            parsedCellViewParamsList.forEach(parsedCellViewParams => {
-                this.createFrame(cellWidth, parsedCellViewParams);
+            cellViewParamsList.forEach(cellViewParams => {
+                this.createFrame(cellWidth, cellViewParams);
             });
         }
         else {
@@ -65,17 +62,17 @@ export class CellSheetParent {
         }
     }
 
-    drawFrame(cellWidth, parsedCellViewParams) {
+    drawFrame(cellWidth, cellViewParams) {
         const ctx = this.texture.canvas.getContext("2d");
-        const framePos = getFrameXY(cellWidth, parsedCellViewParams);
-        const textureKey = generateCellTextureKey(parsedCellViewParams);
+        const framePos = getFrameXY(cellWidth, cellViewParams);
+        const textureKey = generateCellTextureKey(cellViewParams);
         const frameImg = this.scene.textures.get(textureKey).getSourceImage();
         ctx.drawImage(frameImg, framePos.x, framePos.y, cellWidth, cellWidth);
     }
 
-    createFrame(cellWidth, parsedCellViewParams) {
-        const framePos = getFrameXY(cellWidth, parsedCellViewParams);
-        const frameKey = generateCellSheetTextureFrameKey(parsedCellViewParams);
+    createFrame(cellWidth, cellViewParams) {
+        const framePos = getFrameXY(cellWidth, cellViewParams);
+        const frameKey = generateCellSheetTextureFrameKey(cellViewParams);
         this.texture.add(frameKey, 0, framePos.x, framePos.y, cellWidth, cellWidth);
     }
 }

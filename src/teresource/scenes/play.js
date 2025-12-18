@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { GameController } from "./play/gamecontroller";
 import { ViewController } from "./play/viewcontroller";
-import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl, parseCellViewParams } from "./play/viewmechanics";
+import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/viewmechanics";
 import { GameFactory } from "./play/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/boardcontroller";
 import { CellSheetParent } from "./play/customtexture";
@@ -35,9 +35,8 @@ export class PlayScene extends Phaser.Scene {
         cellImgSkins_fromImgs.forEach(skin => {
             const cellViewParamsList = calcSkinCellViewParams(skin);
             cellViewParamsList.forEach(cellViewParams => {
-                const parsedCellViewParams = parseCellViewParams(cellViewParams);
-                const key = generateCellTextureKey(parsedCellViewParams);
-                const url = generateCellTextureUrl(parsedCellViewParams);
+                const key = generateCellTextureKey(cellViewParams);
+                const url = generateCellTextureUrl(cellViewParams);
                 this.load.image(key, viteURLify(url));
             })
         })
