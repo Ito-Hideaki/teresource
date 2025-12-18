@@ -21,3 +21,15 @@ class RotationPack {
     }
 }
 
+class RotationSystem {
+
+    constructor() {}
+
+    distributeRotationPack()
+
+    /** @param {number} minoType @param {number} rotation 0~3 clockwise @param {number} direction left<0<right @return {RotationMap}*/
+    getMap(minoType, rotation, direction) {
+
+        
+    }
+}
