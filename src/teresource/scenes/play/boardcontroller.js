@@ -323,8 +323,10 @@ export class ControlOrderProvider {
     leftMoveDown = false;
     /** @type {boolean} */
     rightMoveDown = false;
+
+    #DASConfig = 10;
     /** frames until the auto shift get enabled @type {number} */
-    DASTimerF = 12;
+    DASTimerF = 0;
     /** frames until the mino can move horizontally again @type {number} */
     ARRTimerF = 0;
 
@@ -340,7 +342,7 @@ export class ControlOrderProvider {
     }
 
     #resetDAS() {
-        this.DASTimerF = 12;
+        this.DASTimerF = this.#DASConfig;
     }
 
     /** receive player inputs as a flag.
