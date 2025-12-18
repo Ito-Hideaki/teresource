@@ -3,7 +3,7 @@ import { PlayScene } from "./teresource/scenes/play";
 
 addEventListener("DOMContentLoaded", () => {
     const config = {
-        width: 1200,
+        width: 1280,
         height: 720,
         scale: {
             mode: Phaser.Scale.NONE,
