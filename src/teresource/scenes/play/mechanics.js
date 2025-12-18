@@ -19,7 +19,8 @@ export const BLOCK_COLORS = {
  */
 
 
-/** Contains mino's color, shape and rotation */
+/** Contains mino's color, shape and rotation.
+ *  All mino shapes must be defined at #ROT0SHAPE */
 export class Mino {
 
     /** @type {MinoShape[]} */
