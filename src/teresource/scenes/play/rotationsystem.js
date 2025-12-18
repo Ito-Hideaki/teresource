@@ -18,10 +18,11 @@ class RotationPack {
     /** @param {{ left: RotationMap[], right: RotationMap[] }} mapList */
     constructor(mapList) { this.mapList = mapList }
 
-    /** @param {number} rotation 0~3 clockwise @param {number} direction left<0<right @return {RotationMap}*/
-    getMap(rotation, direction) {
-        if (direction > 0) return this.mapList.right[rotation];
-        if (direction < 0) return this.mapList.left[rotation];
+    /** @param {number} currentRotation rotation in angle @param {number} rotation rotation in angle @return {RotationMap}*/
+    getMap(currentRotation, rotation) {
+        const index = Math.floor(currentRotation / 90) % 4;
+        if (rotation%360 == 90) return this.mapList.right[index];
+        if (rotation%360 == 270) return this.mapList.left[index];
         return MAP_EMPTY;
     }
 }
@@ -34,13 +35,13 @@ export class RotationSystem {
     distributeRotationPack(minoType) {
     }
 
-    /** @param {number} minoType @param {number} rotation 0~3 clockwise @param {number} direction left<0<right @return {RotationMap}*/
-    getMap(minoType, rotation, direction) {
-        return this.distributeRotationPack(minoType).getMap(rotation, direction);
+    /** @param {number} minoType @param {number} currentRotation rotation in angle @param {number} rotation rotation in angle @return {RotationMap}*/
+    getMap(minoType, currentRotation, rotation) {
+        return this.distributeRotationPack(minoType).getMap(currentRotation, rotation);
     }
-    /** @param {Mino} mino 0~3 clockwise @param {number} direction left<0<right @return {RotationMap}*/
-    getMapFromMino(mino, direction) {
-        return this.getMap(mino.type, Math.floor(mino.rotation / 90), direction);
+    /** @param {Mino} mino 0~3 clockwise @param {number} rotation rotation in angle @return {RotationMap}*/
+    getMapFromMino(mino, rotation) {
+        return this.getMap(mino.type, Math.floor(mino.rotation / 90), rotation);
     }
 }
 
