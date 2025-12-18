@@ -2,6 +2,7 @@ import { CellBoard, BoardSize, Mino } from "./mechanics";
 import { CurrentMinoManager, MinoQueueManager } from "./minomanager";
 import { BoardControlState } from "./boardcontroller";
 import { CellSheetParent } from "./customtexture";
+import { RotationSystem } from "./rotationsystem";
 
 /** @param {{}} source @return GameContext */
 export class GameContext {
@@ -15,6 +16,8 @@ export class GameContext {
     minoQueueManager
     /** @type {BoardControlState} */
     boardControlState
+    /** @type {RotationSystem} */
+    rotationSystem
 
     /** 
      * @param {{
@@ -23,6 +26,7 @@ export class GameContext {
      * currentMinoManager: CurrentMinoManager,
      * minoQueueManager  : MinoQueueManager,
      * boardControlState : BoardControlState,
+     * rotationSystem    : RotationSystem,
      * }} source
      * */
     constructor(source) {
@@ -31,6 +35,7 @@ export class GameContext {
         this.currentMinoManager = source.currentMinoManager;
         this.minoQueueManager   = source.minoQueueManager;
         this.boardControlState  = source.boardControlState;
+        this.rotationSystem     = source.rotationSystem;
     }
 }
 

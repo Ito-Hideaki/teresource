@@ -26,7 +26,7 @@ class RotationPack {
     }
 }
 
-class RotationSystem {
+export class RotationSystem {
 
     constructor() { }
 
@@ -47,14 +47,15 @@ class RotationSystem {
 export class RotationSystem_NoKick extends RotationSystem {
 
     /** @type {RotationPack} */
-    rotationPack;
+    #rotationPack;
 
     constructor() {
-        this.rotationPack = new RotationPack({ left: [MAP_NOKICK], right: [MAP_NOKICK] });
+        super();
+        this.#rotationPack = new RotationPack({ left: [MAP_NOKICK], right: [MAP_NOKICK] });
     }
 
     /** @param {number} minoType @return {RotationPack} */
     distributeRotationPack(minoType) {
-        return this.rotationPack;
+        return this.#rotationPack;
     }
 }
