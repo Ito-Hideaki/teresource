@@ -1,4 +1,5 @@
 import { Mino } from "./mechanics";
+import { normalizeRotationInRange as normalize } from "#util";
 
 /** 
  * @typedef {{row: number, column: number}[]} RotationMap
@@ -20,9 +21,10 @@ class RotationPack {
 
     /** @param {number} currentRotation rotation in angle @param {number} rotation rotation in angle @return {RotationMap}*/
     getMap(currentRotation, rotation) {
-        const index = Math.floor(currentRotation / 90) % 4;
-        if (rotation%360 == 90) return this.mapList.right[index];
-        if (rotation%360 == 270) return this.mapList.left[index];
+        const rotationIn360 = normalize(rotation, 360);
+        const index = normalize(Math.floor(currentRotation / 90), 4);
+        if (rotationIn360 == 90) return this.mapList.right[index];
+        if (rotationIn360 == 270) return this.mapList.left[index];
         return MAP_EMPTY;
     }
 }
@@ -39,7 +41,7 @@ export class RotationSystem {
     getMap(minoType, currentRotation, rotation) {
         return this.distributeRotationPack(minoType).getMap(currentRotation, rotation);
     }
-    /** @param {Mino} mino 0~3 clockwise @param {number} rotation rotation in angle @return {RotationMap}*/
+    /** @param {Mino} mino @param {number} rotation rotation in angle @return {RotationMap}*/
     getMapFromMino(mino, rotation) {
         return this.getMap(mino.type, mino.rotation, rotation);
     }
