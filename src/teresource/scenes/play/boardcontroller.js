@@ -94,6 +94,8 @@ class RotationHandler {
 
     /** Try mino rotation and return the resulting translation from the current position @param {number} angle @return {{row: number, column: number } | false} */
     simulateRotation(angle) {
+        if(angle === 0) return false;
+
         const minoMng = this.#currentMinoManager;
 
         const rotationMap = this.#rotationSystem.getMapFromMino(minoMng.mino, angle);

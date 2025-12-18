@@ -29,6 +29,16 @@ class RotationPack {
     }
 }
 
+/** @type {RotationPack} */
+const PACK_NOKICK = (() => {
+    const leftArray = [], rightArray = [];
+    for(let i = 0; i < 4; i++) {
+        leftArray.push(structuredClone(MAP_NOKICK));
+        rightArray.push(structuredClone(MAP_NOKICK));
+    }
+    return new RotationPack({ left: leftArray, right: rightArray });
+})();
+
 export class RotationSystem {
 
     constructor() { }
@@ -68,17 +78,13 @@ function flipMap(rotationMap, xFlip, yFlip) {
 
 export class RotationSystem_NoKick extends RotationSystem {
 
-    /** @type {RotationPack} */
-    #rotationPack;
-
     constructor() {
         super();
-        this.#rotationPack = new RotationPack({ left: [MAP_NOKICK], right: [MAP_NOKICK] });
     }
 
     /** @param {number} minoType @return {RotationPack} */
     distributeRotationPack(minoType) {
-        return this.#rotationPack;
+        return PACK_NOKICK;
     }
 }
 
@@ -126,8 +132,6 @@ const standardRotationIPack = (() => {
 
 export class RotationSystem_Standard extends RotationSystem {
 
-    #OPack = new RotationPack({ left: [MAP_NOKICK], right: [MAP_NOKICK] });
-
     constructor() {
         super();
     }
@@ -135,7 +139,7 @@ export class RotationSystem_Standard extends RotationSystem {
     /** @param {number} minoType @return {RotationPack} */
     distributeRotationPack(minoType) {
         if(minoType === 2) { //O
-            return this.#OPack;
+            return PACK_NOKICK;
         } 
         if(minoType === 4) { //I
             return standardRotationIPack;
