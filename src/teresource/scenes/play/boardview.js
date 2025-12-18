@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { getRelativeX, getRelativeY } from "#util";
 import { Board, BoardSize, Cell, CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
-import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, generateCellSheetTextureFrameKey, createCellViewParamsFromCell } from "./viewmechanics";
+import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, generateCellSheetTextureFrameKey, createCellViewParamsFromCell, GOBI } from "./viewmechanics";
 import { GameViewContext, GameContext } from "./context";
 import { CellSheetParent } from "./customtexture";
 
@@ -17,13 +17,18 @@ class CellImage extends Phaser.GameObjects.Image {
         super(scene, x, y, cellSheetParent.texture);
         this.setOrigin(0, 0);
 
-        this.setView({ color: "black", gobi: "n" });
+        this.setView({ color: "black", gobi: GOBI.invisible });
     }
 
     /** @param {import("./viewmechanics").CellViewParams} cellViewParams */
     setView(cellViewParams) {
-        const frame = generateCellSheetTextureFrameKey(cellViewParams);
-        this.setFrame(frame);
+        if(cellViewParams.gobi === GOBI.invisible) {
+            this.setVisible(false);
+        } else {
+            this.setVisible(true);
+            const frame = generateCellSheetTextureFrameKey(cellViewParams);
+            this.setFrame(frame);
+        }
     }
 }
 
