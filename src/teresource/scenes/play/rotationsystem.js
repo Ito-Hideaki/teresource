@@ -33,8 +33,8 @@ class RotationPack {
 const PACK_NOKICK = (() => {
     const leftArray = [], rightArray = [];
     for(let i = 0; i < 4; i++) {
-        leftArray.push(structuredClone(MAP_NOKICK));
-        rightArray.push(structuredClone(MAP_NOKICK));
+        leftArray.push(MAP_NOKICK);
+        rightArray.push(MAP_NOKICK);
     }
     return new RotationPack({ left: leftArray, right: rightArray });
 })();
