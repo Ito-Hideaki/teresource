@@ -174,7 +174,6 @@ export class BoardView {
                 /** @type {CellImage} */
                 const cellImage = this.#imageBoard.table[row][column];
                 const cellViewParams = createCellViewParamsFromCell(cell);
-                if(!cell.isBlock && !cellViewParams.isActive) cellViewParams.color = "black"; //temporary aid
                 cellImage.setView(cellViewParams);
             });
         })

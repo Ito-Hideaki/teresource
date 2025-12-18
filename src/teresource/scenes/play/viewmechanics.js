@@ -30,9 +30,14 @@ export const cellGraphicSkins = [
     "rect",
 ]
 
+export const GOBI = {
+    invisible: "u",
+    normal:    "n",
+    active:    "a",
+}
 export const visibleGobis = [
-    "n",
-    "a"
+    GOBI.normal,
+    GOBI.active
 ]
 
 /**
@@ -57,9 +62,9 @@ export function createCellViewParamsFromCell(cell, skin = "skin") {
 
 /** Gobi is an alphabet of the combined cell status, e.g. isActive. Does not include wholy invisible states. @param {Cell} cell @return {string} an alphabet */
 function createStatusGobi(cell) {
-    let statusGobi = "n";
-    if (cell.isActive) statusGobi = "a";
-    return statusGobi;
+    if (cell.isActive) return GOBI.active;
+    if (!cell.isBlock) return GOBI.invisible;
+    return GOBI.normal;
 }
 
 /**
