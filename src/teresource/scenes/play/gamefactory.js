@@ -33,8 +33,8 @@ export class GameFactory {
             boardContainer
         });
         const viewController = new ViewController(scene, gameViewContext);
-        viewController.x = scene.width / 2;
-        viewController.y = scene.height / 2;
+        viewController.x = scene.game.canvas.width / 2;
+        viewController.y = scene.game.canvas.height / 2;
 
         return {
             gameController,

@@ -56,11 +56,6 @@ export class PlayScene extends Phaser.Scene {
         });
         document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
 
-        /** @type number */
-        this.width = this.game.canvas.width;
-        /** @type number */
-        this.height = this.game.canvas.height;
-
         const gameElements = GameFactory.create(this);
         this.#gameController = gameElements.gameController;
         this.#viewController = gameElements.viewController;
