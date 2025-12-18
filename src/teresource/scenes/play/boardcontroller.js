@@ -1,8 +1,9 @@
 // @ts-check
 
 import { CurrentMinoManager, MinoQueueManager } from "./minomanager";
-import { CellBoard } from "./mechanics";
+import { Cell, CellBoard } from "./mechanics";
 import { GameContext } from "./context";
+import { RotationSystem } from "./rotationsystem";
 
 export class ControlOrder {
 
@@ -74,6 +75,43 @@ export function createBoardControlResult() {
         verticalMinoMove: 0,
     };
     return obj;
+}
+
+class RotationHandler {
+    /** @type {RotationSystem} */
+    #rotationSystem
+    /** @type {CellBoard} */
+    #cellBoard
+    /** @type {CurrentMinoManager} */
+    #currentMinoManager
+
+    /** @param {GameContext} gameContext */
+    constructor(gameContext) {
+        this.#rotationSystem = gameContext.rotationSystem;
+        this.#cellBoard = gameContext.cellBoard;
+        this.#currentMinoManager = gameContext.currentMinoManager;
+    }
+
+    /** Try mino rotation and return the resulting translation from the current position @param {number} controlRotationFlag @return {{row: number, column: number } | false} */
+    simulateRotation(controlRotationFlag) {
+        const minoMng = this.#currentMinoManager;
+
+        let angle = 0;
+        if (controlRotationFlag & CO.ROTATE_CLOCK_WISE) angle = 90;
+        else if (controlRotationFlag & CO.ROTATE_COUNTER_CLOCK) angle = 270;
+
+        const rotationMap = this.#rotationSystem.getMapFromMino(minoMng.mino, angle);
+        const rotatedMino = minoMng.mino.copyRotated(angle);
+
+        for(let i = 0; i < rotationMap.length; i++) {
+            const movedRow = minoMng.row + rotationMap[i].row;
+            const movedColumn = minoMng.column + rotationMap[i].column;
+            if(!this.#cellBoard.doesMinoCollides(rotatedMino, movedRow, movedColumn)) {
+                return structuredClone(rotationMap[i]);
+            }
+        }
+        return false;
+    }
 }
 
 /**Manage Board and Mino states, progress it with update()
