@@ -127,8 +127,6 @@ export class BoardController {
     #cellBoard;
     /** @type {BoardControlState} */
     #state;
-    /** @type {MinoQueueManager} */
-    #minoQueueManager;
     /** @type {RotationHandler} */
     #rotationHandler;
 
@@ -139,7 +137,6 @@ export class BoardController {
         this.#currentMinoManager = context.currentMinoManager;
         this.#cellBoard = context.cellBoard;
         this.#state = context.boardControlState;
-        this.#minoQueueManager = context.minoQueueManager;
         this.#rotationHandler = new RotationHandler(context);
     }
 
@@ -152,9 +149,6 @@ export class BoardController {
         const order = new ControlOrder();
         order.value = controlOrderFlag;
 
-        if (this.#currentMinoManager.isPlaced) {
-            this.#update_newMino();
-        }
         this.#update_processSoftDropInputs(order.value);
 
         this.#update_advanceFallingProgress(deltaTime);
@@ -172,10 +166,6 @@ export class BoardController {
 
         if (isMinoPlacedByHardDrop || isMinoPlacedByLockDown) {
             this.#update_placeMino();
-        }
-
-        if (this.#currentMinoManager.isPlaced) {
-            this.#update_newMino();
         }
 
         const result = createBoardControlResult();
@@ -293,17 +283,6 @@ export class BoardController {
         this.#cellBoard.compositeMinoTable(table, row, column);
         minoMng.place();
     }
-
-    #update_newMino() {
-        //set CurrentMinoManager
-        const nextMino = this.#minoQueueManager.takeNextMino();
-        this.#currentMinoManager.startNextMino(nextMino);
-
-        //set BoardControlState
-        this.#state.fallingProgress = 0;
-        this.#state.lockDownCount = 0;
-    }
-
 
     /** Move this.#mino vertically within a range that does not collide @param {number} move @return the result amount of the movement*/
     #moveMinoVertically(move) {
