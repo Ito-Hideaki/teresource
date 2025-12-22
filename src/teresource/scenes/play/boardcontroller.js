@@ -63,6 +63,8 @@ export class BoardControlState {
  * @typedef {{
  *     horizontalMinoMove: number,
  *     verticalMinoMove: number,
+ *     placedByHardDrop: boolean,
+ *     placedByLockDown: boolean,
  * }} BoardControlResult
  * 
 */
@@ -73,6 +75,8 @@ export function createBoardControlResult() {
     const obj = {
         horizontalMinoMove: 0,
         verticalMinoMove: 0,
+        placedByHardDrop: false,
+        placedByLockDown: false,
     };
     return obj;
 }
@@ -147,7 +151,6 @@ export class BoardController {
     update(controlOrderFlag, deltaTime = 0.016667) {
         const order = new ControlOrder();
         order.value = controlOrderFlag;
-        const result = createBoardControlResult();
 
         if (this.#currentMinoManager.isPlaced) {
             this.#update_newMino();
@@ -175,6 +178,9 @@ export class BoardController {
             this.#update_newMino();
         }
 
+        const result = createBoardControlResult();
+        result.placedByHardDrop = isMinoPlacedByHardDrop;
+        result.placedByHardDrop = isMinoPlacedByLockDown;
         Object.assign(result, minoMoveResult);
         return result;
     }

@@ -25,6 +25,7 @@ export class GameController {
         const controlOrder = this.#controlOrderProvider.provideControlOrder();
         this.#lastBoardControlResult = this.#boardController.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(this.#lastBoardControlResult);
+
         this.#controlOrderProvider.advanceTime(deltaTime);
     }
 }
