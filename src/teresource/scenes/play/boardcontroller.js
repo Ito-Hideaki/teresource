@@ -170,7 +170,7 @@ export class BoardController {
 
         const result = createBoardControlResult();
         result.placedByHardDrop = isMinoPlacedByHardDrop;
-        result.placedByHardDrop = isMinoPlacedByLockDown;
+        result.placedByLockDown = isMinoPlacedByLockDown;
         Object.assign(result, minoMoveResult);
         return result;
     }
