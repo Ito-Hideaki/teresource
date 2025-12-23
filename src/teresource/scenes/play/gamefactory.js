@@ -1,6 +1,6 @@
 import { CurrentMinoManager, Bag, MinoQueueManager } from "./minomanager";
 import { BoardSize, CellBoard } from "./mechanics";
-import { ControlOrderProvider, BoardController, BoardControlState } from "./boardcontroller";
+import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "./boardcontroller";
 import { GameContext, GameViewContext } from "./context";
 import { ViewController } from "./viewcontroller";
 import { GameController } from "./gamecontroller";
@@ -16,13 +16,13 @@ export class GameFactory {
         const cellBoard = new CellBoard(boardSize);
         console.log(cellBoard);
         const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN));
-        const boardControlState = new BoardControlState();
+        const boardUpdateState = new BoardUpdateState();
         const gameContext = new GameContext({
-            cellBoard, boardSize, currentMinoManager, minoQueueManager, boardControlState, rotationSystem: new RotationSystem_Standard()
+            cellBoard, boardSize, currentMinoManager, minoQueueManager, boardUpdateState, rotationSystem: new RotationSystem_Standard()
         });
         const controlOrderProvider = new ControlOrderProvider();
-        const boardController = new BoardController(gameContext);
-        const gameController = new GameController(gameContext, { boardController, controlOrderProvider });
+        const boardUpdater = new BoardUpdater(gameContext);
+        const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider });
         //Create elements of the scene
         console.log(gameContext);
 

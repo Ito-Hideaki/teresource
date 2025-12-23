@@ -1,29 +1,29 @@
-import { ControlOrder, BoardController, ControlOrderProvider, BoardControlDiff } from "./boardcontroller";
+import { ControlOrder, BoardUpdater, ControlOrderProvider, BoardUpdateDiff } from "./boardcontroller";
 import { GameContext } from "./context";
 
 /** Represents the logic og the game attached to each player */
 export class GameController {
 
-    #boardController
+    #boardUpdater
     #controlOrderProvider
-    /** @type {BoardControlDiff} */
-    #lastBoardControlDiff
+    /** @type {BoardUpdateDiff} */
+    #lastBoardUpdateDiff
     #currentMinoManager
     #minoQueueManager
-    #boardControlState
+    #boardUpdateState
 
     /**
      * @param {GameContext} gameContext
-     * @param {{boardController: BoardController, controlOrderProvider: ControlOrderProvider}} $
+     * @param {{boardUpdater: BoardUpdater, controlOrderProvider: ControlOrderProvider}} $
      */
     constructor(gameContext, $) {
         this.#controlOrderProvider = $.controlOrderProvider;
-        this.#boardController = $.boardController;
+        this.#boardUpdater = $.boardUpdater;
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
-        this.#boardControlState = gameContext.boardControlState;
+        this.#boardUpdateState = gameContext.boardUpdateState;
 
-        this.#lastBoardControlDiff = new BoardControlDiff();
+        this.#lastBoardUpdateDiff = new BoardUpdateDiff();
     }
 
     /** @param {number} deltaTime */
@@ -32,15 +32,15 @@ export class GameController {
         const startNewMinoIfNeeded = () => {
             if (this.#currentMinoManager.isPlaced) {
                 this.#currentMinoManager.startNextMino(this.#minoQueueManager.takeNextMino());
-                this.#boardControlState.startNewMino();
+                this.#boardUpdateState.startNewMino();
             }
         }
 
         startNewMinoIfNeeded();
         //Advance a frame
         const controlOrder = this.#controlOrderProvider.provideControlOrder();
-        this.#lastBoardControlDiff = this.#boardController.update(controlOrder.value, deltaTime);
-        this.#controlOrderProvider.receiveControlResult(this.#lastBoardControlDiff);
+        this.#lastBoardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
+        this.#controlOrderProvider.receiveControlResult(this.#lastBoardUpdateDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);
 
         startNewMinoIfNeeded();

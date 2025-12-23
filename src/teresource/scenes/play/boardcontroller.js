@@ -47,8 +47,8 @@ export class ControlOrder {
 
 const CO = ControlOrder;
 
-/** Contains BoardController primitive status */
-export class BoardControlState {
+/** Contains BoardUpdater primitive status */
+export class BoardUpdateState {
     /** @type number */
     fallingProgress = 0;
     /** @type number */
@@ -63,13 +63,13 @@ export class BoardControlState {
     }
 }
 
-export class BoardControlDiff {
+export class BoardUpdateDiff {
     /** @type {number} */ horizontalMinoMove = 0;
     /** @type {number} */ verticalMinoMove = 0;
     /** @type {boolean} */ placedByHardDrop = false;
     /** @type {boolean} */ placedByLockDown = false;
     /** @type {number} */ appliedRotationAngle = 0;
-    /** @type {BoardControlState} */ newState = new BoardControlState();
+    /** @type {BoardUpdateState} */ newState = new BoardUpdateState();
 }
 
 class RotationHandler {
@@ -108,11 +108,11 @@ class RotationHandler {
 }
 
 /** @typedef {{horizontalMinoMove: number, verticalMinoMove: number }} minoMoves */
-/** @typedef {{ cellBoard: CellBoard, currentMinoManager: CurrentMinoManager, boardControlState: BoardControlState }} BoardControlCalculatorParams */
+/** @typedef {{ cellBoard: CellBoard, currentMinoManager: CurrentMinoManager, boardUpdateState: BoardUpdateState }} BoardUpdateCalculatorParams */
 
 /**Calculate what will happen next frame given the current state.
  * Does not contain any primitive status itself */
-export class BoardControlCalculator {
+export class BoardUpdateCalculator {
     /** @type {RotationHandler} */
     #rotationHandler;
 
@@ -126,8 +126,8 @@ export class BoardControlCalculator {
     /** calculate next frame state and actions
      * @param {number} controlOrderFlag
      * @param {number} deltaTime
-     * @param {BoardControlCalculatorParams} params
-     * @return {BoardControlDiff}
+     * @param {BoardUpdateCalculatorParams} params
+     * @return {BoardUpdateDiff}
      */
     calculate(controlOrderFlag, deltaTime = 0.016667, params) {
         const order = new ControlOrder();
@@ -135,8 +135,8 @@ export class BoardControlCalculator {
 
         //Copy states for calculation
         const copiedCurrentMinoManager = params.currentMinoManager.duplicate();
-        const diff = new BoardControlDiff();
-        diff.newState = structuredClone(params.boardControlState);
+        const diff = new BoardUpdateDiff();
+        diff.newState = structuredClone(params.boardUpdateState);
 
         //Main process
         this.#update_processSoftDropInputs(order.value, diff.newState);
@@ -167,7 +167,7 @@ export class BoardControlCalculator {
         return diff;
     }
 
-    /** @param {minoMoves} minoMoves @param {BoardControlState} state */
+    /** @param {minoMoves} minoMoves @param {BoardUpdateState} state */
     #update_lockdownReset(minoMoves, state) {
         if (minoMoves.horizontalMinoMove != 0 || minoMoves.verticalMinoMove != 0) {
             state.lockDownCount = 0;
@@ -175,7 +175,7 @@ export class BoardControlCalculator {
     }
 
     /** Measure passed time, judge if the mino has locked down (not placed mino yet)
-     * @param {number} deltaTime @param {BoardControlState} state @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager
+     * @param {number} deltaTime @param {BoardUpdateState} state @param {BoardUpdateCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager
      * @return {boolean} lockdown judgement
      */
     #update_lockDown(deltaTime, state, params, copiedCurrentMinoManager) {
@@ -191,7 +191,7 @@ export class BoardControlCalculator {
         return false;
     }
 
-    /** start/stop softDrop @param {number} controlSoftDropFlag START_SOFT_DROP & STOP_SOFT_DROP @param {BoardControlState} state */
+    /** start/stop softDrop @param {number} controlSoftDropFlag START_SOFT_DROP & STOP_SOFT_DROP @param {BoardUpdateState} state */
     #update_processSoftDropInputs(controlSoftDropFlag, state) {
         if (controlSoftDropFlag & CO.START_SOFT_DROP) {
             state.softDrop = true;
@@ -201,7 +201,7 @@ export class BoardControlCalculator {
         }
     }
 
-    /** @param {number} deltaTime @param {BoardControlState} state @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager */
+    /** @param {number} deltaTime @param {BoardUpdateState} state @param {BoardUpdateCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager */
     #update_advanceFallingProgress(deltaTime, state, params, copiedCurrentMinoManager) {
         const minoMng = copiedCurrentMinoManager;
         if (params.cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
@@ -212,7 +212,7 @@ export class BoardControlCalculator {
     }
 
     /** Do mino freefall and movement
-     * @param {number} controlMovementFlag MOVE_LEFT & MOVE_RIGHT @param {BoardControlState} state @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager 
+     * @param {number} controlMovementFlag MOVE_LEFT & MOVE_RIGHT @param {BoardUpdateState} state @param {BoardUpdateCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager 
      * */
     #update_gravityAndMove(controlMovementFlag, state, params, copiedCurrentMinoManager) {
         let horizontalMinoMove = 0, verticalMinoMove = 0;
@@ -237,7 +237,7 @@ export class BoardControlCalculator {
     }
 
     /**  Do hard-dropping process (not actually placed yet)
-     * @param {number} controlHardDropFlag HARD_DROP @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager
+     * @param {number} controlHardDropFlag HARD_DROP @param {BoardUpdateCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager
      * @return {boolean} if the mino has placed by hard-drop */
     #update_hardDrop(controlHardDropFlag, params, copiedCurrentMinoManager) {
         if (controlHardDropFlag & CO.HARD_DROP) {
@@ -247,7 +247,7 @@ export class BoardControlCalculator {
         return false;
     }
 
-    /** @param {number} controlRotationFlag ROTATE_CLOCK_WISE & ROTATE_COUNTER_CLOCK @param {BoardControlState} state @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return {number} appliedRotationAngle */
+    /** @param {number} controlRotationFlag ROTATE_CLOCK_WISE & ROTATE_COUNTER_CLOCK @param {BoardUpdateState} state @param {BoardUpdateCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return {number} appliedRotationAngle */
     #update_rotateMino(controlRotationFlag, state, params, copiedCurrentMinoManager) {
         const minoMng = copiedCurrentMinoManager;
 
@@ -266,7 +266,7 @@ export class BoardControlCalculator {
         return 0;
     }
 
-    /** Move mino vertically within a range that does not collide @param {number} move @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return the result amount of the movement*/
+    /** Move mino vertically within a range that does not collide @param {number} move @param {BoardUpdateCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return the result amount of the movement*/
     #moveMinoVertically(move, params, copiedCurrentMinoManager) {
         const minoMng = copiedCurrentMinoManager;
         const resultMove = params.cellBoard.tryMoveMinoVertically(move, minoMng.mino, minoMng.row, minoMng.column);
@@ -274,7 +274,7 @@ export class BoardControlCalculator {
         return resultMove;
     }
 
-    /** Move mino horizontally within a range that does not collide @param {number} move  @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return the result amount of the movement*/
+    /** Move mino horizontally within a range that does not collide @param {number} move  @param {BoardUpdateCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return the result amount of the movement*/
     #moveMinoHorizontally(move, params, copiedCurrentMinoManager) {
         const minoMng = copiedCurrentMinoManager;
         const resultMove = params.cellBoard.tryMoveMinoHorizontally(move, minoMng.mino, minoMng.row, minoMng.column);
@@ -285,17 +285,17 @@ export class BoardControlCalculator {
 
 /**Manage Board and Mino states, progress it with update()
  * Does not contain any primitive status itself, so the outcome is determined by external states and inputs */
-export class BoardController {
+export class BoardUpdater {
 
     /** @typedef {{horizontalMinoMove: number, verticalMinoMove: number }} minoMoves */
     /** @type {CurrentMinoManager} */
     #currentMinoManager;
     /** @type {CellBoard} */
     #cellBoard;
-    /** @type {BoardControlState} */
+    /** @type {BoardUpdateState} */
     #state;
-    /** @type {BoardControlCalculator} */
-    #boardControlCalculator;
+    /** @type {BoardUpdateCalculator} */
+    #boardUpdateCalculator;
 
     /**
      *  @param { GameContext } context
@@ -303,18 +303,18 @@ export class BoardController {
     constructor(context) {
         this.#currentMinoManager = context.currentMinoManager;
         this.#cellBoard = context.cellBoard;
-        this.#state = context.boardControlState;
-        this.#boardControlCalculator = new BoardControlCalculator(context);
+        this.#state = context.boardUpdateState;
+        this.#boardUpdateCalculator = new BoardUpdateCalculator(context);
     }
 
     /** advance time
      * @param {number} controlOrderFlag
      * @param {number} deltaTime
-     * @return {BoardControlDiff}
+     * @return {BoardUpdateDiff}
      */
     update(controlOrderFlag, deltaTime = 0.016667) {
-        const diff = this.#boardControlCalculator.calculate(controlOrderFlag, deltaTime, {
-            boardControlState: this.#state,
+        const diff = this.#boardUpdateCalculator.calculate(controlOrderFlag, deltaTime, {
+            boardUpdateState: this.#state,
             currentMinoManager: this.#currentMinoManager,
             cellBoard: this.#cellBoard
         });
@@ -322,7 +322,7 @@ export class BoardController {
         return diff;
     }
 
-    /** @param {BoardControlDiff} diff */
+    /** @param {BoardUpdateDiff} diff */
     #update_applyDiff(diff) {
         const cmg = this.#currentMinoManager;
         Object.assign(this.#state, diff.newState);
@@ -432,7 +432,7 @@ export class ControlOrderProvider {
         }
     }
 
-    /** Require ControlResults to set cooldown properly @param {BoardControlDiff} controlDiff */
+    /** Require ControlResults to set cooldown properly @param {BoardUpdateDiff} controlDiff */
     receiveControlResult(controlDiff) {
         if (controlDiff.horizontalMinoMove) {
             this.ARRTimerF = 2;
