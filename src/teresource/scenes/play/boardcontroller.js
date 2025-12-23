@@ -207,7 +207,7 @@ export class BoardUpdateCalculator {
         if (params.cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
             state.fallingProgress = 0;
         } else {
-            state.fallingProgress += deltaTime * 60 * 0.02 * (state.softDrop ? 20 : 1);
+            state.fallingProgress += deltaTime * 60 * 100 * (state.softDrop ? 20 : 1);
         }
     }
 
@@ -220,7 +220,7 @@ export class BoardUpdateCalculator {
         //when the gravity is very large, horizontal moving is tried more than once
         do {
             //move horizontally
-            {
+            if(horizontalMinoMove === 0) {
                 const leftInput = !!(controlMovementFlag & CO.MOVE_LEFT);
                 const rightInput = !!(controlMovementFlag & CO.MOVE_RIGHT);
                 const horizontalIdealMove = -1 * +leftInput + 1 * +rightInput;
