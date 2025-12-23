@@ -1,5 +1,6 @@
 import { ControlOrder, BoardUpdater, ControlOrderProvider, BoardUpdateDiff } from "./boardcontroller";
 import { GameContext } from "./context";
+import { LineClearManager } from "./lineclear";
 
 /** Represents the logic og the game attached to each player */
 export class GameController {
@@ -24,6 +25,8 @@ export class GameController {
         this.#boardUpdateState = gameContext.boardUpdateState;
 
         this.#lastBoardUpdateDiff = new BoardUpdateDiff();
+
+        this.lineClearManager = new LineClearManager(gameContext); //temporary
     }
 
     /** @param {number} deltaTime */
@@ -41,6 +44,9 @@ export class GameController {
         const controlOrder = this.#controlOrderProvider.provideControlOrder();
         this.#lastBoardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(this.#lastBoardUpdateDiff);
+        //Clear filled line (row)
+        this.lineClearManager.update();
+
         this.#controlOrderProvider.advanceTime(deltaTime);
 
         startNewMinoIfNeeded();

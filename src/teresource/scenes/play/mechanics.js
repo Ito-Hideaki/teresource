@@ -238,6 +238,8 @@ export class BoardSize {
 export class Board {
     /** @type {any[][]} */
     table;
+    /** @type {Function} */
+    elementFactory;
 
     get rowCount() { return this.table.length; }
     get columnCount() { return this.table[0].length; }
@@ -247,12 +249,15 @@ export class Board {
      * @param { Function } elementFactory
     */
     constructor(boardSize, elementFactory) {
+        this.elementFactory = elementFactory;
         const size = boardSize ?? new BoardSize();
         this.table = new Array(size.rowCount).fill().map(() => {
-            return new Array(size.columnCount).fill().map(
-                elementFactory
-            )
+            return this.createRow(size.columnCount)
         });
+    }
+
+    createRow(columnCount = this.columnCount) {
+        return new Array(columnCount).fill().map(this.elementFactory);
     }
 
     isCellPosOutOfTable(row, column) {
