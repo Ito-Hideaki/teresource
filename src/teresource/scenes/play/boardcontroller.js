@@ -63,16 +63,6 @@ export class BoardControlState {
     }
 }
 
-/** 
- * @typedef {{
- *     horizontalMinoMove: number,
- *     verticalMinoMove: number,
- *     placedByHardDrop: boolean,
- *     placedByLockDown: boolean,
- * }} BoardControlResult
- * 
-*/
-
 export class BoardControlDiff {
     /** @type {number} */ horizontalMinoMove = 0;
     /** @type {number} */ verticalMinoMove = 0;
@@ -80,18 +70,6 @@ export class BoardControlDiff {
     /** @type {boolean} */ placedByLockDown = false;
     /** @type {number} */ appliedRotationAngle = 0;
     /** @type {BoardControlState} */ newState = new BoardControlState();
-}
-
-/** @return BoardControlResult */
-export function createBoardControlResult() {
-    /** @type {BoardControlResult} */
-    const obj = {
-        horizontalMinoMove: 0,
-        verticalMinoMove: 0,
-        placedByHardDrop: false,
-        placedByLockDown: false,
-    };
-    return obj;
 }
 
 class RotationHandler {
@@ -332,7 +310,7 @@ export class BoardController {
     /** advance time
      * @param {number} controlOrderFlag
      * @param {number} deltaTime
-     * @return {BoardControlResult}
+     * @return {BoardControlDiff}
      */
     update(controlOrderFlag, deltaTime = 0.016667) {
         const diff = this.#boardControlCalculator.calculate(controlOrderFlag, deltaTime, {
@@ -341,9 +319,7 @@ export class BoardController {
             cellBoard: this.#cellBoard
         });
         this.#update_applyDiff(diff);
-        /** @type {BoardControlResult} */
-        const result = diff; //temporary implementation
-        return result;
+        return diff;
     }
 
     /** @param {BoardControlDiff} diff */
@@ -456,9 +432,9 @@ export class ControlOrderProvider {
         }
     }
 
-    /** Require ControlResults to set cooldown properly @param {BoardControlResult} controlResult */
-    receiveControlResult(controlResult) {
-        if (controlResult.horizontalMinoMove) {
+    /** Require ControlResults to set cooldown properly @param {BoardControlDiff} controlDiff */
+    receiveControlResult(controlDiff) {
+        if (controlDiff.horizontalMinoMove) {
             this.ARRTimerF = 2;
         }
     }

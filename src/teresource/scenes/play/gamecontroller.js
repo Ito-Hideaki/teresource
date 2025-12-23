@@ -1,4 +1,4 @@
-import { ControlOrder, BoardController, createBoardControlResult, ControlOrderProvider } from "./boardcontroller";
+import { ControlOrder, BoardController, ControlOrderProvider, BoardControlDiff } from "./boardcontroller";
 import { GameContext } from "./context";
 
 /** Represents the logic og the game attached to each player */
@@ -6,8 +6,8 @@ export class GameController {
 
     #boardController
     #controlOrderProvider
-    /** @type {import("./boardcontroller").BoardControlResult} */
-    #lastBoardControlResult
+    /** @type {BoardControlDiff} */
+    #lastBoardControlDiff
     #currentMinoManager
     #minoQueueManager
     #boardControlState
@@ -23,7 +23,7 @@ export class GameController {
         this.#currentMinoManager = gameContext.currentMinoManager;
         this.#boardControlState = gameContext.boardControlState;
 
-        this.#lastBoardControlResult = new createBoardControlResult();
+        this.#lastBoardControlDiff = new BoardControlDiff();
     }
 
     /** @param {number} deltaTime */
@@ -39,8 +39,8 @@ export class GameController {
         startNewMinoIfNeeded();
         //Advance a frame
         const controlOrder = this.#controlOrderProvider.provideControlOrder();
-        this.#lastBoardControlResult = this.#boardController.update(controlOrder.value, deltaTime);
-        this.#controlOrderProvider.receiveControlResult(this.#lastBoardControlResult);
+        this.#lastBoardControlDiff = this.#boardController.update(controlOrder.value, deltaTime);
+        this.#controlOrderProvider.receiveControlResult(this.#lastBoardControlDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);
 
         startNewMinoIfNeeded();
