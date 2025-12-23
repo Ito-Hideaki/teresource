@@ -43,6 +43,16 @@ export class CurrentMinoManager {
     get isPlaced() {
         return this.#isPlaced;
     };
+
+    /** Copy public and private members and returns it @return {CurrentMinoManager} */
+    duplicate() {
+        const copied = new CurrentMinoManager();
+        copied.row = this.row;
+        copied.column = this.column;
+        copied.#currentMino = this.#currentMino;
+        copied.#isPlaced = this.#isPlaced;
+        return copied;
+    }
 }
 
 export class Bag {
