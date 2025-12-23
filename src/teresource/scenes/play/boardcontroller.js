@@ -107,7 +107,7 @@ class RotationHandler {
 
     /** Try mino rotation and return the resulting translation from the current position @param {number} angle @return {{row: number, column: number } | false} */
     simulateRotation(angle) {
-        if(angle === 0) return false;
+        if (angle === 0) return false;
 
         const minoMng = this.#currentMinoManager;
 
@@ -171,7 +171,7 @@ export class BoardControlCalculator {
 
         /** @type {minoMoves} */ const minoMoveResult = {
             horizontalMinoMove: copiedCurrentMinoManager.column - params.currentMinoManager.column,
-            verticalMinoMove  : copiedCurrentMinoManager.row - params.currentMinoManager.row,
+            verticalMinoMove: copiedCurrentMinoManager.row - params.currentMinoManager.row,
         }
         this.#update_lockdownReset(minoMoveResult, diff.newState);
 
@@ -332,21 +332,28 @@ export class BoardController {
      */
     update(controlOrderFlag, deltaTime = 0.016667) {
         const diff = this.#boardControlCalculator.calculate(controlOrderFlag, deltaTime, {
-            boardControlState : this.#state,
+            boardControlState: this.#state,
             currentMinoManager: this.#currentMinoManager,
-            cellBoard         : this.#cellBoard
+            cellBoard: this.#cellBoard
         });
-        //apply changes
-        this.#state = diff.newState;
-        this.#currentMinoManager.row += diff.verticalMinoMove;
-        this.#currentMinoManager.column += diff.horizontalMinoMove;
-        this.#currentMinoManager.rotateMino(diff.appliedRotationAngle);
-        if(diff.placedByHardDrop || diff.placedByLockDown) {
-            this.#currentMinoManager.place();
-        }
+        this.#update_applyDiff(diff);
         /** @type {BoardControlResult} */
         const result = diff; //temporary implementation
         return result;
+    }
+
+    /** @param {BoardControlDiff} diff */
+    #update_applyDiff(diff) {
+        const cmg = this.#currentMinoManager;
+        this.#state = diff.newState;
+        cmg.row += diff.verticalMinoMove;
+        cmg.column += diff.horizontalMinoMove;
+        cmg.rotateMino(diff.appliedRotationAngle);
+        if (diff.placedByHardDrop || diff.placedByLockDown) {
+            this.#currentMinoManager.place();
+            const { table, topLeft } = cmg.mino.convertToTable();
+            this.#cellBoard.compositeMinoTable(table, cmg.row + topLeft.row, cmg.column + topLeft.column);
+        }
     }
 }
 
