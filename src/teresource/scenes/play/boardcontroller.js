@@ -69,6 +69,15 @@ export class BoardControlState {
  * 
 */
 
+export class BoardControlDiff {
+    /** @type {number} */ horizontalMinoMove = 0;
+    /** @type {number} */ verticalMinoMove = 0;
+    /** @type {boolean} */ placedByHardDrop = false;
+    /** @type {boolean} */ placedByLockDown = false;
+    /** @type {number} */ appliedRotationAngle = 0;
+    /** @type {BoardControlState} */ newState = new BoardControlState();
+}
+
 /** @return BoardControlResult */
 export function createBoardControlResult() {
     /** @type {BoardControlResult} */
@@ -116,6 +125,182 @@ class RotationHandler {
     }
 }
 
+/** @typedef {{horizontalMinoMove: number, verticalMinoMove: number }} minoMoves */
+/** @typedef {{ cellBoard: CellBoard, currentMinoManager: CurrentMinoManager, boardControlState: BoardControlState }} BoardControlCalculatorParams */
+
+/**Calculate what will happen next frame given the current state.
+ * Does not contain any primitive status itself */
+export class BoardControlCalculator {
+    /** @type {RotationHandler} */
+    #rotationHandler;
+
+    /**
+     *  @param { GameContext } context
+    */
+    constructor(context) {
+        this.#rotationHandler = new RotationHandler(context);
+    }
+
+    /** calculate next frame state and actions
+     * @param {number} controlOrderFlag
+     * @param {number} deltaTime
+     * @param {BoardControlCalculatorParams} params
+     * @return {BoardControlDiff}
+     */
+    calculate(controlOrderFlag, deltaTime = 0.016667, params) {
+        const order = new ControlOrder();
+        order.value = controlOrderFlag;
+
+        //Copy states for calculation
+        const copiedCurrentMinoManager = params.currentMinoManager.duplicate();
+        const diff = new BoardControlDiff();
+        diff.newState = structuredClone(params.boardControlState);
+
+        //Main process
+        this.#update_processSoftDropInputs(order.value, diff.newState);
+
+        this.#update_advanceFallingProgress(deltaTime, diff.newState, params, copiedCurrentMinoManager);
+
+        const appliedRotationAngle = this.#update_rotateMino(order.value, diff.newState, params, copiedCurrentMinoManager);
+
+        this.#update_gravityAndMove(order.value, diff.newState, params, copiedCurrentMinoManager);
+
+        const isMinoPlacedByHardDrop = this.#update_hardDrop(order.value, params, copiedCurrentMinoManager);
+
+        order.setFalseAll();
+
+        /** @type {minoMoves} */ const minoMoveResult = {
+            horizontalMinoMove: copiedCurrentMinoManager.column - params.currentMinoManager.column,
+            verticalMinoMove  : copiedCurrentMinoManager.row - params.currentMinoManager.row,
+        }
+        this.#update_lockdownReset(minoMoveResult, diff.newState);
+
+        const isMinoPlacedByLockDown = this.#update_lockDown(deltaTime, diff.newState, params, copiedCurrentMinoManager);
+
+        //Diff assembly
+        Object.assign(diff, minoMoveResult); //horizontal/vertical mino move
+        diff.placedByHardDrop = isMinoPlacedByHardDrop;
+        diff.placedByLockDown = isMinoPlacedByLockDown;
+        diff.appliedRotationAngle = appliedRotationAngle;
+        return diff;
+    }
+
+    /** @param {minoMoves} minoMoves @param {BoardControlState} state */
+    #update_lockdownReset(minoMoves, state) {
+        if (minoMoves.horizontalMinoMove != 0 || minoMoves.verticalMinoMove != 0) {
+            state.lockDownCount = 0;
+        }
+    }
+
+    /** Measure passed time, judge if the mino has locked down (not placed mino yet)
+     * @param {number} deltaTime @param {BoardControlState} state @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager
+     * @return {boolean} lockdown judgement
+     */
+    #update_lockDown(deltaTime, state, params, copiedCurrentMinoManager) {
+        const minoMng = copiedCurrentMinoManager;
+        if (params.cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
+            state.lockDownCount += deltaTime;
+            if (state.lockDownCount > 0.5) {
+                return true;
+            }
+        } else {
+            state.lockDownCount = 0;
+        }
+        return false;
+    }
+
+    /** start/stop softDrop @param {number} controlSoftDropFlag START_SOFT_DROP & STOP_SOFT_DROP @param {BoardControlState} state */
+    #update_processSoftDropInputs(controlSoftDropFlag, state) {
+        if (controlSoftDropFlag & CO.START_SOFT_DROP) {
+            state.softDrop = true;
+        }
+        if (controlSoftDropFlag & CO.STOP_SOFT_DROP) {
+            state.softDrop = false;
+        }
+    }
+
+    /** @param {number} deltaTime @param {BoardControlState} state @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager */
+    #update_advanceFallingProgress(deltaTime, state, params, copiedCurrentMinoManager) {
+        const minoMng = copiedCurrentMinoManager;
+        if (params.cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
+            state.fallingProgress = 0;
+        } else {
+            state.fallingProgress += deltaTime * 60 * 0.02 * (state.softDrop ? 20 : 1);
+        }
+    }
+
+    /** Do mino freefall and movement
+     * @param {number} controlMovementFlag MOVE_LEFT & MOVE_RIGHT @param {BoardControlState} state @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager 
+     * */
+    #update_gravityAndMove(controlMovementFlag, state, params, copiedCurrentMinoManager) {
+        let horizontalMinoMove = 0, verticalMinoMove = 0;
+        //usually execute it only once
+        //when the gravity is very large, horizontal moving is tried more than once
+        do {
+            //move horizontally
+            {
+                const leftInput = !!(controlMovementFlag & CO.MOVE_LEFT);
+                const rightInput = !!(controlMovementFlag & CO.MOVE_RIGHT);
+                const horizontalIdealMove = -1 * +leftInput + 1 * +rightInput;
+                const horizontalRealMove = this.#moveMinoHorizontally(horizontalIdealMove, params, copiedCurrentMinoManager);
+                horizontalMinoMove += horizontalRealMove;
+            }
+            //let mino fall
+            if (state.fallingProgress >= 1) {
+                state.fallingProgress--;
+                const rowMoved = this.#moveMinoVertically(1, params, copiedCurrentMinoManager);
+                verticalMinoMove += rowMoved;
+            }
+        } while (state.fallingProgress >= 1);
+    }
+
+    /**  Do hard-dropping process (not actually placed yet)
+     * @param {number} controlHardDropFlag HARD_DROP @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager
+     * @return {boolean} if the mino has placed by hard-drop */
+    #update_hardDrop(controlHardDropFlag, params, copiedCurrentMinoManager) {
+        if (controlHardDropFlag & CO.HARD_DROP) {
+            this.#moveMinoVertically(99, params, copiedCurrentMinoManager);
+            return true;
+        }
+        return false;
+    }
+
+    /** @param {number} controlRotationFlag ROTATE_CLOCK_WISE & ROTATE_COUNTER_CLOCK @param {BoardControlState} state @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return {number} appliedRotationAngle */
+    #update_rotateMino(controlRotationFlag, state, params, copiedCurrentMinoManager) {
+        const minoMng = copiedCurrentMinoManager;
+
+        let rotation = 0;
+        if (controlRotationFlag & CO.ROTATE_CLOCK_WISE) rotation = 90;
+        else if (controlRotationFlag & CO.ROTATE_COUNTER_CLOCK) rotation = 270;
+
+        const resultTranslation = this.#rotationHandler.simulateRotation(rotation);
+        if (resultTranslation) {
+            minoMng.rotateMino(rotation);
+            minoMng.row += resultTranslation.row;
+            minoMng.column += resultTranslation.column;
+            state.lockDownCount = 0;
+            return rotation;
+        }
+        return 0;
+    }
+
+    /** Move mino vertically within a range that does not collide @param {number} move @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return the result amount of the movement*/
+    #moveMinoVertically(move, params, copiedCurrentMinoManager) {
+        const minoMng = copiedCurrentMinoManager;
+        const resultMove = params.cellBoard.tryMoveMinoVertically(move, minoMng.mino, minoMng.row, minoMng.column);
+        minoMng.row += resultMove;
+        return resultMove;
+    }
+
+    /** Move mino horizontally within a range that does not collide @param {number} move  @param {BoardControlCalculatorParams} params @param {CurrentMinoManager} copiedCurrentMinoManager @return the result amount of the movement*/
+    #moveMinoHorizontally(move, params, copiedCurrentMinoManager) {
+        const minoMng = copiedCurrentMinoManager;
+        const resultMove = params.cellBoard.tryMoveMinoHorizontally(move, minoMng.mino, minoMng.row, minoMng.column);
+        minoMng.column += resultMove;
+        return resultMove;
+    }
+}
+
 /**Manage Board and Mino states, progress it with update()
  * Does not contain any primitive status itself, so the outcome is determined by external states and inputs */
 export class BoardController {
@@ -127,8 +312,8 @@ export class BoardController {
     #cellBoard;
     /** @type {BoardControlState} */
     #state;
-    /** @type {RotationHandler} */
-    #rotationHandler;
+    /** @type {BoardControlCalculator} */
+    #boardControlCalculator;
 
     /**
      *  @param { GameContext } context
@@ -137,7 +322,7 @@ export class BoardController {
         this.#currentMinoManager = context.currentMinoManager;
         this.#cellBoard = context.cellBoard;
         this.#state = context.boardControlState;
-        this.#rotationHandler = new RotationHandler(context);
+        this.#boardControlCalculator = new BoardControlCalculator(context);
     }
 
     /** advance time
@@ -146,160 +331,22 @@ export class BoardController {
      * @return {BoardControlResult}
      */
     update(controlOrderFlag, deltaTime = 0.016667) {
-        const order = new ControlOrder();
-        order.value = controlOrderFlag;
-
-        this.#update_processSoftDropInputs(order.value);
-
-        this.#update_advanceFallingProgress(deltaTime);
-
-        this.#update_rotateMino(order.value);
-
-        const minoMoveResult = this.#update_gravityAndMove(order.value);
-
-        const isMinoPlacedByHardDrop = this.#update_hardDrop(order.value);
-
-        order.setFalseAll();
-
-        this.#update_lockdownReset(minoMoveResult);
-        const isMinoPlacedByLockDown = this.#update_lockDown(deltaTime);
-
-        if (isMinoPlacedByHardDrop || isMinoPlacedByLockDown) {
-            this.#update_placeMino();
+        const diff = this.#boardControlCalculator.calculate(controlOrderFlag, deltaTime, {
+            boardControlState : this.#state,
+            currentMinoManager: this.#currentMinoManager,
+            cellBoard         : this.#cellBoard
+        });
+        //apply changes
+        this.#state = diff.newState;
+        this.#currentMinoManager.row += diff.verticalMinoMove;
+        this.#currentMinoManager.column += diff.horizontalMinoMove;
+        this.#currentMinoManager.rotateMino(diff.appliedRotationAngle);
+        if(diff.placedByHardDrop || diff.placedByLockDown) {
+            this.#currentMinoManager.place();
         }
-
-        const result = createBoardControlResult();
-        result.placedByHardDrop = isMinoPlacedByHardDrop;
-        result.placedByLockDown = isMinoPlacedByLockDown;
-        Object.assign(result, minoMoveResult);
+        /** @type {BoardControlResult} */
+        const result = diff; //temporary implementation
         return result;
-    }
-
-    /** @param {minoMoves} minoMoves */
-    #update_lockdownReset(minoMoves) {
-        if (minoMoves.horizontalMinoMove != 0 || minoMoves.verticalMinoMove != 0) {
-            this.#state.lockDownCount = 0;
-        }
-    }
-
-    /** Measure passed time, judge if the mino has locked down
-     * @param {number} deltaTime
-     * @return {boolean} lockdown judgement
-     */
-    #update_lockDown(deltaTime) {
-        const minoMng = this.#currentMinoManager;
-        if (this.#cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
-            this.#state.lockDownCount += deltaTime;
-            if (this.#state.lockDownCount > 0.5) {
-                return true;
-            }
-        } else {
-            this.#state.lockDownCount = 0;
-        }
-        return false;
-    }
-
-    /** start/stop softDrop @param {number} controlSoftDropFlag START_SOFT_DROP & STOP_SOFT_DROP */
-    #update_processSoftDropInputs(controlSoftDropFlag) {
-        if (controlSoftDropFlag & CO.START_SOFT_DROP) {
-            this.#state.softDrop = true;
-        }
-        if (controlSoftDropFlag & CO.STOP_SOFT_DROP) {
-            this.#state.softDrop = false;
-        }
-    }
-
-    /** @param {number} deltaTime */
-    #update_advanceFallingProgress(deltaTime) {
-        const minoMng = this.#currentMinoManager;
-        if (this.#cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
-            this.#state.fallingProgress = 0;
-        } else {
-            this.#state.fallingProgress += deltaTime * 60 * 0.02 * (this.#state.softDrop ? 20 : 1);
-        }
-    }
-
-    /** Do mino freefall and movement
-     * @param {number} controlMovementFlag MOVE_LEFT & MOVE_RIGHT
-     * @return {minoMoves}
-     * */
-    #update_gravityAndMove(controlMovementFlag) {
-        let horizontalMinoMove = 0, verticalMinoMove = 0;
-        //usually execute it only once
-        //when the gravity is very large, horizontal moving is tried more than once
-        do {
-            //move horizontally
-            {
-                const leftInput = !!(controlMovementFlag & CO.MOVE_LEFT);
-                const rightInput = !!(controlMovementFlag & CO.MOVE_RIGHT);
-                const horizontalIdealMove = -1 * +leftInput + 1 * +rightInput;
-                const horizontalRealMove = this.#moveMinoHorizontally(horizontalIdealMove);
-                horizontalMinoMove += horizontalRealMove;
-            }
-            //let mino fall
-            if (this.#state.fallingProgress >= 1) {
-                this.#state.fallingProgress--;
-                const rowMoved = this.#moveMinoVertically(1);
-                verticalMinoMove += rowMoved;
-            }
-        } while (this.#state.fallingProgress >= 1);
-
-        return { horizontalMinoMove, verticalMinoMove };
-    }
-
-    /**  Do hard-dropping process
-     * @param {number} controlHardDropFlag HARD_DROP
-     * @return {boolean} if the mino has placed by hard-drop */
-    #update_hardDrop(controlHardDropFlag) {
-        if (controlHardDropFlag & CO.HARD_DROP) {
-            this.#moveMinoVertically(99);
-            return true;
-        }
-        return false;
-    }
-
-    /** @param {number} controlRotationFlag ROTATE_CLOCK_WISE & ROTATE_COUNTER_CLOCK*/
-    #update_rotateMino(controlRotationFlag) {
-        const minoMng = this.#currentMinoManager;
-
-        let rotation = 0;
-        if (controlRotationFlag & CO.ROTATE_CLOCK_WISE) rotation = 90;
-        else if (controlRotationFlag & CO.ROTATE_COUNTER_CLOCK) rotation = 270;
-
-        const resultTranslation = this.#rotationHandler.simulateRotation(rotation);
-        if (resultTranslation) {
-            minoMng.rotateMino(rotation);
-            minoMng.row += resultTranslation.row;
-            minoMng.column += resultTranslation.column;
-            this.#state.lockDownCount = 0;
-        }
-    }
-
-    #update_placeMino() {
-        const minoMng = this.#currentMinoManager;
-        const { table, topLeft } = minoMng.mino.convertToTable();
-        const row = minoMng.row + topLeft.row;
-        const column = minoMng.column + topLeft.column;
-        this.#cellBoard.compositeMinoTable(table, row, column);
-        minoMng.place();
-    }
-
-    /** Move this.#mino vertically within a range that does not collide @param {number} move @return the result amount of the movement*/
-    #moveMinoVertically(move) {
-        const minoMng = this.#currentMinoManager;
-        const mino = this.#currentMinoManager.mino;
-        const resultMove = this.#cellBoard.tryMoveMinoVertically(move, mino, minoMng.row, minoMng.column);
-        minoMng.row += resultMove;
-        return resultMove;
-    }
-
-    /** Move this.#mino horizontally within a range that does not collide @param {number} move @return the result amount of the movement*/
-    #moveMinoHorizontally(move) {
-        const minoMng = this.#currentMinoManager;
-        const mino = this.#currentMinoManager.mino;
-        const resultMove = this.#cellBoard.tryMoveMinoHorizontally(move, mino, minoMng.row, minoMng.column);
-        minoMng.column += resultMove;
-        return resultMove;
     }
 }
 
