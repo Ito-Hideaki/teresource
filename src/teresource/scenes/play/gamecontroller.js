@@ -10,6 +10,7 @@ export class GameController {
     #lastBoardControlResult
     #currentMinoManager
     #minoQueueManager
+    #boardControlState
 
     /**
      * @param {GameContext} gameContext
@@ -20,6 +21,7 @@ export class GameController {
         this.#boardController = $.boardController;
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
+        this.#boardControlState = gameContext.boardControlState;
 
         this.#lastBoardControlResult = new createBoardControlResult();
     }
@@ -27,19 +29,20 @@ export class GameController {
     /** @param {number} deltaTime */
     update(deltaTime) {
 
-        const pullNewMinoIfNeeded = () => {
+        const startNewMinoIfNeeded = () => {
             if (this.#currentMinoManager.isPlaced) {
                 this.#currentMinoManager.startNextMino(this.#minoQueueManager.takeNextMino());
+                this.#boardControlState.startNewMino();
             }
         }
 
-        pullNewMinoIfNeeded();
+        startNewMinoIfNeeded();
         //Advance a frame
         const controlOrder = this.#controlOrderProvider.provideControlOrder();
         this.#lastBoardControlResult = this.#boardController.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(this.#lastBoardControlResult);
         this.#controlOrderProvider.advanceTime(deltaTime);
 
-        pullNewMinoIfNeeded();
+        startNewMinoIfNeeded();
     }
 }

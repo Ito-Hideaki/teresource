@@ -57,6 +57,10 @@ export class BoardControlState {
     softDrop = false;
     constructor() {
     }
+    startNewMino() {
+        this.lockDownCount = 0;
+        this.fallingProgress = 0;
+    }
 }
 
 /** 
@@ -345,7 +349,7 @@ export class BoardController {
     /** @param {BoardControlDiff} diff */
     #update_applyDiff(diff) {
         const cmg = this.#currentMinoManager;
-        this.#state = diff.newState;
+        Object.assign(this.#state, diff.newState);
         cmg.row += diff.verticalMinoMove;
         cmg.column += diff.horizontalMinoMove;
         cmg.rotateMino(diff.appliedRotationAngle);
