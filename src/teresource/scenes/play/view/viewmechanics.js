@@ -1,4 +1,4 @@
-import { Cell } from "./mechanics";
+import { Cell } from "../core/mechanics";
 
 export const cellColorStr = [
     "red",

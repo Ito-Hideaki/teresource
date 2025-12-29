@@ -1,9 +1,9 @@
 // @ts-check
 
-import { CurrentMinoManager, MinoQueueManager } from "./minomanager";
-import { Cell, CellBoard } from "./mechanics";
-import { GameContext } from "./context";
-import { RotationSystem } from "./rotationsystem";
+import { CurrentMinoManager, MinoQueueManager } from "../core/minomanager";
+import { Cell, CellBoard } from "../core/mechanics";
+import { GameContext } from "../infra/context";
+import { RotationSystem } from "../core/rotationsystem";
 
 export class ControlOrder {
 

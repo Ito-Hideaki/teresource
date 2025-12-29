@@ -1,10 +1,10 @@
 import Phaser from "phaser";
-import { GameController } from "./play/gamecontroller";
-import { ViewController } from "./play/viewcontroller";
-import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/viewmechanics";
-import { GameFactory } from "./play/gamefactory";
-import { ControlOrder, ControlOrderProvider } from "./play/boardcontroller";
-import { CellSheetParent } from "./play/customtexture";
+import { GameController } from "./play/controller/gamecontroller";
+import { ViewController } from "./play/view/viewcontroller";
+import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/viewmechanics";
+import { GameFactory } from "./play/infra/gamefactory";
+import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontroller";
+import { CellSheetParent } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 
 

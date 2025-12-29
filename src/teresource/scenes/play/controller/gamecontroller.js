@@ -1,6 +1,6 @@
 import { ControlOrder, BoardUpdater, ControlOrderProvider, BoardUpdateDiff } from "./boardcontroller";
-import { GameContext } from "./context";
-import { LineClearManager } from "./lineclear";
+import { GameContext } from "../infra/context";
+import { LineClearManager } from "../core/lineclear";
 
 /** Represents the logic og the game attached to each player */
 export class GameController {

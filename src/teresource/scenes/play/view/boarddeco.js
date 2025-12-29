@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "#util";
-import { GameViewContext } from "./context";
-import { BoardSize } from "./mechanics";
+import { GameViewContext } from "../infra/context";
+import { BoardSize } from "../core/mechanics";
 
 const utkg = new UniqueTextureKeyGenerator("boarddeco");
 

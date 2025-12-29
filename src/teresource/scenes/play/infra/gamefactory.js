@@ -1,11 +1,11 @@
-import { CurrentMinoManager, Bag, MinoQueueManager } from "./minomanager";
-import { BoardSize, CellBoard } from "./mechanics";
-import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "./boardcontroller";
+import { CurrentMinoManager, Bag, MinoQueueManager } from "../core/minomanager";
+import { BoardSize, CellBoard } from "../core/mechanics";
+import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "../controller/boardcontroller";
 import { GameContext, GameViewContext } from "./context";
-import { ViewController } from "./viewcontroller";
-import { GameController } from "./gamecontroller";
-import { PlayScene } from "../play";
-import { RotationSystem_NoKick, RotationSystem_Standard } from "./rotationsystem";
+import { ViewController } from "../view/viewcontroller";
+import { GameController } from "../controller/gamecontroller";
+import { PlayScene } from "../../play";
+import { RotationSystem_NoKick, RotationSystem_Standard } from "../core/rotationsystem";
 
 export class GameFactory {
 

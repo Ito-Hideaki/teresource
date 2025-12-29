@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 import { BoardView } from "./boardview";
 import { BoardDeco } from "./boarddeco";
-import { GameViewContext } from "./context";
-import { PlayScene } from "../play";
+import { GameViewContext } from "../infra/context";
+import { PlayScene } from "../../play";
 
 /** Represents the game view for each player */
 export class ViewController {

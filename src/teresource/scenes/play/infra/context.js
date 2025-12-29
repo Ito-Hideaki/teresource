@@ -1,8 +1,8 @@
-import { CellBoard, BoardSize, Mino } from "./mechanics";
-import { CurrentMinoManager, MinoQueueManager } from "./minomanager";
-import { BoardUpdateState } from "./boardcontroller";
-import { CellSheetParent } from "./customtexture";
-import { RotationSystem } from "./rotationsystem";
+import { CellBoard, BoardSize, Mino } from "../core/mechanics";
+import { CurrentMinoManager, MinoQueueManager } from "../core/minomanager";
+import { BoardUpdateState } from "../controller/boardcontroller";
+import { CellSheetParent } from "../view/customtexture";
+import { RotationSystem } from "../core/rotationsystem";
 
 /** @param {{}} source @return GameContext */
 export class GameContext {

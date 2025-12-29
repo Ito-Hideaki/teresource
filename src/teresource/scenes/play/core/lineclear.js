@@ -1,4 +1,4 @@
-import { GameContext } from "./context";
+import { GameContext } from "../infra/context";
 import { CellBoard } from "./mechanics";
 
 export class LineClearManager {

@@ -1,9 +1,9 @@
 import Phaser from "phaser";
 import { getRelativeX, getRelativeY } from "#util";
-import { Board, BoardSize, Cell, CellBoard } from "./mechanics";
-import { CurrentMinoManager } from "./minomanager";
+import { Board, BoardSize, Cell, CellBoard } from "../core/mechanics";
+import { CurrentMinoManager } from "../core/minomanager";
 import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, generateCellSheetTextureFrameKey, createCellViewParamsFromCell, GOBI } from "./viewmechanics";
-import { GameViewContext, GameContext } from "./context";
+import { GameViewContext, GameContext } from "../infra/context";
 import { CellSheetParent } from "./customtexture";
 
 class CellImage extends Phaser.GameObjects.Image {
