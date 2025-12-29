@@ -81,7 +81,7 @@ export class Bag {
 }
 
 export class MinoQueueManager {
-    #minoQueue
+    minoQueue
     bag
 
     /** @param {Bag} bag
@@ -89,17 +89,17 @@ export class MinoQueueManager {
     */
     constructor(bag, minoQueue = []) {
         this.bag = bag;
-        this.#minoQueue = minoQueue;
+        this.minoQueue = minoQueue;
         this.#genMinoQueueUntil100();
     }
 
     takeNextMino() {
         this.#genMinoQueueUntil100();
-        const mino = this.#minoQueue.splice(0, 1)[0];
+        const mino = this.minoQueue.splice(0, 1)[0];
         return mino;
     }
 
     #genMinoQueueUntil100() {
-        while (this.#minoQueue.length < 100) this.bag.createAndPushTo(this.#minoQueue);
+        while (this.minoQueue.length < 100) this.bag.createAndPushTo(this.minoQueue);
     }
 }
