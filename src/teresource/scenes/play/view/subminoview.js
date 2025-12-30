@@ -1,41 +1,54 @@
 import Phaser from "phaser";
-import { BoardSize } from "../core/mechanics";
+import { BoardSize, Mino, Cell } from "../core/mechanics";
 import { CellImage, ImageBoard } from "./cellimage";
 import { GameViewContext } from "../infra/context";
 import { createRelativePositionGetter } from "#util";
+import { createCellViewParamsFromCell } from "./viewmechanics";
 
 const subMinoViewBoardSize = new BoardSize(10, 10);
-const cellImgRelativePositionGetter = createRelativePositionGetter(25, subMinoViewBoardSize.rowCount, subMinoViewBoardSize.columnCount, 0, 0);
+
+const minoDisplayOrigin = [
+    { row: 0.5, column: 1 },    //Z
+    { row: 0.5, column: 1 },    //L
+    { row: 0.5, column: 0.5 },  //O
+    { row: 0.5, column: 1 },    //S
+    { row: 1, column: 1.5 },    //I
+    { row: 0.5, column: 1 },    //J
+    { row: 0.5, column: 1 },    //T
+]
 
 class SubMinoView {
     /** @type {ImageBoard} */ #imageBoard
     /** @type {Phaser.GameObjects.Container} */ #container
-    /** @type {Function} */ #getRelativeX;
-    /** @type {Function} */ #getRelativeY;
+    /** @type {number} */ #cellWidth;
+    /** @type {number} size width and height of the mino area*/ #size;
+    #getRelativeCellImgX = (column => column * this.#cellWidth);
+    #getRelativeCellImgY = (row => row * this.#cellWidth);
 
-    /** @param {Phaser.Scene} scene @param {number} cellWidth @param {GameViewContext} context */
-    constructor(scene, cellWidth, context) {
-        this.#getRelativeX = cellImgRelativePositionGetter.getRelativeX;
-        this.#getRelativeY = cellImgRelativePositionGetter.getRelativeY;
-        this.#initContainer(scene, cellWidth, context);
-        this.#initImageBoard(scene, cellWidth, context);
+    /** @param {Phaser.Scene} scene @param {number} size width and height of the mino area @param {GameViewContext} context */
+    constructor(scene, size, context) {
+        this.#cellWidth = 30;
+        this.#size = size;
+
+        this.#initContainer(scene, context);
+        this.#initImageBoard(scene, context);
     }
 
-    /** @param {Phaser.Scene} scene @param {number} cellWidth @param {GameViewContext} context */
-    #initContainer(scene, cellWidth, context) {
+    /** @param {Phaser.Scene} scene @param {number} size @param {GameViewContext} context */
+    #initContainer(scene, context) {
         this.#container = scene.add.container();
         context.boardContainer.add(this.#container);
     }
 
-    /** @param {Phaser.Scene} scene @param {number} cellWidth @param {GameViewContext} context */
-    #initImageBoard(scene, cellWidth, context) {
+    /** @param {Phaser.Scene} scene @param {GameViewContext} context */
+    #initImageBoard(scene, context) {
         this.#imageBoard = new ImageBoard(subMinoViewBoardSize);
         const table = this.#imageBoard.table;
 
         for(let row = 0; row < this.#imageBoard.rowCount; row++) {
             for(let col = 0; col < this.#imageBoard.columnCount; col++) {
-                const x = this.#getRelativeX(col, cellWidth, subMinoViewBoardSize.columnCount);
-                const y = this.#getRelativeY(row, cellWidth, subMinoViewBoardSize.rowCount);
+                const x = this.#getRelativeCellImgX(col);
+                const y = this.#getRelativeCellImgY(row);
                 table[row][col] = new CellImage(scene, x, y, context.cellSheetParent);
                 this.#container.add(table[row][col]);
             }
@@ -44,24 +57,50 @@ class SubMinoView {
 
     /** @param {Mino} mino */
     updateView(mino) {
-        this.#imageBoard.table.forEach(row => row.forEach((/** @type {CellImage} */ cellImg) => {
-            cellImg.setView({ color: "red", gobi: "n", skin: "skin" });
-        }))
+        //update cellImg
+        const { table } = mino.convertToTable({isActive: true});
+        this.#imageBoard.table.forEach((arr, row) => arr.forEach((/** @type {CellImage} */ cellImg, col) => {
+            let cell;
+            if (row < table.length && col < table[0].length) {
+                cell = table[row][col];
+            } else cell = new Cell(false);
+            cellImg.setView(createCellViewParamsFromCell(cell));
+        }));
+        //set container scale
+        const cellSizeFactor = 1 / Math.max(mino.shape.size, 3.4); //  displayed cell width / mino area width
+        const displayedCellWidth = this.#size * cellSizeFactor;
+        const scale = displayedCellWidth / this.#cellWidth;
+        this.#container.setScale(scale);
+        //set container position
+        const minoOrigin = minoDisplayOrigin[mino.type];
+        this.#container.x = this.#size * (0.5 - minoOrigin.column * cellSizeFactor);
+        this.#container.y = this.#size * (0.5 - minoOrigin.row * cellSizeFactor);
+    }
+}
+
+class SubMinoBox {
+    #subMinoView;
+    /** @param {Phaser.Scene} scene @param {number} size width and height of the whole view @param {GameViewContext} context */
+    constructor(scene, size, context) {
+        this.#subMinoView = new SubMinoView(scene, 100, context);
+    }
+    updateView(mino) {
+        this.#subMinoView.updateView(mino);
     }
 }
 
 export class MinoQueueView {
 
-    #subMinoView
+    #subMinoBox
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} context */
     constructor(scene, cellWidth, context) {
         this.minoQueue = context.gameContext.minoQueueManager.minoQueue;
-        this.#subMinoView = new SubMinoView(scene, cellWidth, context);
+        this.#subMinoBox = new SubMinoBox(scene, cellWidth, context);
     }
 
     update() {
-        this.#subMinoView.updateView();
+        this.#subMinoBox.updateView(this.minoQueue[0]);
         if (import.meta.env.DEV) {
             const elm = document.getElementById("minoqueue");
             if (!elm) return;

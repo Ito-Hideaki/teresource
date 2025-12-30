@@ -62,8 +62,8 @@ export function createCellViewParamsFromCell(cell, skin = "skin") {
 
 /** Gobi is a string of the combined cell status, e.g. isActive. Does not include wholy invisible states. @param {Cell} cell @return {string} gobi  */
 function createStatusGobi(cell) {
-    if (cell.isActive) return GOBI.active;
     if (!cell.isBlock) return GOBI.invisible;
+    if (cell.isActive) return GOBI.active;
     return GOBI.normal;
 }
 
