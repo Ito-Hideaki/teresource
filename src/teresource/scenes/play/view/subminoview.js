@@ -70,7 +70,7 @@ class SubMinoView {
             cellImg.setView(createCellViewParamsFromCell(cell));
         }));
         //set container scale
-        const cellSizeFactor = 1 / Math.max(mino.shape.size, 3.4); //  displayed cell width / mino area width
+        const cellSizeFactor = 1 / Math.max(mino.shape.size, 4); //  displayed cell width / mino area width
         const displayedCellWidth = this.#size * cellSizeFactor;
         const scale = displayedCellWidth / this.#cellWidth;
         this.#container.setScale(scale);
@@ -132,12 +132,12 @@ export class MinoQueueView {
         this.#subMinoBoxList = [];
         let subMinoViewYOffset = 0;
         for(let i = 0; i < 5; i++) {
-            const size = i == 0 ? 110 : 80;
+            const size = 90;
             const subMinoView = new SubMinoBox(scene, size, context);
-            subMinoView.x = context.getRelativeBoardX(context.gameContext.boardSize.columnCount) + 5;
+            subMinoView.x = context.getRelativeBoardX(context.gameContext.boardSize.columnCount) + 10;
             subMinoView.y = context.getRelativeBoardY(20) + subMinoViewYOffset;
             this.#subMinoBoxList.push(subMinoView);
-            subMinoViewYOffset += size + 5;
+            subMinoViewYOffset += size + 3;
         }
     }
 
