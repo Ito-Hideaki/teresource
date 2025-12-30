@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { UniqueTextureKeyGenerator, getRelativeX, getRelativeY } from "#util";
+import { UniqueTextureKeyGenerator } from "#util";
 import { GameViewContext } from "../infra/context";
 import { BoardSize } from "../core/mechanics";
 
@@ -8,48 +8,10 @@ const utkg = new UniqueTextureKeyGenerator("boarddeco");
 /** Draw a part which is not affected by board state */
 export class BoardDeco {
 
-    /**
-     * Stroke board background grids, centered at (0,0).
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {number} cellWidth
-     * @param {number} rowCount
-     * @param {number} columnCount
-     */
-    static #strokeGrid(ctx, cellWidth, rowCount, columnCount) {
-
-        ctx.strokeStyle = "#323232ff";
-        ctx.lineWidth = cellWidth / 10;
-
-        //top: row = 0 & y = -30; bottom: row = 39 & y = 9;
-        for (let row = 0; row <= rowCount; row++) {
-            const rowY = getRelativeY(row, cellWidth, rowCount);
-            ctx.beginPath();
-            ctx.moveTo(getRelativeX(0, cellWidth, columnCount), rowY);
-            ctx.lineTo(getRelativeX(columnCount, cellWidth, columnCount), rowY);
-            ctx.stroke();
-        }
-
-        //left: column = 0 & x = -5; right: column = 10 & x = 5;
-        for (let column = 0; column <= columnCount; column++) {
-            const cellX = getRelativeX(column, cellWidth, columnCount);
-            ctx.beginPath();
-            ctx.moveTo(cellX, getRelativeY(0, cellWidth, rowCount));
-            ctx.lineTo(cellX, getRelativeY(rowCount, cellWidth, rowCount));
-            ctx.stroke();
-        }
-
-        ctx.beginPath();
-    }
-
-    static #fillBackground(ctx, cellWidth, rowCount, columnCount) {
-        ctx.fillStyle = "#000";
-        ctx.fillRect(
-            getRelativeX(0, cellWidth, columnCount),
-            getRelativeY(0, cellWidth, rowCount),
-            cellWidth * columnCount,
-            cellWidth * rowCount
-        );
-    }
+    /** @type {Function} */
+    #getRelativeX;
+    /** @type {Function} */
+    #getRelativeY;
 
     /** @type {BoardSize} */
     #boardSize;
@@ -81,6 +43,8 @@ export class BoardDeco {
         this.#cellWidth = cellWidth;
         this.#boardSize = gContext.boardSize;
         this.#boardContainer = gvContext.boardContainer;
+        this.#getRelativeX = gvContext.getRelativeBoardX;
+        this.#getRelativeY = gvContext.getRelativeBoardY;
 
         this.#init();
     }
@@ -102,12 +66,62 @@ export class BoardDeco {
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
 
-        BoardDeco.#fillBackground(ctx, this.#cellWidth, 20, this.#boardSize.columnCount);
-        BoardDeco.#strokeGrid(ctx, this.#cellWidth, 20, this.#boardSize.columnCount);
+        this.#fillBackground(ctx, 20, 20);
+        this.#strokeGrid(ctx, 20, 20);
 
         ctx.restore();
 
         this.#image.texture.refresh();
+    }
+
+    /**
+     * Stroke board background grids, centered at (0,0).
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {number} rowCount
+     * @param {number} rowToDisplayFrom
+     */
+    #strokeGrid(ctx, rowCount, rowToDisplayFrom) {
+        const columnCount = this.#boardSize.columnCount;
+        const cellWidth = this.#cellWidth;
+        ctx.strokeStyle = "#323232ff";
+        ctx.lineWidth = cellWidth / 10;
+
+        //horizontal lines
+        for (let row = rowToDisplayFrom; row <= rowToDisplayFrom + rowCount; row++) {
+            const rowY = this.#getRelativeY(row);
+            ctx.beginPath();
+            ctx.moveTo(this.#getRelativeX(0), rowY);
+            ctx.lineTo(this.#getRelativeX(columnCount), rowY);
+            ctx.stroke();
+        }
+
+        //vertical lines
+        for (let column = 0; column <= columnCount; column++) {
+            const cellX = this.#getRelativeX(column);
+            ctx.beginPath();
+            ctx.moveTo(cellX, this.#getRelativeY(rowToDisplayFrom));
+            ctx.lineTo(cellX, this.#getRelativeY(rowToDisplayFrom + rowCount));
+            ctx.stroke();
+        }
+
+        ctx.beginPath();
+    }
+
+    /**
+     * Fill board background, centered at (0,0).
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {number} rowCount
+     * @param {number} rowToDisplayFrom
+     */
+    #fillBackground(ctx, rowCount, rowToDisplayFrom) {
+        const columnCount = this.#boardSize.columnCount;
+        ctx.fillStyle = "#000";
+        ctx.fillRect(
+            this.#getRelativeX(0),
+            this.#getRelativeY(rowToDisplayFrom),
+            this.#getRelativeX(columnCount) - this.#getRelativeX(0),
+            this.#getRelativeY(rowCount) - this.#getRelativeY(0),
+        );
     }
 
     update() {

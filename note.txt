@@ -41,3 +41,4 @@ settingsはただのオブジェクトにする
 scene.width scene.height 削除
 cellSheetTextureにGhostなどのために複数のsourceImageを使う
 ミノの形色＝番号対応は実行時に決められるようにし、文字と数字を使い分ける
+rowToDisplayFrom configに突っ込んでどうにかする

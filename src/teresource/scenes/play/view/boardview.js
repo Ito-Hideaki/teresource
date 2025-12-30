@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { getRelativeX, getRelativeY } from "#util";
 import { Cell, CellBoard } from "../core/mechanics";
 import { CurrentMinoManager } from "../core/minomanager";
 import { generateCellTextureKey, cellImgSkins, cellGraphicSkins, createCellViewParamsFromCell } from "./viewmechanics";
@@ -24,6 +23,10 @@ export class BoardView {
     #currentMinoManager
     /** @type {string} */
     #skin
+    /** @type {Function} */
+    #getRelativeX;
+    /** @type {Function} */
+    #getRelativeY;
 
     get #boardWidth() {
         return this.#cellWidth * this.#cellBoard.rowCount;
@@ -50,6 +53,8 @@ export class BoardView {
         this.#cellWidth = cellWidth;
         this.#cellBoard = gContext.cellBoard;
         this.#currentMinoManager = gContext.currentMinoManager;
+        this.#getRelativeX = gvContext.getRelativeBoardX;
+        this.#getRelativeY = gvContext.getRelativeBoardY;
 
         this.#initImageBoard(scene, cellWidth, gvContext);
     }
@@ -66,8 +71,8 @@ export class BoardView {
         this.#imageBoard.table.forEach((array, row) => {
             array.forEach((_, column) => {
                 //generate cellImage for each cell of the board
-                const x = getRelativeX(column, cellWidth, boardSize.columnCount);
-                const y = getRelativeY(row, cellWidth, boardSize.rowCount);
+                const x = this.#getRelativeX(column, cellWidth, boardSize.columnCount);
+                const y = this.#getRelativeY(row, cellWidth, boardSize.rowCount);
                 const cellImage = new CellImage(scene, x, y, gvContext.cellSheetParent);
                 this.#imageBoard.table[row][column] = cellImage;
 

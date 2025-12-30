@@ -2,16 +2,21 @@ import Phaser from "phaser";
 import { BoardSize } from "../core/mechanics";
 import { CellImage, ImageBoard } from "./cellimage";
 import { GameViewContext } from "../infra/context";
-import { getRelativeX, getRelativeY } from "#util";
+import { createRelativePositionGetter } from "#util";
 
 const subMinoViewBoardSize = new BoardSize(10, 10);
+const cellImgRelativePositionGetter = createRelativePositionGetter(25, subMinoViewBoardSize.rowCount, subMinoViewBoardSize.columnCount, 0, 0);
 
 class SubMinoView {
     /** @type {ImageBoard} */ #imageBoard
     /** @type {Phaser.GameObjects.Container} */ #container
+    /** @type {Function} */ #getRelativeX;
+    /** @type {Function} */ #getRelativeY;
 
     /** @param {Phaser.Scene} scene @param {number} cellWidth @param {GameViewContext} context */
     constructor(scene, cellWidth, context) {
+        this.#getRelativeX = cellImgRelativePositionGetter.getRelativeX;
+        this.#getRelativeY = cellImgRelativePositionGetter.getRelativeY;
         this.#initContainer(scene, cellWidth, context);
         this.#initImageBoard(scene, cellWidth, context);
     }
@@ -29,8 +34,8 @@ class SubMinoView {
 
         for(let row = 0; row < this.#imageBoard.rowCount; row++) {
             for(let col = 0; col < this.#imageBoard.columnCount; col++) {
-                const x = getRelativeX(col, cellWidth, subMinoViewBoardSize.columnCount);
-                const y = getRelativeY(row, cellWidth, subMinoViewBoardSize.rowCount);
+                const x = this.#getRelativeX(col, cellWidth, subMinoViewBoardSize.columnCount);
+                const y = this.#getRelativeY(row, cellWidth, subMinoViewBoardSize.rowCount);
                 table[row][col] = new CellImage(scene, x, y, context.cellSheetParent);
                 this.#container.add(table[row][col]);
             }
