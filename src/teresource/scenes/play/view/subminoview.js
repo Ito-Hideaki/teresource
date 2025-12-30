@@ -13,7 +13,7 @@ const minoDisplayOrigin = [
     { row: 1, column: 1.5 },    //L
     { row: 1, column: 1 },  //O
     { row: 1, column: 1.5 },    //S
-    { row: 2, column: 2 },    //I
+    { row: 1.5, column: 2 },    //I
     { row: 1, column: 1.5 },    //J
     { row: 1, column: 1.5 },    //T
 ]
