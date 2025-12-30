@@ -44,7 +44,25 @@ export class FunctionsUpdator {
     }
 }
 
-/** Calculate relative y coordinate from given values. */
+/** Create functions to get relative position for board or etc
+ * @param {number} cellWidth
+ *  @param {number} rowCount width of the displayed board
+ * @param {number} columnCount height of the displayed board
+ * @param {number} rowOffset how far down to shift row
+ * @param {number} columnOffset how far to shift column to the right
+ * */
+export function createRelativePositionGetter(cellWidth, rowCount, columnCount, rowOffset, columnOffset) {
+    return {
+        getRelativeY: /** Calculate relative y coordinate from given values. @param {number} row */ function(row) {
+            return cellWidth * (rowOffset + row - rowCount / 2)
+        },
+        getRelativeX: /** Calculate relative x coordinate from given values. @param {number} column */ function(column) {
+            return cellWidth * (columnOffset + column - columnCount / 2)
+        }
+    }
+}
+
+
 export function getRelativeY(row, cellWidth, rowCount) {
     return cellWidth * (10 + row - rowCount)
 }
