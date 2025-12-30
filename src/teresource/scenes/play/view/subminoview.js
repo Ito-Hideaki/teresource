@@ -84,13 +84,39 @@ class SubMinoView {
 }
 
 class SubMinoBox {
-    #subMinoView;
+    /** @type {SubMinoView} */ #subMinoView;
+    /** @type {Phaser.GameObjects.Image} */ #image;
+    /** @type {number} */#size;
+    /** @type {number} */ #x = 0;
+    set x(val) {
+        this.#x = val;
+    }
+    get x() {return this.#x}
+    /** @type {number} */ #y = 0;
+    set y(val) {
+        this.#y = val;
+    }
+    get y() {return this.#y}
+
     /** @param {Phaser.Scene} scene @param {number} size width and height of the whole view @param {GameViewContext} context */
     constructor(scene, size, context) {
-        this.#subMinoView = new SubMinoView(scene, 100, context);
+        this.#size = size;
+        this.#image = scene.add.image(0, 0, "subminoview_back");
+        this.#image.setOrigin(0, 0);
+        context.boardContainer.add(this.#image);
+        this.#subMinoView = new SubMinoView(scene, size * 0.8, context);
     }
+
     updateView(mino) {
+        //update minoview
+        this.#subMinoView.x = this.#x + this.#size * 0.1;
+        this.#subMinoView.y = this.#y + this.#size * 0.1;
         this.#subMinoView.updateView(mino);
+        //update back image
+        this.#image.displayWidth = this.#size;
+        this.#image.displayHeight = this.#size;
+        this.#image.x = this.#x;
+        this.#image.y = this.#y;
     }
 }
 
@@ -101,7 +127,9 @@ export class MinoQueueView {
     /** @param {Phaser.Scene} scene @param {GameViewContext} context */
     constructor(scene, cellWidth, context) {
         this.minoQueue = context.gameContext.minoQueueManager.minoQueue;
-        this.#subMinoBox = new SubMinoBox(scene, cellWidth, context);
+        this.#subMinoBox = new SubMinoBox(scene, 100, context);
+        this.#subMinoBox.x = 0;
+        this.#subMinoBox.y = 0;
     }
 
     update() {
