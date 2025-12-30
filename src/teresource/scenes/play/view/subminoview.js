@@ -7,14 +7,15 @@ import { createCellViewParamsFromCell } from "./viewmechanics";
 
 const subMinoViewBoardSize = new BoardSize(10, 10);
 
+/** (0,0) means the top left point of the table, NOT THE CENTER OF THE TOP LEFT CELL */
 const minoDisplayOrigin = [
-    { row: 0.5, column: 1 },    //Z
-    { row: 0.5, column: 1 },    //L
-    { row: 0.5, column: 0.5 },  //O
-    { row: 0.5, column: 1 },    //S
-    { row: 1, column: 1.5 },    //I
-    { row: 0.5, column: 1 },    //J
-    { row: 0.5, column: 1 },    //T
+    { row: 1, column: 1.5 },    //Z
+    { row: 1, column: 1.5 },    //L
+    { row: 1, column: 1 },  //O
+    { row: 1, column: 1.5 },    //S
+    { row: 2, column: 2 },    //I
+    { row: 1, column: 1.5 },    //J
+    { row: 1, column: 1.5 },    //T
 ]
 
 class SubMinoView {
@@ -22,6 +23,8 @@ class SubMinoView {
     /** @type {Phaser.GameObjects.Container} */ #container
     /** @type {number} */ #cellWidth;
     /** @type {number} size width and height of the mino area*/ #size;
+    /** @type {number} */ x = 0;
+    /** @type {number} */ y = 0;
     #getRelativeCellImgX = (column => column * this.#cellWidth);
     #getRelativeCellImgY = (row => row * this.#cellWidth);
 
@@ -73,8 +76,10 @@ class SubMinoView {
         this.#container.setScale(scale);
         //set container position
         const minoOrigin = minoDisplayOrigin[mino.type];
-        this.#container.x = this.#size * (0.5 - minoOrigin.column * cellSizeFactor);
-        this.#container.y = this.#size * (0.5 - minoOrigin.row * cellSizeFactor);
+        const offsetX = this.#size * (0.5 - minoOrigin.column * cellSizeFactor);
+        const offsetY = this.#size * (0.5 - minoOrigin.row * cellSizeFactor);
+        this.#container.x = this.x + offsetX;
+        this.#container.y = this.y + offsetY;
     }
 }
 
