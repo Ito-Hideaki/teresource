@@ -122,18 +122,27 @@ class SubMinoBox {
 
 export class MinoQueueView {
 
-    #subMinoBox
+    #subMinoBoxList
+    minoQueue
+    subMinoBoxList
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} context */
     constructor(scene, cellWidth, context) {
         this.minoQueue = context.gameContext.minoQueueManager.minoQueue;
-        this.#subMinoBox = new SubMinoBox(scene, 100, context);
-        this.#subMinoBox.x = 0;
-        this.#subMinoBox.y = 0;
+        this.#subMinoBoxList = [];
+        let subMinoViewYOffset = 0;
+        for(let i = 0; i < 5; i++) {
+            const size = i == 0 ? 110 : 80;
+            const subMinoView = new SubMinoBox(scene, size, context);
+            subMinoView.x = context.getRelativeBoardX(context.gameContext.boardSize.columnCount) + 5;
+            subMinoView.y = context.getRelativeBoardY(20) + subMinoViewYOffset;
+            this.#subMinoBoxList.push(subMinoView);
+            subMinoViewYOffset += size + 5;
+        }
     }
 
     update() {
-        this.#subMinoBox.updateView(this.minoQueue[0]);
+        this.#subMinoBoxList.forEach((subMinoBox, i) => subMinoBox.updateView(this.minoQueue[i]));
         if (import.meta.env.DEV) {
             const elm = document.getElementById("minoqueue");
             if (!elm) return;
