@@ -31,6 +31,7 @@ export class PlayScene extends Phaser.Scene {
     }
 
     preload() {
+        // url style must be like: viteURLify("/image/path/to/file.png");
         /** First-level textures */
         cellImgSkins_fromImgs.forEach(skin => {
             const cellViewParamsList = calcSkinCellViewParams(skin);
@@ -45,6 +46,7 @@ export class PlayScene extends Phaser.Scene {
             const url = generateCellSheetTextureUrl(skin);
             this.load.image(key, viteURLify(url));
         })
+        this.load.image("subminoview_back", viteURLify("/image/subminoview_back.jpg"));
     }
 
     create() {
