@@ -40,23 +40,26 @@ export class GameContext {
 }
 
 export class GameViewContext {
-    /** @type {CellSheetParent} */
-    cellSheetParent
-    /** @type {GameContext} */
-    gameContext
-    /** @type {Phaser.GameObjects.Container} */
-    boardContainer
+    /** @type {CellSheetParent} */ cellSheetParent
+    /** @type {GameContext} */ gameContext
+    /** @type {Phaser.GameObjects.Container} */ boardContainer
+    /** @type {Function} */ getRelativeBoardY
+    /** @type {Function} */ getRelativeBoardX
 
     /** 
      * @param {{
-     * cellSheetParent: CellSheetParent,
-     * gameContext    : GameContext,
-     * boardContainer : Phaser.GameObjects.Container
+     * cellSheetParent  : CellSheetParent,
+     * gameContext      : GameContext,
+     * boardContainer   : Phaser.GameObjects.Container,
+     * getRelativeBoardX: Function,
+     * getRelativeBoardY: Function
      * }} source
      * */
     constructor(source) {
         this.cellSheetParent = source.cellSheetParent;
         this.gameContext     = source.gameContext;
         this.boardContainer  = source.boardContainer;
+        this.getRelativeBoardX    = source.getRelativeBoardX;
+        this.getRelativeBoardY    = source.getRelativeBoardY;
     }
 }

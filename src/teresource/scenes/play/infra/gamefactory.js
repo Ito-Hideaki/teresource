@@ -6,6 +6,7 @@ import { ViewController } from "../view/viewcontroller";
 import { GameController } from "../controller/gamecontroller";
 import { PlayScene } from "../../play";
 import { RotationSystem_NoKick, RotationSystem_Standard } from "../core/rotationsystem";
+import { createRelativePositionGetter } from "#util";
 
 export class GameFactory {
 
@@ -28,10 +29,13 @@ export class GameFactory {
 
         const skin = "nine";
         const boardContainer = scene.add.container();
+        const relativeBoardPositionGetter = createRelativePositionGetter(30, 20, boardSize.columnCount, -20, 0);
         const gameViewContext = new GameViewContext({
             cellSheetParent: scene.cellSheetParentIndex[skin],
             gameContext,
-            boardContainer
+            boardContainer,
+            getRelativeBoardX: relativeBoardPositionGetter.getRelativeX,
+            getRelativeBoardY: relativeBoardPositionGetter.getRelativeY
         });
         const viewController = new ViewController(scene, gameViewContext);
         viewController.x = scene.game.canvas.width / 2;
