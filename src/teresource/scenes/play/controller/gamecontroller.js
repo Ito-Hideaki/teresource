@@ -42,12 +42,11 @@ export class GameController {
         startNewMinoIfNeeded();
         //Advance a frame
         const controlOrder = this.#controlOrderProvider.provideControlOrder();
+        this.#controlOrderProvider.advanceTime(deltaTime);
         this.#lastBoardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(this.#lastBoardUpdateDiff);
         //Clear filled line (row)
         this.lineClearManager.update();
-
-        this.#controlOrderProvider.advanceTime(deltaTime);
 
         startNewMinoIfNeeded();
     }
