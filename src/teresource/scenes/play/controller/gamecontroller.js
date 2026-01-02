@@ -39,7 +39,7 @@ export class GameController {
         //Advance a frame
         /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
         this.#controlOrderProvider.advanceTime(deltaTime);
-        const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
+        /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         //Clear filled line (row)
         this.lineClearManager.update();
