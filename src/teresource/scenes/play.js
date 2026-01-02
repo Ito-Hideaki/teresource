@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { MINO_DATA_LIST } from "./play/core/coredata";
 import { GameController } from "./play/controller/gamecontroller";
 import { ViewController } from "./play/view/viewcontroller";
 import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/viewmechanics";
@@ -58,7 +59,12 @@ export class PlayScene extends Phaser.Scene {
         });
         document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
 
-        const gameElements = GameFactory.create(this);
+        /** @type {import("./play/infra/gamefactory").GameConfig} */ const gameConfig = {
+            bag: {
+                minoTypeToUseList: Object.keys(MINO_DATA_LIST)
+            }
+        }
+        const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;
         this.#viewController = gameElements.viewController;
         this.#controlOrderProvider = gameElements.controlOrderProvider;

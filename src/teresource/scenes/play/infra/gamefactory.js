@@ -21,13 +21,13 @@ function getBagConfigFromGameConfig(gameConfig) {
 
 export class GameFactory {
 
-    /** @param {PlayScene} scene */
-    static create(scene) {
+    /** @param {PlayScene} scene @param {GameConfig} gameConfig */
+    static create(scene, gameConfig) {
         const boardSize = new BoardSize(40, 10);
         const currentMinoManager = new CurrentMinoManager();
         const cellBoard = new CellBoard(boardSize);
         console.log(cellBoard);
-        const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN));
+        const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfigFromGameConfig(gameConfig)));
         const boardUpdateState = new BoardUpdateState();
         const gameContext = new GameContext({
             cellBoard, boardSize, currentMinoManager, minoQueueManager, boardUpdateState, rotationSystem: new RotationSystem_Standard()
