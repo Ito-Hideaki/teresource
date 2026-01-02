@@ -55,28 +55,37 @@ export class CurrentMinoManager {
     }
 }
 
+/** @typedef {{minoTypeToUseList:string[]}} BagConfig */
+
+/** @param {any} gameConfig @return {BagConfig} */
+export function BagConfigParser(gameConfig) {
+    return gameConfig.bag;
+}
+
 export class Bag {
     static TYPES = {
         SEVEN: 0
     }
     /** @type {number} */
     type;
-    /** @param {number} type */
-    constructor(type) {
+    /** @type {BagConfig} */ config;
+    /** @param {number} type @param {BagConfig} config*/
+    constructor(type, config) {
         this.type = type;
+        this.config = config;
     }
 
     /** @return {Mino[]} */
-    static #create_Seven() {
-        const minoTypeArr = Object.keys(MINO_DATA_LIST);
-        return shuffle(new Array(7).fill(undefined).map((_, i) => new Mino(minoTypeArr[i])));
+    create_allMinoTypeShuffled() {
+        const minoTypeArr = this.config.minoTypeToUseList;
+        return shuffle(minoTypeArr.map((minoType) => new Mino(minoType)));
     }
 
     /**
      * @param {Mino[]} minoQueue
      */
     createAndPushTo(minoQueue) {
-        const queueToAdd = Bag.#create_Seven();
+        const queueToAdd = this.create_allMinoTypeShuffled();
         minoQueue.push(...queueToAdd);
     }
 }
