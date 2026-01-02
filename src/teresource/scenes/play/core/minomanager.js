@@ -77,7 +77,7 @@ export class Bag {
      */
     createAndPushTo(minoQueue) {
         const queueToAdd = Bag.#create_Seven();
-        queueToAdd.forEach(mino => minoQueue.push(mino));
+        minoQueue.push(...queueToAdd);
     }
 }
 
