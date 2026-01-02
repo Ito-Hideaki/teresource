@@ -6,16 +6,16 @@ import { createCellViewParamsFromCell } from "./viewmechanics";
 
 const subMinoViewBoardSize = new BoardSize(10, 10);
 
-/** (0,0) means the top left point of the table, NOT THE CENTER OF THE TOP LEFT CELL */
-const minoDisplayOrigin = [
-    { row: 1, column: 1.5 },    //Z
-    { row: 1, column: 1.5 },    //L
-    { row: 1, column: 1 },  //O
-    { row: 1, column: 1.5 },    //S
-    { row: 1.5, column: 2 },    //I
-    { row: 1, column: 1.5 },    //J
-    { row: 1, column: 1.5 },    //T
-]
+/** @type {Object<string, { row: number, column: number}>} (0,0) means the top left point of the table, NOT THE CENTER OF THE TOP LEFT CELL */
+const minoDisplayOrigin = {
+    "z": { row: 1, column: 1.5 },
+    "l": { row: 1, column: 1.5 },
+    "o": { row: 1, column: 1 },
+    "s": { row: 1, column: 1.5 },
+    "i": { row: 1.5, column: 2 },
+    "j": { row: 1, column: 1.5 },
+    "t": { row: 1, column: 1.5 },
+}
 
 class SubMinoView {
     /** @type {ImageBoard} */ #imageBoard

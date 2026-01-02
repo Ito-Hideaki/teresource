@@ -1,12 +1,12 @@
 // @ts-check
 
-import { Mino } from './mechanics';
+import { MINO_DATA_LIST, Mino } from './mechanics';
 import { shuffle } from "#util";
 
 /** States of the mino currently handled by the player */
 export class CurrentMinoManager {
     /** @type {Mino} */
-    #currentMino = new Mino(0);
+    #currentMino = new Mino("z");
     /** x of the center of the mino shape @type number */
     row = 0;
     /** y of the center of the mino shape @type number */
@@ -68,7 +68,8 @@ export class Bag {
 
     /** @return {Mino[]} */
     static #create_Seven() {
-        return shuffle(new Array(7).fill(undefined).map((_, i) => new Mino(i)));
+        const minoTypeArr = Object.keys(MINO_DATA_LIST);
+        return shuffle(new Array(7).fill(undefined).map((_, i) => new Mino(minoTypeArr[i])));
     }
 
     /**

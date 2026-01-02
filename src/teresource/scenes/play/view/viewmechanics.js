@@ -55,7 +55,7 @@ export const visibleGobis = [
 export function createCellViewParamsFromCell(cell, skin = "skin") {
     const $ = {};
     $.skin = skin;
-    $.color = cellColorStr[cell.color];
+    $.color = cell.color;
     $.gobi = createStatusGobi(cell);
     return $;
 }

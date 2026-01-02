@@ -43,11 +43,11 @@ export class RotationSystem {
 
     constructor() { }
 
-    /** @param {number} minoType @return {RotationPack} */
+    /** @param {string} minoType @return {RotationPack} */
     distributeRotationPack(minoType) {
     }
 
-    /** @param {number} minoType @param {number} currentRotation rotation in angle @param {number} rotation rotation in angle @return {RotationMap}*/
+    /** @param {string} minoType @param {number} currentRotation rotation in angle @param {number} rotation rotation in angle @return {RotationMap}*/
     getMap(minoType, currentRotation, rotation) {
         return this.distributeRotationPack(minoType).getMap(currentRotation, rotation);
     }
@@ -136,14 +136,15 @@ export class RotationSystem_Standard extends RotationSystem {
         super();
     }
 
-    /** @param {number} minoType @return {RotationPack} */
+    /** @param {string} minoType @return {RotationPack} */
     distributeRotationPack(minoType) {
-        if(minoType === 2) { //O
-            return PACK_NOKICK;
-        } 
-        if(minoType === 4) { //I
-            return standardRotationIPack;
+        switch(minoType) {
+            case "o":
+                return PACK_NOKICK;
+            case "i":
+                return standardRotationIPack;
+            default:
+                return standardRotationSize3Pack;
         }
-        return standardRotationSize3Pack;
     }
 }

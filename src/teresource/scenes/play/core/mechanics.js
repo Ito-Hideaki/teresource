@@ -1,19 +1,5 @@
 import { cellPosRotate4Way } from "#util";
 
-
-/** @enum {number} */
-export const BLOCK_COLORS = {
-    RED: 0,
-    ORANGE: 1,
-    YELLOW: 2,
-    GREEN: 3,
-    SKY: 4,
-    BLUE: 5,
-    PURPLE: 6,
-    GREY: 7,
-    BLACK: 8,
-}
-
 /**
  * @typedef { {size:number, map:number[][], origin:{x:number,y:number}} } MinoShape
  */
@@ -129,91 +115,8 @@ export const MINO_DATA_LIST = {
 }
 
 
-/** Contains mino's color, shape and rotation.
- *  All mino shapes must be defined at #ROT0SHAPE */
+/** Contains mino's color, shape and rotation. */
 export class Mino {
-
-    /** @type {MinoShape[]} */
-    static #ROT0SHAPE = [
-        {
-            size: 3,
-            origin: {
-                x: 1,
-                y: 1,
-            },
-            map: [  //Z
-                [1, 1, 0],
-                [0, 1, 1],
-                [0, 0, 0],
-            ]
-        }, { //L
-            size: 3,
-            origin: {
-                x: 1,
-                y: 1,
-            },
-            map: [
-                [0, 0, 1],
-                [1, 1, 1],
-                [0, 0, 0],
-            ]
-        }, { //O
-            size: 2,
-            origin: {
-                x: 0,
-                y: 1,
-            },
-            map: [
-                [1, 1],
-                [1, 1],
-            ]
-        }, { //S
-            size: 3,
-            origin: {
-                x: 1,
-                y: 1,
-            },
-            map: [
-                [0, 1, 1],
-                [1, 1, 0],
-                [0, 0, 0],
-            ]
-        }, { //I
-            size: 4,
-            origin: {
-                x: 1,
-                y: 1,
-            },
-            map: [
-                [0, 0, 0, 0],
-                [1, 1, 1, 1],
-                [0, 0, 0, 0],
-                [0, 0, 0, 0],
-            ]
-        }, { //J
-            size: 3,
-            origin: {
-                x: 1,
-                y: 1,
-            },
-            map: [
-                [1, 0, 0],
-                [1, 1, 1],
-                [0, 0, 0],
-            ]
-        }, { //T
-            size: 3,
-            origin: {
-                x: 1,
-                y: 1,
-            },
-            map: [
-                [0, 1, 0],
-                [1, 1, 1],
-                [0, 0, 0],
-            ]
-        }
-    ];
 
     /** @param {MinoShape} shape @param {number} rotation 実数、オイラー角 @return {MinoShape}*/
     static #rotateShape = function(shape, rotation) {
@@ -236,13 +139,13 @@ export class Mino {
     #shape;
 
     /**
-     * @param {number} type
+     * @param {string} type
      * @param {number} rotation 0, 90, 180, 270 clockwise
      * */
     constructor(type, rotation = 0) {
         this.#type = type;
         this.#rotation = rotation;
-        this.#shape = Mino.#rotateShape(Mino.#ROT0SHAPE[type], rotation);
+        this.#shape = Mino.#rotateShape(MINO_DATA_LIST[type].shape, rotation);
     }
 
     /** @return {Mino} duplicated mino */
@@ -283,7 +186,7 @@ export class Mino {
         this.#shape.map.forEach(array => {
             const tableRow = [];
             array.forEach(value => {
-                const cell = new Cell(value, this.#type, { isActive: $.isActive });
+                const cell = new Cell(value, MINO_DATA_LIST[this.#type].color, { isActive: $.isActive });
                 tableRow.push(cell);
             });
             table.push(tableRow);
@@ -300,17 +203,17 @@ export class Cell {
 
     #isBlock;
     #isActive;
-    /** @type {BLOCK_COLORS} */
+    /** @type {string} */
     #color;
 
     /**
      * @param {Boolean} isBlock
-     * @param {BLOCK_COLORS} color
+     * @param {string} color
      * @param {{
      * isActive: boolean
      * }} $
      */
-    constructor(isBlock, color = BLOCK_COLORS.RED, $ = {}) {
+    constructor(isBlock, color = "red", $ = {}) {
         this.#isBlock = isBlock;
         this.#isActive = $.isActive ?? false;
         this.#color = color;
