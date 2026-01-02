@@ -5,7 +5,7 @@ import { PlayScene } from "../../play";
 import { MinoQueueView } from "./subminoview";
 
 /** Represents the game view for each player */
-export class ViewController {
+export class GameViewController {
     #boardView;
     #boardDeco;
     #boardContainer;

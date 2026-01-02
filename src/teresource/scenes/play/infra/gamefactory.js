@@ -2,7 +2,7 @@ import { CurrentMinoManager, Bag, MinoQueueManager } from "../core/minomanager";
 import { BoardSize, CellBoard } from "../core/mechanics";
 import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "../controller/boardcontroller";
 import { GameContext, GameViewContext } from "./context";
-import { ViewController } from "../view/viewcontroller";
+import { GameViewController } from "../view/gameviewcontroller";
 import { GameController } from "../controller/gamecontroller";
 import { PlayScene } from "../../play";
 import { RotationSystem_NoKick, RotationSystem_Standard } from "../core/rotationsystem";
@@ -48,14 +48,14 @@ export class GameFactory {
             getRelativeBoardX: relativeBoardPositionGetter.getRelativeX,
             getRelativeBoardY: relativeBoardPositionGetter.getRelativeY
         });
-        const viewController = new ViewController(scene, gameViewContext);
-        viewController.x = scene.game.canvas.width / 2;
-        viewController.y = scene.game.canvas.height / 2;
+        const gameViewController = new GameViewController(scene, gameViewContext);
+        gameViewController.x = scene.game.canvas.width / 2;
+        gameViewController.y = scene.game.canvas.height / 2;
 
         return {
             gameController,
             gameContext,
-            viewController,
+            gameViewController,
             controlOrderProvider
         }
     }

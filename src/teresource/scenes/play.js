@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { MINO_DATA_LIST } from "./play/core/coredata";
 import { GameController } from "./play/controller/gamecontroller";
-import { ViewController } from "./play/view/viewcontroller";
+import { GameViewController } from "./play/view/gameviewcontroller";
 import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/viewmechanics";
 import { GameFactory } from "./play/infra/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontroller";
@@ -20,8 +20,8 @@ export class PlayScene extends Phaser.Scene {
     height;
     /** @type {GameController} */
     #gameController;
-    /** @type {ViewController} */
-    #viewController;
+    /** @type {GameViewController} */
+    #gameViewController;
     /** @type {ControlOrderProvider} */
     #controlOrderProvider;
 
@@ -66,7 +66,7 @@ export class PlayScene extends Phaser.Scene {
         }
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;
-        this.#viewController = gameElements.viewController;
+        this.#gameViewController = gameElements.gameViewController;
         this.#controlOrderProvider = gameElements.controlOrderProvider;
 
         this.input.keyboard.on("keydown", e => {
@@ -105,6 +105,6 @@ export class PlayScene extends Phaser.Scene {
     update(time, delta) {
         const deltaTime = delta / 1000;
         this.#gameController.update(deltaTime);
-        this.#viewController.update(deltaTime);
+        this.#gameViewController.update(deltaTime);
     }
 }
