@@ -8,6 +8,17 @@ import { PlayScene } from "../../play";
 import { RotationSystem_NoKick, RotationSystem_Standard } from "../core/rotationsystem";
 import { createRelativePositionGetter } from "#util";
 
+/** 
+ * @typedef {{
+ *    bag: import("../core/minomanager").BagConfig
+ * }} GameConfig
+ *  */
+
+/** @param {any} gameConfig @return {BagConfig} */
+function getBagConfigFromGameConfig(gameConfig) {
+    return gameConfig.bag;
+}
+
 export class GameFactory {
 
     /** @param {PlayScene} scene */

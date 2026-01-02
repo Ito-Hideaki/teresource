@@ -57,11 +57,6 @@ export class CurrentMinoManager {
 
 /** @typedef {{minoTypeToUseList:string[]}} BagConfig */
 
-/** @param {any} gameConfig @return {BagConfig} */
-export function BagConfigParser(gameConfig) {
-    return gameConfig.bag;
-}
-
 export class Bag {
     static TYPES = {
         SEVEN: 0
