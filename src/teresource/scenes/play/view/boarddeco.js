@@ -5,6 +5,8 @@ import { BoardSize } from "../core/mechanics";
 
 const utkg = new UniqueTextureKeyGenerator("boarddeco");
 
+/** @typedef {{}} BoardDecoConfig */
+
 /** Draw a part which is not affected by board state */
 export class BoardDeco {
 
@@ -20,6 +22,7 @@ export class BoardDeco {
     #image;
     #scene;
     #boardContainer;
+    /** @type {BoardDecoConfig} */ #config;
 
     get #boardWidth() {
         return this.#cellWidth * this.#boardSize.rowCount;
@@ -36,8 +39,9 @@ export class BoardDeco {
     /**
      * @param {Phaser.Scene} scene
      * @param { GameViewContext } gvContext
+     * @param {BoardDecoConfig} config
      */
-    constructor(scene, cellWidth, gvContext) {
+    constructor(scene, cellWidth, gvContext, config) {
         const gContext = gvContext.gameContext;
         this.#scene = scene;
         this.#cellWidth = cellWidth;
@@ -45,7 +49,7 @@ export class BoardDeco {
         this.#boardContainer = gvContext.boardContainer;
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
-
+        this.#config = config;
         this.#init();
     }
 
@@ -66,8 +70,8 @@ export class BoardDeco {
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
 
-        this.#fillBackground(ctx, 20, 20);
-        this.#strokeGrid(ctx, 20, 20);
+        this.#fillBackground(ctx, this.#boardSize.rowCount, 0);
+        this.#strokeGrid(ctx, this.#boardSize.rowCount, 0);
 
         ctx.restore();
 
