@@ -1,16 +1,5 @@
+import { cellColorStr } from "../core/coredata";
 import { Cell } from "../core/mechanics";
-
-export const cellColorStr = [
-    "red",
-    "orange",
-    "yellow",
-    "green",
-    "sky",
-    "blue",
-    "purple",
-    "grey",
-    "black"
-]
 
 export const cellImgSkins_fromSheet = [
     "nine",

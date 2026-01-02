@@ -1,6 +1,6 @@
 // @ts-check
-
-import { MINO_DATA_LIST, Mino } from './mechanics';
+import { MINO_DATA_LIST } from "./coredata";
+import { Mino } from './mechanics';
 import { shuffle } from "#util";
 
 /** States of the mino currently handled by the player */
