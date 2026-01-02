@@ -1,4 +1,4 @@
-import { CellBoard, BoardSize, Mino } from "../core/mechanics";
+import { CellBoard, BoardSize } from "../core/mechanics";
 import { CurrentMinoManager, MinoQueueManager } from "../core/minomanager";
 import { BoardUpdateState } from "../controller/boardcontroller";
 import { CellSheetParent } from "../view/customtexture";

@@ -2,7 +2,6 @@ import Phaser from "phaser";
 import { BoardSize, Mino, Cell } from "../core/mechanics";
 import { CellImage, ImageBoard } from "./cellimage";
 import { GameViewContext } from "../infra/context";
-import { createRelativePositionGetter } from "#util";
 import { createCellViewParamsFromCell } from "./viewmechanics";
 
 const subMinoViewBoardSize = new BoardSize(10, 10);

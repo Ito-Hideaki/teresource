@@ -1,4 +1,3 @@
-import Phaser from "phaser";
 import { BoardView } from "./boardview";
 import { BoardDeco } from "./boarddeco";
 import { GameViewContext } from "../infra/context";

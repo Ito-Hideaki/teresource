@@ -1,7 +1,7 @@
 // @ts-check
 
-import { CurrentMinoManager, MinoQueueManager } from "../core/minomanager";
-import { Cell, CellBoard } from "../core/mechanics";
+import { CurrentMinoManager } from "../core/minomanager";
+import { CellBoard } from "../core/mechanics";
 import { GameContext } from "../infra/context";
 import { RotationSystem } from "../core/rotationsystem";
 
