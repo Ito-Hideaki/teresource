@@ -7,8 +7,6 @@ export class GameController {
 
     #boardUpdater
     #controlOrderProvider
-    /** @type {BoardUpdateDiff} */
-    #lastBoardUpdateDiff
     #currentMinoManager
     #minoQueueManager
     #boardUpdateState
@@ -23,8 +21,6 @@ export class GameController {
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
         this.#boardUpdateState = gameContext.boardUpdateState;
-
-        this.#lastBoardUpdateDiff = new BoardUpdateDiff();
 
         this.lineClearManager = new LineClearManager(gameContext); //temporary
     }
@@ -43,8 +39,8 @@ export class GameController {
         //Advance a frame
         /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
         this.#controlOrderProvider.advanceTime(deltaTime);
-        this.#lastBoardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
-        this.#controlOrderProvider.receiveControlResult(this.#lastBoardUpdateDiff);
+        const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
+        this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         //Clear filled line (row)
         this.lineClearManager.update();
 
