@@ -26,7 +26,6 @@ export class GameFactory {
         const boardSize = new BoardSize(40, 10);
         const currentMinoManager = new CurrentMinoManager();
         const cellBoard = new CellBoard(boardSize);
-        console.log(cellBoard);
         const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfigFromGameConfig(gameConfig)));
         const boardUpdateState = new BoardUpdateState();
         const gameContext = new GameContext({
@@ -36,8 +35,6 @@ export class GameFactory {
         const boardUpdater = new BoardUpdater(gameContext);
         const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider });
         //Create elements of the scene
-        console.log(gameContext);
-
         const skin = "nine";
         const boardContainer = scene.add.container();
         const relativeBoardPositionGetter = createRelativePositionGetter(30, 20, boardSize.columnCount, -20, 0);
