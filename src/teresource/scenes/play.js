@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
 import { GameController } from "./play/controller/gamecontroller";
 import { GameViewController } from "./play/view/gameviewcontroller";
-import { cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet } from "./play/view/viewdata";
+import { cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, IMG_SKIN_DATA_INDEX } from "./play/view/viewdata";
 import { calcSkinCellViewParams, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/viewmechanics";
 import { GameFactory } from "./play/infra/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontroller";
@@ -56,7 +56,7 @@ export class PlayScene extends Phaser.Scene {
         this.cellSheetParentIndex = {};
         /* Second-level textures */
         cellImgSkins.forEach(skin => {
-            this.cellSheetParentIndex[skin] = new CellSheetParent(this, skin, 30);
+            this.cellSheetParentIndex[skin] = new CellSheetParent(this, skin, IMG_SKIN_DATA_INDEX[skin].cellWidth);
         });
         document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
 
