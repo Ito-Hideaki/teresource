@@ -16,6 +16,9 @@ const IMG_SKIN_DATA_INDEX_fromImg = {
 const IMG_SKIN_DATA_INDEX_fromSheet = {
     "nine": {
         cellWidth: 30
+    },
+    "nine-s": {
+        cellWidth: 3
     }
 }
 /** @type {Object<string, CellSkinData>} */
