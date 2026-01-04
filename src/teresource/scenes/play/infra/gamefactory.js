@@ -35,7 +35,7 @@ export class GameFactory {
         const boardUpdater = new BoardUpdater(gameContext);
         const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider });
         //Create elements of the scene
-        const skin = "nine-s";
+        const skin = "pika";
         const boardContainer = scene.add.container();
         const relativeBoardPositionGetter = createRelativePositionGetter(30, 20, boardSize.columnCount, -20, 0);
         const gameViewContext = new GameViewContext({

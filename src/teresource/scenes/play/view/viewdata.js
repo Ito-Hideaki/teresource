@@ -17,6 +17,9 @@ const IMG_SKIN_DATA_INDEX_fromSheet = {
     "nine": {
         cellWidth: 30
     },
+    "pika": {
+        cellWidth: 30
+    },
     "nine-s": {
         cellWidth: 3
     }
