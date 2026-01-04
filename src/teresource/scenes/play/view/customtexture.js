@@ -29,17 +29,18 @@ function getRequiredTextureHeight(cellWidth) {
  */
 export class CellSheetParent {
 
-    /** @param {Phaser.Scene} scene @param {string} skin  */
-    constructor(scene, skin) {
+    /** @param {Phaser.Scene} scene @param {string} skin @param {number} textureCellWidth */
+    constructor(scene, skin, textureCellWidth) {
         this.skin = skin;
         this.scene = scene;
+        this.textureCellWidth = textureCellWidth;
         this.#init();
     }
 
     #init() {
         const skin = this.skin;
         const scene = this.scene;
-        const cellWidth = 30;
+        const cellWidth = this.textureCellWidth;
         const key = generateCellSheetTextureKey(skin);
         const cellViewParamsList = calcSkinCellViewParams(this.skin);
 

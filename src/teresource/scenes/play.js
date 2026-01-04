@@ -55,7 +55,7 @@ export class PlayScene extends Phaser.Scene {
         this.cellSheetParentIndex = {};
         /* Second-level textures */
         cellImgSkins.forEach(skin => {
-            this.cellSheetParentIndex[skin] = new CellSheetParent(this, skin);
+            this.cellSheetParentIndex[skin] = new CellSheetParent(this, skin, 30);
         });
         document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
 
