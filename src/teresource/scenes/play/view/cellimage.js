@@ -25,6 +25,7 @@ export class CellImage extends Phaser.GameObjects.Image {
             this.setVisible(true);
             const frame = generateCellSheetTextureFrameKey(cellViewParams);
             this.setFrame(frame);
+            this.setDisplaySize(30, 30);
         }
     }
 }
