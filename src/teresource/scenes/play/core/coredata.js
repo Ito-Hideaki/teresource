@@ -12,7 +12,7 @@ export const cellColorStr = [
 
 /** @typedef { { shape: import("./mechanics").MinoShape, color: string } } MinoData */
 /** @type {Object<string, MinoData>} */
-export const MINO_DATA_LIST = {
+export const MINO_DATA_INDEX = {
     "z" : {
         shape: {
             size: 3,

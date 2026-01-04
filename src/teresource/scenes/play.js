@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { MINO_DATA_LIST } from "./play/core/coredata";
+import { MINO_DATA_INDEX } from "./play/core/coredata";
 import { GameController } from "./play/controller/gamecontroller";
 import { GameViewController } from "./play/view/gameviewcontroller";
 import { calcSkinCellViewParams, cellGraphicSkins, cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/viewmechanics";
@@ -61,7 +61,7 @@ export class PlayScene extends Phaser.Scene {
 
         /** @type {import("./play/infra/gamefactory").GameConfig} */ const gameConfig = {
             bag: {
-                minoTypeToUseList: Object.keys(MINO_DATA_LIST)
+                minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             }
         }
         const gameElements = GameFactory.create(this, gameConfig);

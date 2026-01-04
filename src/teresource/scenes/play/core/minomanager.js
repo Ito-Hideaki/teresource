@@ -1,5 +1,5 @@
 // @ts-check
-import { MINO_DATA_LIST } from "./coredata";
+import { MINO_DATA_INDEX } from "./coredata";
 import { Mino } from './mechanics';
 import { shuffle } from "#util";
 

@@ -1,5 +1,5 @@
 import { cellPosRotate4Way } from "#util";
-import { MINO_DATA_LIST } from "./coredata";
+import { MINO_DATA_INDEX } from "./coredata";
 
 /**
  * @typedef { {size:number, map:number[][], origin:{x:number,y:number}} } MinoShape
@@ -36,7 +36,7 @@ export class Mino {
     constructor(type, rotation = 0) {
         this.#type = type;
         this.#rotation = rotation;
-        this.#shape = Mino.#rotateShape(MINO_DATA_LIST[type].shape, rotation);
+        this.#shape = Mino.#rotateShape(MINO_DATA_INDEX[type].shape, rotation);
     }
 
     /** @return {Mino} duplicated mino */
@@ -77,7 +77,7 @@ export class Mino {
         this.#shape.map.forEach(array => {
             const tableRow = [];
             array.forEach(value => {
-                const cell = new Cell(value, MINO_DATA_LIST[this.#type].color, { isActive: $.isActive });
+                const cell = new Cell(value, MINO_DATA_INDEX[this.#type].color, { isActive: $.isActive });
                 tableRow.push(cell);
             });
             table.push(tableRow);
