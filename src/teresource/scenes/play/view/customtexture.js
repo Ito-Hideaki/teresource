@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { cellColorStr } from "../core/coredata";
-import { calcSkinCellViewParams, cellImgSkins_fromImgs, cellImgSkins_fromSheet, generateCellTextureKey, visibleGobis, generateCellSheetTextureKey, generateCellSheetTextureFrameKey } from "./viewmechanics";
+import {  cellImgSkins_fromImgs, cellImgSkins_fromSheet } from "./viewdata";
+import { calcSkinCellViewParams, generateCellTextureKey, visibleGobis, generateCellSheetTextureKey, generateCellSheetTextureFrameKey } from "./viewmechanics";
 
 /**  @param {import("./viewmechanics").CellViewParams} cellViewParams */
 function getFramePosition(cellViewParams) {

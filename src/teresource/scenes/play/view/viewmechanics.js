@@ -1,24 +1,6 @@
 import { cellColorStr } from "../core/coredata";
 import { Cell } from "../core/mechanics";
 
-export const cellImgSkins_fromSheet = [
-    "nine",
-];
-
-export const cellImgSkins_fromImgs = [
-    "default",
-    "tikin",
-]
-
-export const cellImgSkins = [
-    ...cellImgSkins_fromImgs,
-    ...cellImgSkins_fromSheet,
-]
-
-export const cellGraphicSkins = [
-    "rect",
-]
-
 export const GOBI = {
     invisible: "u",
     normal:    "n",
