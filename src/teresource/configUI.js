@@ -42,9 +42,17 @@ class ConfigUIDataHandler {
 }
 
 export function createConfigUIElement() {
+    /** @typedef {{ name: string }} ConfigItemConfig */
+    /** @type {ConfigItemConfig[]} */
+    const configItemConfigList = [
+        { name: "skin"}
+    ];
+
     const element = document.createElement("div");
-    const item = ConfigUIItemFactory.create({ name: "skin" }).element;
-    element.appendChild(item);
+    configItemConfigList.forEach(configItemConfig => {
+        const item = ConfigUIItemFactory.create(configItemConfig).element;
+        element.appendChild(item);
+    });
     const configUIDataHandler = new ConfigUIDataHandler(element);
     return { element, configUIDataHandler };
 }
