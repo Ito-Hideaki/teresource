@@ -1,6 +1,15 @@
-function createConfigUIItem() {
+/**
+ *  @param {{
+ *     name: string
+ * }} config
+ * */
+function createConfigUIItem(config) {
     const elm = document.createElement("div");
-    elm.innerHTML = "This is config";
+    {
+        const nameElm = document.createElement("div");
+        nameElm.textContent = config.name;
+        elm.appendChild(nameElm);
+    }
     return { element: elm };
 }
 
@@ -18,7 +27,7 @@ class ConfigUIDataHandler {
 
 export function createConfigUIElement() {
     const element = document.createElement("div");
-    const item = createConfigUIItem().element;
+    const item = createConfigUIItem({ name: "skin" }).element;
     element.appendChild(item);
     const configUIDataHandler = new ConfigUIDataHandler(element);
     return { element, configUIDataHandler };
