@@ -31,9 +31,11 @@ class ConfigUIItemFactory {
 
 class ConfigUIDataHandler {
     #elm;
-    /** @param {HTMLElement} element */
-    constructor(element) {
+    #configItemConfigList;
+    /** @param {HTMLElement} element @param {ConfigItemConfig[]} configItemConfigList */
+    constructor(element, configItemConfigList) {
         this.#elm = element;
+        this.#configItemConfigList = configItemConfigList;
     }
 
     getPlaySceneConfig() {
@@ -53,6 +55,6 @@ export function createConfigUIElement() {
         const item = ConfigUIItemFactory.create(configItemConfig).element;
         element.appendChild(item);
     });
-    const configUIDataHandler = new ConfigUIDataHandler(element);
+    const configUIDataHandler = new ConfigUIDataHandler(element, configItemConfigList);
     return { element, configUIDataHandler };
 }
