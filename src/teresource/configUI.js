@@ -1,4 +1,12 @@
 class ConfigUIItemFactory {
+
+    /** @param {string } name */
+    static createNameElm(name) {
+        const nameElm = document.createElement("div");
+        nameElm.textContent = name;
+        return nameElm;
+    }
+
     /**
      *  @param {{
      *     name: string
@@ -6,11 +14,8 @@ class ConfigUIItemFactory {
      * */
     static create(config) {
         const elm = document.createElement("div");
-        {
-            const nameElm = document.createElement("div");
-            nameElm.textContent = config.name;
-            elm.appendChild(nameElm);
-        }
+        const Factory = ConfigUIItemFactory;
+        elm.appendChild(Factory.createNameElm(config.name));
         return { element: elm };
     }
 }
@@ -29,7 +34,7 @@ class ConfigUIDataHandler {
 
 export function createConfigUIElement() {
     const element = document.createElement("div");
-    const item = createConfigUIItem({ name: "skin" }).element;
+    const item = ConfigUIItemFactory.create({ name: "skin" }).element;
     element.appendChild(item);
     const configUIDataHandler = new ConfigUIDataHandler(element);
     return { element, configUIDataHandler };
