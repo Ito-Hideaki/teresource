@@ -47,7 +47,7 @@ export class BoardView {
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
 
-        this.#initImageBoard(scene, cellWidth, gvContext);
+        this.#initImageBoard(scene, config.boardCellWidth, gvContext);
     }
 
     /**
