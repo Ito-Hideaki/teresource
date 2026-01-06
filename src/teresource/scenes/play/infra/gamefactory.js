@@ -15,7 +15,7 @@ import { createRelativePositionGetter } from "#util";
  *  */
 
 /** @param {any} gameConfig @return {BagConfig} */
-function getBagConfigFromGameConfig(gameConfig) {
+function getBagConfig(gameConfig) {
     return gameConfig.bag;
 }
 
@@ -26,7 +26,7 @@ export class GameFactory {
         const boardSize = new BoardSize(40, 10);
         const currentMinoManager = new CurrentMinoManager();
         const cellBoard = new CellBoard(boardSize);
-        const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfigFromGameConfig(gameConfig)));
+        const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfig(gameConfig)));
         const boardUpdateState = new BoardUpdateState();
         const gameContext = new GameContext({
             cellBoard, boardSize, currentMinoManager, minoQueueManager, boardUpdateState, rotationSystem: new RotationSystem_Standard()
