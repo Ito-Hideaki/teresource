@@ -23,7 +23,7 @@ export class GameViewController {
      */
     constructor(scene, gvContext) {
         this.#boardContainer = gvContext.boardContainer;
-        this.#boardDeco = new BoardDeco(scene, 30, gvContext, {});
+        this.#boardDeco = new BoardDeco(scene, gvContext, { boardCellWidth: 30 });
         this.#boardView = new BoardView(scene, 30, gvContext);
         this.#minoQueueView = new MinoQueueView(scene, 30, gvContext);
     }

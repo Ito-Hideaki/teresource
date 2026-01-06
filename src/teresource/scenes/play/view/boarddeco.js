@@ -5,7 +5,11 @@ import { BoardSize } from "../core/mechanics";
 
 const utkg = new UniqueTextureKeyGenerator("boarddeco");
 
-/** @typedef {{}} BoardDecoConfig */
+/** 
+ * @typedef {{
+ *    boardCellWidth: number
+ * }} BoardDecoConfig
+ *  */
 
 /** Draw a part which is not affected by board state */
 export class BoardDeco {
@@ -17,7 +21,6 @@ export class BoardDeco {
 
     /** @type {BoardSize} */
     #boardSize;
-    #cellWidth;
     /** @type {Phaser.GameObjects.Image} */
     #image;
     #scene;
@@ -25,7 +28,7 @@ export class BoardDeco {
     /** @type {BoardDecoConfig} */ #config;
 
     get #boardWidth() {
-        return this.#cellWidth * this.#boardSize.rowCount;
+        return this.#config.boardCellWidth * this.#boardSize.rowCount;
     }
 
     set x(num) {
@@ -41,10 +44,9 @@ export class BoardDeco {
      * @param { GameViewContext } gvContext
      * @param {BoardDecoConfig} config
      */
-    constructor(scene, cellWidth, gvContext, config) {
+    constructor(scene, gvContext, config) {
         const gContext = gvContext.gameContext;
         this.#scene = scene;
-        this.#cellWidth = cellWidth;
         this.#boardSize = gContext.boardSize;
         this.#boardContainer = gvContext.boardContainer;
         this.#getRelativeX = gvContext.getRelativeBoardX;
@@ -86,7 +88,7 @@ export class BoardDeco {
      */
     #strokeGrid(ctx, rowCount, rowToDisplayFrom) {
         const columnCount = this.#boardSize.columnCount;
-        const cellWidth = this.#cellWidth;
+        const cellWidth = this.#config.boardCellWidth;
         ctx.strokeStyle = "#323232ff";
         ctx.lineWidth = cellWidth / 10;
 
