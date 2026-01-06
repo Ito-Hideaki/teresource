@@ -1,4 +1,4 @@
-function createConfigItem() {
+function createConfigUIItem() {
     const elm = document.createElement("div");
     elm.innerHTML = "This is config";
     return { element: elm };
@@ -18,7 +18,7 @@ class ConfigUIDataHandler {
 
 export function createConfigUIElement() {
     const element = document.createElement("div");
-    const item = createConfigItem().element;
+    const item = createConfigUIItem().element;
     element.appendChild(item);
     const configUIDataHandler = new ConfigUIDataHandler(element);
     return { element, configUIDataHandler };
