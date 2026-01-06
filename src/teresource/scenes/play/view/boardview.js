@@ -5,6 +5,8 @@ import { createCellViewParamsFromCell } from "./viewmechanics";
 import { GameViewContext, GameContext } from "../infra/context";
 import { ImageBoard, CellImage } from "./cellimage";
 
+/** @typedef {{ boardCellWidth: number }} BoardViewConfig */
+
 /** Draws all the cells of the board */
 export class BoardView {
 
@@ -34,10 +36,10 @@ export class BoardView {
 
     /**
      *  @param { Phaser.Scene } scene
-     *  @param { number } cellWidth
      *  @param { GameViewContext } gvContext
+     * @param { BoardViewConfig } config
     */
-    constructor(scene, cellWidth, gvContext) {
+    constructor(scene, gvContext, config) {
         /** @type {GameContext} */
         const gContext = gvContext.gameContext;
         this.#cellBoard = gContext.cellBoard;
