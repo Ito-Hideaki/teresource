@@ -45,7 +45,7 @@ export class GameFactory {
             getRelativeBoardX: relativeBoardPositionGetter.getRelativeX,
             getRelativeBoardY: relativeBoardPositionGetter.getRelativeY
         });
-        const gameViewController = new GameViewController(scene, gameViewContext);
+        const gameViewController = new GameViewController(scene, gameViewContext, { boardCellWidth: 30 });
         gameViewController.x = scene.game.canvas.width / 2;
         gameViewController.y = scene.game.canvas.height / 2;
 

@@ -4,6 +4,22 @@ import { GameViewContext } from "../infra/context";
 import { PlayScene } from "../../play";
 import { MinoQueueView } from "./subminoview";
 
+/** 
+ * @typedef {{
+ *     boardCellWidth: number
+ * }} GameViewConfig
+ *  */
+
+/** @param {GameViewConfig} gameViewConfig @return {import("./boarddeco").BoardDecoConfig} */
+function getBoardDecoConfig(gameViewConfig) {
+    return { boardCellWidth : gameViewConfig.boardCellWidth };
+}
+
+/** @param {GameViewConfig} gameViewConfig @return {import("./boardview").BoardViewConfig}*/
+function getBoardViewConfig(gameViewConfig) {
+    return { boardCellWidth : gameViewConfig.boardCellWidth };
+}
+
 /** Represents the game view for each player */
 export class GameViewController {
     #boardView;
@@ -20,11 +36,12 @@ export class GameViewController {
     /**
      *  @param {PlayScene} scene
      * @param {GameViewContext} gvContext
+     * @param {GameViewConfig} config
      */
-    constructor(scene, gvContext) {
+    constructor(scene, gvContext, config) {
         this.#boardContainer = gvContext.boardContainer;
-        this.#boardDeco = new BoardDeco(scene, gvContext, { boardCellWidth: 30 });
-        this.#boardView = new BoardView(scene, gvContext, { boardCellWidth: 30 });
+        this.#boardDeco = new BoardDeco(scene, gvContext, getBoardDecoConfig(config));
+        this.#boardView = new BoardView(scene, gvContext, getBoardViewConfig(config));
         this.#minoQueueView = new MinoQueueView(scene, 30, gvContext);
     }
 
