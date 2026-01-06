@@ -126,7 +126,7 @@ export class MinoQueueView {
     subMinoBoxList
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} context */
-    constructor(scene, cellWidth, context) {
+    constructor(scene, context) {
         this.minoQueue = context.gameContext.minoQueueManager.minoQueue;
         this.#subMinoBoxList = [];
         let subMinoViewYOffset = 0;

@@ -42,7 +42,7 @@ export class GameViewController {
         this.#boardContainer = gvContext.boardContainer;
         this.#boardDeco = new BoardDeco(scene, gvContext, getBoardDecoConfig(config));
         this.#boardView = new BoardView(scene, gvContext, getBoardViewConfig(config));
-        this.#minoQueueView = new MinoQueueView(scene, 30, gvContext);
+        this.#minoQueueView = new MinoQueueView(scene, gvContext);
     }
 
     /** @param {number} deltaTime */
