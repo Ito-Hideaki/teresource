@@ -35,9 +35,10 @@ export class GameFactory {
         const boardUpdater = new BoardUpdater(gameContext);
         const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider });
         //Create elements of the scene
+        const boardCellWidth = 15;
         const skin = "pika";
         const boardContainer = scene.add.container();
-        const relativeBoardPositionGetter = createRelativePositionGetter(30, 20, boardSize.columnCount, -20, 0);
+        const relativeBoardPositionGetter = createRelativePositionGetter(boardCellWidth, 20, boardSize.columnCount, -20, 0);
         const gameViewContext = new GameViewContext({
             cellSheetParent: scene.cellSheetParentIndex[skin],
             gameContext,
@@ -45,7 +46,7 @@ export class GameFactory {
             getRelativeBoardX: relativeBoardPositionGetter.getRelativeX,
             getRelativeBoardY: relativeBoardPositionGetter.getRelativeY
         });
-        const gameViewController = new GameViewController(scene, gameViewContext, { boardCellWidth: 30 });
+        const gameViewController = new GameViewController(scene, gameViewContext, { boardCellWidth });
         gameViewController.x = scene.game.canvas.width / 2;
         gameViewController.y = scene.game.canvas.height / 2;
 
