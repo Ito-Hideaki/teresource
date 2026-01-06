@@ -51,7 +51,7 @@ class SubMinoView {
             for(let col = 0; col < this.#imageBoard.columnCount; col++) {
                 const x = this.#getRelativeCellImgX(col);
                 const y = this.#getRelativeCellImgY(row);
-                table[row][col] = new CellImage(scene, x, y, context.cellSheetParent);
+                table[row][col] = new CellImage(scene, x, y, context.cellSheetParent, this.#cellWidth);
                 this.#container.add(table[row][col]);
             }
         }

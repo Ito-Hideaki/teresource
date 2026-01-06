@@ -64,7 +64,7 @@ export class BoardView {
                 //generate cellImage for each cell of the board
                 const x = this.#getRelativeX(column, cellWidth, boardSize.columnCount);
                 const y = this.#getRelativeY(row, cellWidth, boardSize.rowCount);
-                const cellImage = new CellImage(scene, x, y, gvContext.cellSheetParent);
+                const cellImage = new CellImage(scene, x, y, gvContext.cellSheetParent, cellWidth);
                 this.#imageBoard.table[row][column] = cellImage;
 
                 //add cellImage to scene and container
