@@ -7,6 +7,14 @@ class ConfigUIItemFactory {
         return nameElm;
     }
 
+    static createStringInputBox() {
+        const elm = document.createElement("div");
+        const box = document.createElement("input");
+        box.type = "text";
+        elm.appendChild(box);
+        return elm;
+    }
+
     /**
      *  @param {{
      *     name: string
@@ -16,6 +24,7 @@ class ConfigUIItemFactory {
         const elm = document.createElement("div");
         const Factory = ConfigUIItemFactory;
         elm.appendChild(Factory.createNameElm(config.name));
+        elm.appendChild(Factory.createStringInputBox());
         return { element: elm };
     }
 }
