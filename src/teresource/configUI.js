@@ -1,16 +1,18 @@
-/**
- *  @param {{
- *     name: string
- * }} config
- * */
-function createConfigUIItem(config) {
-    const elm = document.createElement("div");
-    {
-        const nameElm = document.createElement("div");
-        nameElm.textContent = config.name;
-        elm.appendChild(nameElm);
+class ConfigUIItemFactory {
+    /**
+     *  @param {{
+     *     name: string
+     * }} config
+     * */
+    static create(config) {
+        const elm = document.createElement("div");
+        {
+            const nameElm = document.createElement("div");
+            nameElm.textContent = config.name;
+            elm.appendChild(nameElm);
+        }
+        return { element: elm };
     }
-    return { element: elm };
 }
 
 class ConfigUIDataHandler {
