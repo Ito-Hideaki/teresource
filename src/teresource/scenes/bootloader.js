@@ -1,11 +1,12 @@
 import Phaser from "phaser";
 import { viteURLify } from "#util";
+import { createSecondLevelTextures, loadFirstLevelTextures as loadFirstLevelTexturesOfPlayScene } from "./play";
 
 export class BootloaderScene extends Phaser.Scene {
     constructor() {
         super({
             key: "bootloader",
-            background: 0x000,
+            backgroundColor: "#000",
         });
     }
     preload() {
@@ -16,10 +17,19 @@ export class BootloaderScene extends Phaser.Scene {
         const scene = this;
         const bar = this.add.image(scene.game.canvas.width / 2, scene.game.canvas.height / 2, "loading_bar");
         bar.setDisplaySize(scene.game.canvas.width / 2, scene.game.canvas.width / 20);
-        bar.setCrop(0, 0, 0, 0);
 
-        this.load.on("progress", progress => {
-            bar.setCrop(0, 0, bar.texture.width * progress, bar.texture.height);
-        });
+        function setProgress(progress) {
+            bar.setCrop(0, 0, bar.width * progress, bar.height);
+        }
+
+        new Promise((resolve, reject) => {
+            this.load.on("progress", setProgress);
+            loadFirstLevelTexturesOfPlayScene(this);
+            this.load.once("complete", () => { resolve() });
+            this.load.start();
+        }).then(() => {
+            this.game.cellSheetParentIndex = createSecondLevelTextures(this);
+            this.scene.start("play");
+        })
     }
 }

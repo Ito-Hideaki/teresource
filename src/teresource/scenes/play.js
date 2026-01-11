@@ -20,6 +20,36 @@ function getGameConfigFrom_GamePersonalization(configUIDataHandler) {
 }
 
 
+/** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
+export function loadFirstLevelTextures(scene) {
+    // url style must be like: viteURLify("/image/path/to/file.png");
+    /** First-level textures */
+    cellImgSkins_fromImgs.forEach(skin => {
+        const cellViewParamsList = calcSkinCellViewParams(skin);
+        cellViewParamsList.forEach(cellViewParams => {
+            const key = generateCellTextureKey(cellViewParams);
+            const url = generateCellTextureUrl(cellViewParams);
+            scene.load.image(key, viteURLify(url));
+        })
+    });
+    cellImgSkins_fromSheet.forEach(skin => {
+        const key = generateCellSheetTextureKey(skin);
+        const url = generateCellSheetTextureUrl(skin);
+        scene.load.image(key, viteURLify(url));
+    });
+}
+
+/**create textures using loaded textures. Only executable once. @param {Phaser.Scene} scene */
+export function createSecondLevelTextures(scene) {
+    /** @type {Object.<string, CellSheetParent>} */
+    const cellSheetParentIndex = {};
+    cellImgSkins.forEach(skin => {
+        cellSheetParentIndex[skin] = new CellSheetParent(scene, skin, IMG_SKIN_DATA_INDEX[skin].cellWidth);
+    });
+    return cellSheetParentIndex;
+}
+
+
 /**
  * @extends Phaser.Scene
  */
@@ -42,30 +72,13 @@ export class PlayScene extends Phaser.Scene {
 
     preload() {
         // url style must be like: viteURLify("/image/path/to/file.png");
-        /** First-level textures */
-        cellImgSkins_fromImgs.forEach(skin => {
-            const cellViewParamsList = calcSkinCellViewParams(skin);
-            cellViewParamsList.forEach(cellViewParams => {
-                const key = generateCellTextureKey(cellViewParams);
-                const url = generateCellTextureUrl(cellViewParams);
-                this.load.image(key, viteURLify(url));
-            })
-        })
-        cellImgSkins_fromSheet.forEach(skin => {
-            const key = generateCellSheetTextureKey(skin);
-            const url = generateCellSheetTextureUrl(skin);
-            this.load.image(key, viteURLify(url));
-        })
+        //cell textures are already loaded on BootloaderScene
         this.load.image("subminoview_back", viteURLify("/image/subminoview_back.jpg"));
     }
 
     create() {
-        /** @type {Object.<string, CellSheetParent>} */
-        this.cellSheetParentIndex = {};
-        /* Second-level textures */
-        cellImgSkins.forEach(skin => {
-            this.cellSheetParentIndex[skin] = new CellSheetParent(this, skin, IMG_SKIN_DATA_INDEX[skin].cellWidth);
-        });
+        this.cellSheetParentIndex = this.game.cellSheetParentIndex;
+
         document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
 
         /** @type {import("./play/infra/gamefactory").GameConfig} */ const gameConfig = {
