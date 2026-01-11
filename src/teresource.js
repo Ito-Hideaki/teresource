@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { PlayScene } from "./teresource/scenes/play";
+import { BootloaderScene } from "./teresource/scenes/bootloader";
 import { createConfigUIBoard } from "./teresource/configUI";
 
 addEventListener("DOMContentLoaded", () => {
@@ -19,7 +20,7 @@ addEventListener("DOMContentLoaded", () => {
         },
         backgroundColor: "#ddd",
         parent: "game-container",
-        scene: PlayScene,
+        scene: [BootloaderScene, PlayScene],
     };
 
     const game = new Phaser.Game(config);
