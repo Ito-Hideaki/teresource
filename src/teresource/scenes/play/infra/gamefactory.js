@@ -11,6 +11,7 @@ import { createRelativePositionGetter } from "#util";
 /** 
  * @typedef {{
  *    bag: import("../core/minomanager").BagConfig
+ *    skin: string
  * }} GameConfig
  *  */
 
@@ -36,7 +37,7 @@ export class GameFactory {
         const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider });
         //Create elements of the scene
         const boardCellWidth = 26;
-        const skin = "pika";
+        const skin = gameConfig.skin;
         const boardContainer = scene.add.container();
         const relativeBoardPositionGetter = createRelativePositionGetter(boardCellWidth, 20, boardSize.columnCount, -20, 0);
         const gameViewContext = new GameViewContext({

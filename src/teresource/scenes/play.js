@@ -63,7 +63,8 @@ export class PlayScene extends Phaser.Scene {
         /** @type {import("./play/infra/gamefactory").GameConfig} */ const gameConfig = {
             bag: {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
-            }
+            },
+            skin: "pika"
         }
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;
