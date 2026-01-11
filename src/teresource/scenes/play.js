@@ -8,8 +8,13 @@ import { GameFactory } from "./play/infra/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontroller";
 import { CellSheetParent } from "./play/view/customtexture";
 import { viteURLify } from "#util";
+import { ConfigUIDataHandler } from "../configUI";
 
 
+/** @param {ConfigUIDataHandler} configUIDataHandler @return {import("./play/infra/gamefactory").GameConfig} */
+function getGameConfigFromConfigUI(configUIDataHandler) {
+    return configUIDataHandler.getPlaySceneConfig();
+}
 
 
 /**
@@ -64,7 +69,7 @@ export class PlayScene extends Phaser.Scene {
             bag: {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
-            skin: "pika"
+            ...getGameConfigFromConfigUI(this.game.configUIDataHandler)
         }
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;

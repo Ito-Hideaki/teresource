@@ -32,7 +32,7 @@ class ConfigUIItemFactory {
     }
 }
 
-class ConfigUIDataHandler {
+export class ConfigUIDataHandler {
     #elm;
     #configItemConfigList;
     /** @param {HTMLElement} element @param {ConfigItemConfig[]} configItemConfigList */
@@ -42,7 +42,7 @@ class ConfigUIDataHandler {
     }
 
     getPlaySceneConfig() {
-        return { skin: "pika" };
+        return { skin: "nine" };
     }
 }
 

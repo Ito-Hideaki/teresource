@@ -19,5 +19,6 @@ addEventListener("DOMContentLoaded", () => {
         scene: PlayScene,
     };
 
-    new Phaser.Game(config);
+    const game = new Phaser.Game(config);
+    game.configUIDataHandler = configUIDataHandler;
 });
