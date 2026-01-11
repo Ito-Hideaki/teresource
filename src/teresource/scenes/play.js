@@ -124,7 +124,7 @@ export class PlayScene extends Phaser.Scene {
             }
         })
 
-        const rebootButton = this.add.dom(300, 100, "div", "background-color: yellow; padding: 10px;", "Reboot Scene");
+        const rebootButton = this.add.dom(300, 100, "button", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0", "Reboot Scene");
         rebootButton.addListener("click");
         rebootButton.on("click", e => {
             this.scene.start("play");
