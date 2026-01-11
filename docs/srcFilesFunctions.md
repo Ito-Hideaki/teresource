@@ -10,9 +10,13 @@ This document provides a brief description of the function of each source file i
 ## Utility
 
 - [src/teresource/util.js](src/teresource/util.js): Contains general-purpose utility classes and functions, such as unique key generation, function update management, coordinate calculations, and array shuffling.
+- [src/teresource/configUI.css](src/teresource/configUI.css): Defines the CSS styles for the configuration user interface elements.
+- [src/teresource/configUI.js](src/teresource/configUI.js): Implements the logic for dynamically creating the configuration UI components and handling their data synchronization.
+- [src/teresource/configUIData.js](src/teresource/configUIData.js): Defines the data structures, types, and mappings used to populate settings in the configuration UI.
 
 ## Scenes
 
+- [src/teresource/scenes/bootloader.js](src/teresource/scenes/bootloader.js): Manages asset preloading and texture creation while displaying a progress bar before starting the game.
 - [src/teresource/scenes/play.js](src/teresource/scenes/play.js): The main game scene (`PlayScene`). It handles asset preloading, game object creation via `GameFactory`, and player input mapping.
 
 ### Play Scene Components
@@ -30,3 +34,9 @@ This document provides a brief description of the function of each source file i
 - [src/teresource/scenes/play/rotationsystem.js](src/teresource/scenes/play/rotationsystem.js): Implements rotation logic for minos, including support for wall kicks (SRS-like) and different rotation systems.
 - [src/teresource/scenes/play/viewcontroller.js](src/teresource/scenes/play/viewcontroller.js): Coordinates the visual components of the game, managing the `BoardView` and `BoardDeco` within a Phaser container.
 - [src/teresource/scenes/play/viewmechanics.js](src/teresource/scenes/play/viewmechanics.js): Contains constants and utility functions for mapping game state (cells, colors, status) to visual parameters (textures, frames, skins).
+- [src/teresource/scenes/play/core/coredata.js](src/teresource/scenes/play/core/coredata.js): Contains the core data definitions for Tetris pieces (minos), including shapes and colors.
+- [src/teresource/scenes/play/view/baseviewconfig.js](src/teresource/scenes/play/view/baseviewconfig.js): Provides shared type definitions for configuring board display area.
+- [src/teresource/scenes/play/view/cellimage.js](src/teresource/scenes/play/view/cellimage.js): Manages the visual representation of individual board cells as Phaser Image objects.
+- [src/teresource/scenes/play/view/subminoview.js](src/teresource/scenes/play/view/subminoview.js): Handles rendering and positioning of smaller mino previews for "Next" and "Hold" displays.
+- [src/teresource/scenes/play/view/viewdata.js](src/teresource/scenes/play/view/viewdata.js): Defines metadata and indices for available cell skins.
+- [src/teresource/scenes/play/view/gameviewcontroller.js](src/teresource/scenes/play/view/gameviewcontroller.js): Manages and updates the visual components of a player's game view, coordinating the board, decorations, and next mino queue.
