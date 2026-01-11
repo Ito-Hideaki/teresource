@@ -33,31 +33,59 @@ class ConfigUIItemFactory {
 }
 
 export class ConfigUIDataHandler {
-    #elm;
-    #configItemConfigList;
-    /** @param {HTMLElement} element @param {ConfigItemConfig[]} configItemConfigList */
-    constructor(element, configItemConfigList) {
-        this.#elm = element;
-        this.#configItemConfigList = configItemConfigList;
+    #boardElement;
+    /** @type {Object.<string, import("./configUIData").ConfigItemConfig>} */ #configMap;
+    #exportMap;
+
+    /** @param {HTMLElement} element @param {import("./configUIData").ConfigItemConfig>[]} configItemConfigList @param {ConfigUIExportMap} configUIExportMap*/
+    constructor(element, configItemConfigList, configUIExportMap) {
+        this.#boardElement = element;
+        this.#configMap = {};
+        configItemConfigList.forEach(configItemConfig => {
+            this.#configMap[configItemConfig.name] = configItemConfig;
+        })
+        this.#exportMap = configUIExportMap;
     }
 
-    getPlaySceneConfig() {
-        return { skin: "nine" };
+    /** @param {ConfigUIExportMap} exportMap */
+    #getConfigForExportMap(exportMap) {
+        const exportObj = {};
+        for (const key in exportMap) {
+            const value = exportMap[key];
+            if (typeof value === "string") {
+                const configItemConfig = this.#configMap[value];
+                exportObj[key] = "pika";
+            } else {
+                exportObj[key] = this.#getConfigForExportMap(value);
+            }
+        }
+        return exportObj;
+    }
+
+    getConfig() {
+        const config = this.#getConfigForExportMap(this.#exportMap);
+        console.log(config);
+        return config;
     }
 }
 
-export function createConfigUIElement() {
-    /** @typedef {{ name: string }} ConfigItemConfig */
-    /** @type {ConfigItemConfig[]} */
-    const configItemConfigList = [
-        { name: "skin"}
-    ];
+import { CONFIGUI_CONFIG_DATA, CONFIGUI_EXPORT_MAP } from "./configUIData";
 
-    const element = document.createElement("div");
-    configItemConfigList.forEach(configItemConfig => {
-        const item = ConfigUIItemFactory.create(configItemConfig).element;
-        element.appendChild(item);
-    });
-    const configUIDataHandler = new ConfigUIDataHandler(element, configItemConfigList);
-    return { element, configUIDataHandler };
+export function createConfigUIBoard() {
+
+    const boardElement = document.createElement("div");
+
+    /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
+
+    for (let key in CONFIGUI_CONFIG_DATA) {
+        const configList = CONFIGUI_CONFIG_DATA[key];
+        configList.forEach(configItemConfig => {
+            const itemElement = ConfigUIItemFactory.create(configItemConfig).element;
+            boardElement.appendChild(itemElement);
+        });
+        const configUIDataHandler = new ConfigUIDataHandler(boardElement, configList, CONFIGUI_EXPORT_MAP[key]);
+        configUIDataHandlerMap[key] = configUIDataHandler;
+    }
+
+    return { element: boardElement, configUIDataHandlerMap };
 }

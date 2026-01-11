@@ -12,8 +12,11 @@ import { ConfigUIDataHandler } from "../configUI";
 
 
 /** @param {ConfigUIDataHandler} configUIDataHandler @return {import("./play/infra/gamefactory").GameConfig} */
-function getGameConfigFromConfigUI(configUIDataHandler) {
-    return configUIDataHandler.getPlaySceneConfig();
+function getGameConfigFrom_GamePersonalization(configUIDataHandler) {
+    const config = configUIDataHandler.getConfig();
+    return {
+        skin: config.gameSkin
+    };
 }
 
 
@@ -69,7 +72,7 @@ export class PlayScene extends Phaser.Scene {
             bag: {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
-            ...getGameConfigFromConfigUI(this.game.configUIDataHandler)
+            ...getGameConfigFrom_GamePersonalization(this.game.configUIDataHandlerMap.gamePersonalization)
         }
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;

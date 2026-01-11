@@ -1,10 +1,10 @@
 import Phaser from "phaser";
 import { PlayScene } from "./teresource/scenes/play";
-import { createConfigUIElement } from "./teresource/configUI";
+import { createConfigUIBoard } from "./teresource/configUI";
 
 addEventListener("DOMContentLoaded", () => {
 
-    const { element, configUIDataHandler } = createConfigUIElement();
+    const { element, configUIDataHandlerMap } = createConfigUIBoard();
     document.getElementById("config-container").appendChild(element);
 
     const config = {
@@ -20,5 +20,5 @@ addEventListener("DOMContentLoaded", () => {
     };
 
     const game = new Phaser.Game(config);
-    game.configUIDataHandler = configUIDataHandler;
+    game.configUIDataHandlerMap = configUIDataHandlerMap;
 });
