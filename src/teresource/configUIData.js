@@ -14,3 +14,7 @@ export const CONFIGUI_EXPORT_MAP = {
         "gameSkin": "skin"
     }
 }
+
+export const CONFIG_DATA_TYPE = {
+    STRING: "string",
+}
