@@ -123,7 +123,7 @@ export function createConfigUIBoard() {
     /** @type {Object.<string, Object.<string, any>>} */
     const initialConfigStateMap = {
         gamePersonalization: {
-            "skin" : "nine",
+            "skin" : "pika",
         }
     }
 
