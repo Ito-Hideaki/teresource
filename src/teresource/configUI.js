@@ -55,16 +55,14 @@ class ItemElementFactory {
     }
 
     /**
-     *  @param {{
-     *     name: string
-     * }} config
+     *  @param {import("./configUIData").ConfigItemConfig} config
      *  @param {any} initialValue
      * */
     static create(config, initialValue) {
         const elm = document.createElement("div");
         elm.classList.add("configui_item");
         const Factory = ItemElementFactory;
-        elm.appendChild(Factory.createNameElm(config.name));
+        elm.appendChild(Factory.createNameElm(config.displayText));
         elm.appendChild(Factory.createStringInputBox());
         const itemDataHandler = new ItemDataHandler(elm, CONFIG_DATA_TYPE.STRING);
         itemDataHandler.setValue(initialValue);
@@ -125,7 +123,7 @@ export function createConfigUIBoard() {
     /** @type {Object.<string, Object.<string, any>>} */
     const initialConfigStateMap = {
         gamePersonalization: {
-            "skin" : "pika",
+            "skin" : "nine",
         }
     }
 

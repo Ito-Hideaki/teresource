@@ -1,10 +1,10 @@
-/** @typedef {{ name: string }} ConfigItemConfig */
+/** @typedef {{ name: string, displayText: string }} ConfigItemConfig */
 /** @typedef {Object.<string, any>} ConfigUIExportMap value is string or another ConfigUIExportMap*/
 
 /** @type {Object.<string, ConfigItemConfig[]>} */
 export const CONFIGUI_CONFIG_DATA = {
     gamePersonalization: [
-        { name: "skin" }
+        { name: "skin", displayText: "skin (次のうちどれか: pika, nine, nine-s, tikin)" }
     ]
 }
 
