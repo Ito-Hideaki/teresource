@@ -14,6 +14,9 @@ addEventListener("DOMContentLoaded", () => {
             mode: Phaser.Scale.NONE,
             autoCenter: Phaser.Scale.CENTER_BOTH,
         },
+        dom: {
+            createContainer: true
+        },
         backgroundColor: "#ddd",
         parent: "game-container",
         scene: PlayScene,

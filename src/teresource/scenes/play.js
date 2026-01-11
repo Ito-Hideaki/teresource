@@ -110,6 +110,12 @@ export class PlayScene extends Phaser.Scene {
                 this.#controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
             }
         })
+
+        const rebootButton = this.add.dom(300, 100, "div", "background-color: yellow; padding: 10px;", "Reboot Scene");
+        rebootButton.addListener("click");
+        rebootButton.on("click", e => {
+            this.scene.start("play");
+        });
     }
 
     update(time, delta) {
