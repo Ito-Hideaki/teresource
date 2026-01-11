@@ -36,6 +36,7 @@ class ItemElementFactory {
         const elm = document.createElement("div");
         const box = document.createElement("input");
         box.type = "text";
+        box.value = "pika";
         box.classList.add("configui_item_inputbox");
         elm.appendChild(box);
         return elm;
@@ -61,13 +62,22 @@ export class ConfigUIDataHandler {
     #boardElement;
     /** @type {Object.<string, import("./configUIData").ConfigItemConfig>} */ #configMap;
     #exportMap;
+    /** @type {Object.<string, ItemDataHandler>} */ #itemDataHandlerMap;
 
-    /** @param {HTMLElement} element @param {import("./configUIData").ConfigItemConfig>[]} configItemConfigList @param {import("./configUIData").ConfigUIExportMap} configUIExportMap*/
-    constructor(element, configItemConfigList, configUIExportMap) {
+    /**
+     *  @param {HTMLElement} element
+     *  @param {import("./configUIData").ConfigItemConfig[]} configItemConfigList
+     *  @param {ItemDataHandler[]} itemDataHandlerList
+     *  @param {import("./configUIData").ConfigUIExportMap} configUIExportMap
+     * */
+    constructor(element, configItemConfigList, itemDataHandlerList, configUIExportMap) {
         this.#boardElement = element;
+
+        this.#itemDataHandlerMap = {};
         this.#configMap = {};
-        configItemConfigList.forEach(configItemConfig => {
+        configItemConfigList.forEach((configItemConfig, i) => {
             this.#configMap[configItemConfig.name] = configItemConfig;
+            this.#itemDataHandlerMap[configItemConfig.name] = itemDataHandlerList[i];
         })
         this.#exportMap = configUIExportMap;
     }
@@ -78,8 +88,8 @@ export class ConfigUIDataHandler {
         for (const key in exportMap) {
             const value = exportMap[key];
             if (typeof value === "string") {
-                const configItemConfig = this.#configMap[value];
-                exportObj[key] = "pika";
+                const itemDataHandler = this.#itemDataHandlerMap[value];
+                exportObj[key] = itemDataHandler.getValue();
             } else {
                 exportObj[key] = this.#getConfigForExportMap(value);
             }
@@ -102,11 +112,13 @@ export function createConfigUIBoard() {
 
     for (let key in CONFIGUI_CONFIG_DATA) {
         const configList = CONFIGUI_CONFIG_DATA[key];
+        const itemDataHandlerList = [];
         configList.forEach(configItemConfig => {
-            const itemElement = ItemElementFactory.create(configItemConfig).element;
-            boardElement.appendChild(itemElement);
+            const { element, itemDataHandler } = ItemElementFactory.create(configItemConfig);
+            boardElement.appendChild(element);
+            itemDataHandlerList.push(itemDataHandler);
         });
-        const configUIDataHandler = new ConfigUIDataHandler(boardElement, configList, CONFIGUI_EXPORT_MAP[key]);
+        const configUIDataHandler = new ConfigUIDataHandler(boardElement, configList, itemDataHandlerList, CONFIGUI_EXPORT_MAP[key]);
         configUIDataHandlerMap[key] = configUIDataHandler;
     }
 
