@@ -1,0 +1,13 @@
+.configui_item {
+    display: flex;
+}
+
+.configui_item_name {
+    font-family: 'Courier New';
+    font-weight: bold;
+    flex-grow: 1;
+}
+
+.configui_item_inputbox {
+    width: 15em;
+}
