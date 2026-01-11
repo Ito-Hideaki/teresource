@@ -4,6 +4,7 @@ class ConfigUIItemFactory {
     static createNameElm(name) {
         const nameElm = document.createElement("div");
         nameElm.textContent = name;
+        nameElm.classList.add("configui_item_name");
         return nameElm;
     }
 
@@ -11,6 +12,7 @@ class ConfigUIItemFactory {
         const elm = document.createElement("div");
         const box = document.createElement("input");
         box.type = "text";
+        box.classList.add("configui_item_inputbox");
         elm.appendChild(box);
         return elm;
     }
@@ -22,6 +24,7 @@ class ConfigUIItemFactory {
      * */
     static create(config) {
         const elm = document.createElement("div");
+        elm.classList.add("configui_item");
         const Factory = ConfigUIItemFactory;
         elm.appendChild(Factory.createNameElm(config.name));
         elm.appendChild(Factory.createStringInputBox());
