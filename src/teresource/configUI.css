@@ -1,5 +1,6 @@
 .configui_item {
     display: flex;
+    font-size: 1.5em;
 }
 
 .configui_item_name {
@@ -10,4 +11,5 @@
 
 .configui_item_inputbox {
     width: 15em;
+    font-size: 0.8em;
 }
