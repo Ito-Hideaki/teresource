@@ -20,6 +20,18 @@ class ItemDataHandler {
         }
         throw "couldn't get data";
     }
+
+    setValue(value) {
+        switch(this.type) {
+            case CONFIG_DATA_TYPE.STRING:
+                const inputElement = this.element.getElementsByTagName("input")[0];
+                if(!inputElement) throw "invalid item element";
+                switch(this.type) {
+                    case CONFIG_DATA_TYPE.STRING:
+                        inputElement.value = value;
+                }
+        }
+    }
 }
 
 class ItemElementFactory {
@@ -46,14 +58,16 @@ class ItemElementFactory {
      *  @param {{
      *     name: string
      * }} config
+     *  @param {any} initialValue
      * */
-    static create(config) {
+    static create(config, initialValue) {
         const elm = document.createElement("div");
         elm.classList.add("configui_item");
         const Factory = ItemElementFactory;
         elm.appendChild(Factory.createNameElm(config.name));
         elm.appendChild(Factory.createStringInputBox());
         const itemDataHandler = new ItemDataHandler(elm, CONFIG_DATA_TYPE.STRING);
+        itemDataHandler.setValue(initialValue);
         return { element: elm, itemDataHandler };
     }
 }
@@ -108,13 +122,21 @@ export function createConfigUIBoard() {
 
     const boardElement = document.createElement("div");
 
+    /** @type {Object.<string, Object.<string, any>>} */
+    const initialConfigStateMap = {
+        gamePersonalization: {
+            "skin" : "pika",
+        }
+    }
+
     /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
 
     for (let key in CONFIGUI_CONFIG_DATA) {
         const configList = CONFIGUI_CONFIG_DATA[key];
         const itemDataHandlerList = [];
+        const initialConfigState = initialConfigStateMap[key];
         configList.forEach(configItemConfig => {
-            const { element, itemDataHandler } = ItemElementFactory.create(configItemConfig);
+            const { element, itemDataHandler } = ItemElementFactory.create(configItemConfig, initialConfigState[configItemConfig.name]);
             boardElement.appendChild(element);
             itemDataHandlerList.push(itemDataHandler);
         });
