@@ -1,4 +1,4 @@
-class ConfigUIItemFactory {
+class ItemElementFactory {
 
     /** @param {string } name */
     static createNameElm(name) {
@@ -25,7 +25,7 @@ class ConfigUIItemFactory {
     static create(config) {
         const elm = document.createElement("div");
         elm.classList.add("configui_item");
-        const Factory = ConfigUIItemFactory;
+        const Factory = ItemElementFactory;
         elm.appendChild(Factory.createNameElm(config.name));
         elm.appendChild(Factory.createStringInputBox());
         return { element: elm };
@@ -37,7 +37,7 @@ export class ConfigUIDataHandler {
     /** @type {Object.<string, import("./configUIData").ConfigItemConfig>} */ #configMap;
     #exportMap;
 
-    /** @param {HTMLElement} element @param {import("./configUIData").ConfigItemConfig>[]} configItemConfigList @param {ConfigUIExportMap} configUIExportMap*/
+    /** @param {HTMLElement} element @param {import("./configUIData").ConfigItemConfig>[]} configItemConfigList @param {import("./configUIData").ConfigUIExportMap} configUIExportMap*/
     constructor(element, configItemConfigList, configUIExportMap) {
         this.#boardElement = element;
         this.#configMap = {};
@@ -47,7 +47,7 @@ export class ConfigUIDataHandler {
         this.#exportMap = configUIExportMap;
     }
 
-    /** @param {ConfigUIExportMap} exportMap */
+    /** @param {import("./configUIData").ConfigUIExportMap} exportMap */
     #getConfigForExportMap(exportMap) {
         const exportObj = {};
         for (const key in exportMap) {
@@ -80,7 +80,7 @@ export function createConfigUIBoard() {
     for (let key in CONFIGUI_CONFIG_DATA) {
         const configList = CONFIGUI_CONFIG_DATA[key];
         configList.forEach(configItemConfig => {
-            const itemElement = ConfigUIItemFactory.create(configItemConfig).element;
+            const itemElement = ItemElementFactory.create(configItemConfig).element;
             boardElement.appendChild(itemElement);
         });
         const configUIDataHandler = new ConfigUIDataHandler(boardElement, configList, CONFIGUI_EXPORT_MAP[key]);
