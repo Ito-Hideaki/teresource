@@ -9,6 +9,7 @@
 Table→Cell[][]で表したブロックの集合
 
 PlaySceneに固有のメンバ変数や関数を下位から参照しない
+game.configUIDataHandlerはsceneでのみアクセスすること
 
 回転の0~360への補正などは最下層でのみ行う
 
