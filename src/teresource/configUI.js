@@ -11,11 +11,14 @@ class ItemDataHandler {
     getValue() {
         switch(this.type) {
             case CONFIG_DATA_TYPE.STRING:
+            case CONFIG_DATA_TYPE.NUMBER:
                 const inputElement = this.element.getElementsByTagName("input")[0];
                 if(!inputElement) throw "invalid item element";
                 switch(this.type) {
                     case CONFIG_DATA_TYPE.STRING:
                         return inputElement.value;
+                    case CONFIG_DATA_TYPE.NUMBER:
+                        return Number(inputElement.value);
                 }
         }
         throw "couldn't get data";
@@ -24,10 +27,12 @@ class ItemDataHandler {
     setValue(value) {
         switch(this.type) {
             case CONFIG_DATA_TYPE.STRING:
+            case CONFIG_DATA_TYPE.NUMBER:
                 const inputElement = this.element.getElementsByTagName("input")[0];
                 if(!inputElement) throw "invalid item element";
                 switch(this.type) {
                     case CONFIG_DATA_TYPE.STRING:
+                    case CONFIG_DATA_TYPE.NUMBER:
                         inputElement.value = value;
                 }
         }
@@ -48,7 +53,15 @@ class ItemElementFactory {
         const elm = document.createElement("div");
         const box = document.createElement("input");
         box.type = "text";
-        box.value = "pika";
+        box.classList.add("configui_item_inputbox");
+        elm.appendChild(box);
+        return elm;
+    }
+
+    static createNumberInputBox() {
+        const elm = document.createElement("div");
+        const box = document.createElement("input");
+        box.type = "number";
         box.classList.add("configui_item_inputbox");
         elm.appendChild(box);
         return elm;
@@ -63,8 +76,15 @@ class ItemElementFactory {
         elm.classList.add("configui_item");
         const Factory = ItemElementFactory;
         elm.appendChild(Factory.createNameElm(config.displayText));
-        elm.appendChild(Factory.createStringInputBox());
-        const itemDataHandler = new ItemDataHandler(elm, CONFIG_DATA_TYPE.STRING);
+        switch(config.type) {
+            case CONFIG_DATA_TYPE.STRING:
+                elm.appendChild(Factory.createStringInputBox());
+                break;
+            case CONFIG_DATA_TYPE.NUMBER:
+                elm.appendChild(Factory.createNumberInputBox());
+                break;
+        }
+        const itemDataHandler = new ItemDataHandler(elm, config.type);
         itemDataHandler.setValue(initialValue);
         return { element: elm, itemDataHandler };
     }
@@ -133,12 +153,17 @@ export function createConfigUIBoard() {
     const initialConfigStateMap = {
         gamePersonalization: {
             "skin" : "pika",
+        },
+        handling: {
+            "DAS" : 10,
+            "ARR" : 2,
         }
     }
 
     /** @type {Object.<string, string>} */
     const configUIHeadingDisplayText = {
-        gamePersonalization: "ゲームのみため"
+        gamePersonalization: "ゲームのみため",
+        handling: "ハンドリング",
     }
 
     /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
