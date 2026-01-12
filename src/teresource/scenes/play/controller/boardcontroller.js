@@ -387,8 +387,8 @@ export class ControlOrderProvider {
     /** @type {boolean} */
     rightMoveDown = false;
 
-    #DASConfig = 10;
-    #ARRConfig = 2;
+    #DASConfig;
+    #ARRConfig;
     /** frames until the auto shift get enabled @type {number} */
     DASTimerF = 0;
     /** frames until the mino can move horizontally again @type {number} */
