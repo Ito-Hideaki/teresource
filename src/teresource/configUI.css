@@ -1,3 +1,9 @@
+.configui_itemheading {
+    font-size: 2em;
+    font-weight: bold;
+    font-style: italic;
+}
+
 .configui_item {
     font-family: 'Courier New', monospace;
     display: flex;

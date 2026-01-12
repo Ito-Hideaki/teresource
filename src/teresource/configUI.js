@@ -70,6 +70,14 @@ class ItemElementFactory {
     }
 }
 
+/** @param {string} text */
+function createItemHeading(text) {
+    const elm = document.createElement("div");
+    elm.classList.add("configui_itemheading");
+    elm.textContent = text;
+    return elm;
+}
+
 export class ConfigUIDataHandler {
     #boardElement;
     /** @type {Object.<string, import("./configUIData").ConfigItemConfig>} */ #configMap;
@@ -133,6 +141,9 @@ export function createConfigUIBoard() {
         const configList = CONFIGUI_CONFIG_DATA[key];
         const itemDataHandlerList = [];
         const initialConfigState = initialConfigStateMap[key];
+        //add heading
+        boardElement.appendChild(createItemHeading(key));
+        //add items
         configList.forEach(configItemConfig => {
             const { element, itemDataHandler } = ItemElementFactory.create(configItemConfig, initialConfigState[configItemConfig.name]);
             boardElement.appendChild(element);
