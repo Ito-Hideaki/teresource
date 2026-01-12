@@ -11,13 +11,25 @@ import { createRelativePositionGetter } from "#util";
 /** 
  * @typedef {{
  *    bag: import("../core/minomanager").BagConfig
- *    skin: string
+ *    skin: string,
+ *    handling: {
+ *        DAS: number,
+ *        ARR: number,
+ *    }
  * }} GameConfig
  *  */
 
-/** @param {any} gameConfig @return {BagConfig} */
+/** @param {GameConfig} gameConfig @return {import("../core/minomanager").BagConfig} */
 function getBagConfig(gameConfig) {
     return gameConfig.bag;
+}
+
+/** @param {GameConfig} gameConfig @return {import("../controller/boardcontroller").ControlOrderProviderConfig} */
+function getControlOrderProviderConfig(gameConfig) {
+    return {
+        DAS: gameConfig.handling.DAS,
+        ARR: gameConfig.handling.ARR
+    }
 }
 
 export class GameFactory {
@@ -32,7 +44,7 @@ export class GameFactory {
         const gameContext = new GameContext({
             cellBoard, boardSize, currentMinoManager, minoQueueManager, boardUpdateState, rotationSystem: new RotationSystem_Standard()
         });
-        const controlOrderProvider = new ControlOrderProvider({ DAS: 10, ARR: 2 });
+        const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const boardUpdater = new BoardUpdater(gameContext);
         const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider });
         //Create elements of the scene

@@ -85,7 +85,10 @@ export class PlayScene extends Phaser.Scene {
             bag: {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
-            ...getGameConfigFrom_GamePersonalization(this.game.configUIDataHandlerMap.gamePersonalization)
+            ...getGameConfigFrom_GamePersonalization(this.game.configUIDataHandlerMap.gamePersonalization),
+            handling: {
+                DAS: 10, ARR: 2
+            }
         }
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;
