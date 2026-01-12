@@ -136,6 +136,11 @@ export function createConfigUIBoard() {
         }
     }
 
+    /** @type {Object.<string, string>} */
+    const configUIHeadingDisplayText = {
+        gamePersonalization: "ゲームのみため"
+    }
+
     /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
 
     for (let key in CONFIGUI_CONFIG_DATA) {
@@ -143,7 +148,10 @@ export function createConfigUIBoard() {
         const itemDataHandlerList = [];
         const initialConfigState = initialConfigStateMap[key];
         //add heading
-        boardElement.appendChild(createItemHeading(key));
+        {
+            const headingDisplayText = configUIHeadingDisplayText[key];
+            boardElement.appendChild(createItemHeading(headingDisplayText));
+        }
         //add items
         configList.forEach(configItemConfig => {
             const { element, itemDataHandler } = ItemElementFactory.create(configItemConfig, initialConfigState[configItemConfig.name]);
