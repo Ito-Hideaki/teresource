@@ -368,6 +368,13 @@ class HorizontalLastPriorityJudge {
     }
 }
 
+/**
+ *  @typedef {{
+ *    DAS: number,
+ *    ARR: number
+ * }} ControlOrderProviderConfig
+ *  */
+
 /** receives player inputs, calculates DAS, ARR and else and provides controlOrder for each frame
  * Flow : setNewPlayerInput > provideControlOrder > receiveControlResult > advanceTime
  */
@@ -381,6 +388,7 @@ export class ControlOrderProvider {
     rightMoveDown = false;
 
     #DASConfig = 10;
+    #ARRConfig = 2;
     /** frames until the auto shift get enabled @type {number} */
     DASTimerF = 0;
     /** frames until the mino can move horizontally again @type {number} */
@@ -392,7 +400,10 @@ export class ControlOrderProvider {
         return this.DASTimerF <= 0 && (this.leftMoveDown || this.rightMoveDown);
     }
 
-    constructor() {
+    /** @param {ControlOrderProviderConfig} config */
+    constructor(config) {
+        this.#ARRConfig = config.ARR;
+        this.#DASConfig = config.DAS;
         this.#controlOrder = new ControlOrder();
         this.#horizontalJudge = new HorizontalLastPriorityJudge();
     }
@@ -402,7 +413,7 @@ export class ControlOrderProvider {
     }
 
     /** receive player inputs as a flag.
-     *  Can be called multiple times. 
+     *  Can be called multiple times.
      * @param {number} flag controlOrderFlag */
     setNewPlayerInput(flag) {
         this.#controlOrder.setTrue(flag);
@@ -435,7 +446,7 @@ export class ControlOrderProvider {
     /** Require ControlResults to set cooldown properly @param {BoardUpdateDiff} controlDiff */
     receiveControlResult(controlDiff) {
         if (controlDiff.horizontalMinoMove) {
-            this.ARRTimerF = 2;
+            this.ARRTimerF = this.#ARRConfig;
         }
     }
 

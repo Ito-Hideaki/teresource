@@ -32,7 +32,7 @@ export class GameFactory {
         const gameContext = new GameContext({
             cellBoard, boardSize, currentMinoManager, minoQueueManager, boardUpdateState, rotationSystem: new RotationSystem_Standard()
         });
-        const controlOrderProvider = new ControlOrderProvider();
+        const controlOrderProvider = new ControlOrderProvider({ DAS: 10, ARR: 2 });
         const boardUpdater = new BoardUpdater(gameContext);
         const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider });
         //Create elements of the scene
