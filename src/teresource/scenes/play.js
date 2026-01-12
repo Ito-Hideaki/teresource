@@ -19,6 +19,11 @@ function getGameConfigFrom_GamePersonalization(configUIDataHandler) {
     };
 }
 
+/** @param {ConfigUIDataHandler} configUIDataHandler @return {import("./play/infra/gamefactory").GameConfig} */
+function getGameConfigFrom_Handling(configUIDataHandler) {
+    return { handling: configUIDataHandler.getConfig() };
+}
+
 
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene) {
@@ -86,9 +91,7 @@ export class PlayScene extends Phaser.Scene {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
             ...getGameConfigFrom_GamePersonalization(this.game.configUIDataHandlerMap.gamePersonalization),
-            handling: {
-                DAS: 10, ARR: 2
-            }
+            ...getGameConfigFrom_Handling(this.game.configUIDataHandlerMap.handling),
         }
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;
