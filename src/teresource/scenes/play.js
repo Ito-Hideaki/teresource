@@ -99,6 +99,7 @@ export class PlayScene extends Phaser.Scene {
         this.#controlOrderProvider = gameElements.controlOrderProvider;
 
         this.input.keyboard.on("keydown", e => {
+            if(!this.game.inputEnabled) return;
             if (e.repeat) {
                 e.preventDefault(); return;
             }
@@ -118,6 +119,7 @@ export class PlayScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on("keyup", e => {
+            if(!this.game.inputEnabled) return;
             //list of controlOrders assigned to a perticulay key
             const controlOrderList = {
                 "ArrowLeft": ControlOrder.STOP_MOVE_LEFT,
@@ -130,7 +132,7 @@ export class PlayScene extends Phaser.Scene {
             }
         })
 
-        const rebootButton = this.add.dom(300, 100, "button", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0", "Reboot Scene");
+        const rebootButton = this.add.dom(300, 100, "div", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0; user-select: none;", "Reboot Scene");
         rebootButton.addListener("click");
         rebootButton.on("click", e => {
             this.scene.start("play");
