@@ -8,7 +8,9 @@
       canvas {
         image-rendering: pixelated;
       }
-      table, td {
+
+      table,
+      td {
         border: 3px solid black;
       }
 
@@ -17,7 +19,6 @@
       }
 
       .updatehistorybox {
-        margin: 20px;
         border: 5px solid #333;
         height: 20em;
         padding: 10px;
@@ -31,49 +32,58 @@
         padding: 5px;
         margin: 3px 0px;
       }
-
     </style>
-    <link rel="stylesheet" href="/src/teresource/configUI.css"></link>
+    <link rel="stylesheet" href="/src/teresource/configUI.css">
+    </link>
   </head>
 
   <body>
     <h1>Teresource</h1>
-    <h3>操作</h3>
-    <table>
-      <tr>
-        <td>← 左矢印キー</td>
-        <td>ミノを左に移動</td>
-      </tr>
-      <tr>
-        <td>→ 右矢印キー</td>
-        <td>ミノを右に移動</td>
-      </tr>
-      <tr>
-        <td>↓ 下矢印キー</td>
-        <td>高速落下</td>
-      </tr>
-      <tr>
-        <td>スペースキー</td>
-        <td>設置</td>
-      </tr>
-      <tr>
-        <td>Z</td>
-        <td>ミノを90°左回転</td>
-      </tr>
-      <tr>
-        <td>X</td>
-        <td>ミノを90°右回転</td>
-      </tr>
-    </table>
-    <div id="config-container"></div>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px">
+      <div style="min-width: 400px; flex-grow: 1;">
+        <h3>コンフィグ</h3><div id="config-container" ></div>
+      </div>
+      <div>
+        <h3>操作</h3>
+        <table>
+          <tr>
+            <td>← 左矢印キー</td>
+            <td>ミノを左に移動</td>
+          </tr>
+          <tr>
+            <td>→ 右矢印キー</td>
+            <td>ミノを右に移動</td>
+          </tr>
+          <tr>
+            <td>↓ 下矢印キー</td>
+            <td>高速落下</td>
+          </tr>
+          <tr>
+            <td>スペースキー</td>
+            <td>設置</td>
+          </tr>
+          <tr>
+            <td>Z</td>
+            <td>ミノを90°左回転</td>
+          </tr>
+          <tr>
+            <td>X</td>
+            <td>ミノを90°右回転</td>
+          </tr>
+        </table>
+      </div>
+      <div>
+        <h3>更新履歴</h3>
+        <div class="updatehistorybox" style=" width: 400px;">
+        <div>
+          <p><strong>1/12/2026</strong> コンフィグにDASとARR追加。フレックスなデザインに変更。</p>
+        </div>
+      </div>
+      </div>
+    </div>
     <div id="game-container"
       style="background: linear-gradient(0.25turn, #222, #999, #222); margin: 10px 0px; overflow-x: hidden;"></div>
     <script type="module" src="src/teresource.js"></script>
-    <div class="updatehistorybox">
-      <div>
-        <p><strong>1/12/2026</strong> コンフィグにDASとARR追加</p>
-      </div>
-    </div>
   </body>
 
   </html>
