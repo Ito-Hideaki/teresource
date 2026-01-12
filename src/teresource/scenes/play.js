@@ -84,8 +84,6 @@ export class PlayScene extends Phaser.Scene {
     create() {
         this.cellSheetParentIndex = this.game.cellSheetParentIndex;
 
-        document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
-
         /** @type {import("./play/infra/gamefactory").GameConfig} */ const gameConfig = {
             bag: {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
