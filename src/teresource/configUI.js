@@ -127,6 +127,7 @@ export class ConfigUIDataHandler {
 export function createConfigUIBoard() {
 
     const boardElement = document.createElement("div");
+    boardElement.classList.add("configui_board");
 
     /** @type {Object.<string, Object.<string, any>>} */
     const initialConfigStateMap = {

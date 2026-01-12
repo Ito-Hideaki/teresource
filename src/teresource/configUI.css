@@ -1,13 +1,17 @@
+.configui_board {
+    font-size: 1.5em;
+}
+
 .configui_itemheading {
-    font-size: 2em;
+    font-size: 1.3em;
     font-weight: bold;
     font-style: italic;
+    margin-top: 0.3em;
 }
 
 .configui_item {
     font-family: 'Courier New', monospace;
     display: flex;
-    font-size: 1.5em;
 }
 
 .configui_item_name {
