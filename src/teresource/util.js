@@ -100,8 +100,8 @@ export function cellPosRotate4Way(column, row, rotation) {
 
 /** adjust url depending on the build mode @param {string} url */
 export function viteURLify(url) {
-    if(import.meta.env.PROD) return url.slice(1);
-    else return url;
+    const slicedUrl = url[0] == "/" ? url.slice(1) : url;
+    return import.meta.env.BASE_URL + slicedUrl;
 }
 
 /** @param {number} value @param {number} max @param {number} min */

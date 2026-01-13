@@ -86,9 +86,10 @@
         <div class="updatehistorybox" style=" width: 400px;">
           <!-- script to load update history from updatehistory.json -->
           <script type="module">
+            import { viteURLify } from "#util";
             const parentElement = document.querySelector(".updatehistorybox");
             document.addEventListener("DOMContentLoaded", async function() {
-              const response = await fetch(import.meta.env.BASE_URL + "updatehistory.json");
+              const response = await fetch(viteURLify("updatehistory.json"));
               const obj = await response.json();
               console.log(obj);
               obj.datas.forEach(data => {
