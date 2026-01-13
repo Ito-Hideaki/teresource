@@ -84,9 +84,20 @@
       <div>
         <h3>更新履歴</h3>
         <div class="updatehistorybox" style=" width: 400px;">
-        <div><p><strong>Jan 13 2026</strong> ホールドの見た目だけ実装。</p></div>
-        <div><p><strong>Jan 12 2026</strong> コンフィグにDASとARR追加。フレックスなデザインに変更。ゲーム選択中以外に入力が起きないように変更。</p></div>
-      </div>
+          <script> <!-- script to load update history from updatehistory.json -->
+            const scriptElement = document.currentScript;
+            document.addEventListener("DOMContentLoaded", async function() {
+              const response = await fetch("/updatehistory.json");
+              const obj = await response.json();
+              console.log(obj);
+              obj.datas.forEach(data => {
+                const elm = document.createElement("div");
+                elm.innerHTML = `<p><strong>${data.date}</strong> ${data.content}</p>`;
+                scriptElement.parentElement.appendChild(elm);
+              });
+            });
+          </script>
+        </div>
       </div>
       <div style="min-width: 400px; flex-grow: 1;">
         <h3>コンフィグ</h3><div id="config-container" ></div>
