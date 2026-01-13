@@ -2,7 +2,7 @@ import { BoardView } from "./boardview";
 import { BoardDeco } from "./boarddeco";
 import { GameViewContext } from "../infra/context";
 import { PlayScene } from "../../play";
-import { MinoQueueView } from "./subminoview";
+import { HeldMinoView, MinoQueueView } from "./subminoview";
 
 /** 
  * @typedef {{
@@ -26,6 +26,7 @@ export class GameViewController {
     #boardDeco;
     #boardContainer;
     #minoQueueView;
+    #heldMinoView;
     set x(x) {
         this.#boardContainer.x = x;
     }
@@ -43,6 +44,7 @@ export class GameViewController {
         this.#boardDeco = new BoardDeco(scene, gvContext, getBoardDecoConfig(config));
         this.#boardView = new BoardView(scene, gvContext, getBoardViewConfig(config));
         this.#minoQueueView = new MinoQueueView(scene, gvContext);
+        this.#heldMinoView = new HeldMinoView(scene, gvContext);
     }
 
     /** @param {number} deltaTime */
@@ -50,6 +52,7 @@ export class GameViewController {
         this.#boardDeco.update();
         this.#boardView.update();
         this.#minoQueueView.update();
+        this.#heldMinoView.update();
         // let rad = Math.atan2((this.#boardContainer.y - 360) / 15, (this.#boardContainer.x - 540) / 50);
         // rad += 0.1;
         // this.#boardContainer.x = 540 + Math.cos(rad) * 50;

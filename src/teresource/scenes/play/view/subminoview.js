@@ -154,3 +154,19 @@ export class MinoQueueView {
 
     }
 }
+
+export class HeldMinoView {
+    #subMinoBox
+
+    /** @param {Phaser.Scene} scene @param {GameViewContext} context */
+    constructor(scene, context) {
+        const size = 90;
+        this.#subMinoBox = new SubMinoBox(scene, size, context);
+        this.#subMinoBox.x = context.getRelativeBoardX(0) - 10 - size;
+        this.#subMinoBox.y = context.getRelativeBoardY(20);
+    }
+
+    update() {
+        this.#subMinoBox.updateView(new Mino("z"));
+    }
+}
