@@ -7,19 +7,20 @@ import { RotationSystem } from "../core/rotationsystem";
 
 export class ControlOrder {
 
-    static MOVE_LEFT = 0x0001;
-    static MOVE_RIGHT = 0x0002;
-    static START_SOFT_DROP = 0x0004;
-    static STOP_SOFT_DROP = 0x0008;
-    static HARD_DROP = 0x0010;
-    static ROTATE_CLOCK_WISE = 0x0020;
+    static MOVE_LEFT            = 0x0001;
+    static MOVE_RIGHT           = 0x0002;
+    static START_SOFT_DROP      = 0x0004;
+    static STOP_SOFT_DROP       = 0x0008;
+    static HARD_DROP            = 0x0010;
+    static ROTATE_CLOCK_WISE    = 0x0020;
     static ROTATE_COUNTER_CLOCK = 0x0040;
-    static ROTATE_180 = 0x0080;
+    static ROTATE_180           = 0x0080;
+    static HOLD                 = 0x0100;
 
-    static START_MOVE_LEFT = 0x1_0000;
-    static STOP_MOVE_LEFT = 0x2_0000;
+    static START_MOVE_LEFT  = 0x1_0000;
+    static STOP_MOVE_LEFT   = 0x2_0000;
     static START_MOVE_RIGHT = 0x4_0000;
-    static STOP_MOVE_RIGHT = 0x8_0000;
+    static STOP_MOVE_RIGHT  = 0x8_0000;
 
     constructor(value = 0) {
         this.value = value;
