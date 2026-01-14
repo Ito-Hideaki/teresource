@@ -41,7 +41,7 @@ export class GameController {
             this.#heldMinoManager.resetLimit();
             putNewMino(this.#minoQueueManager.takeNextMino());
         }
-        if (controlOrder.get(0) && this.#heldMinoManager.canRecieveMino()) {
+        if (controlOrder.get(ControlOrder.HOLD) && this.#heldMinoManager.canRecieveMino()) {
             const recievedMino = this.#heldMinoManager.recieveMino(this.#currentMinoManager.mino);
             putNewMino( recievedMino ?? this.#minoQueueManager.takeNextMino());
         }
