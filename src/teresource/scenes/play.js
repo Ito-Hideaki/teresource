@@ -103,12 +103,14 @@ export class PlayScene extends Phaser.Scene {
             }
             //list of controlOrders assigned to a perticulay key
             const controlOrderList = {
-                "ArrowLeft": ControlOrder.START_MOVE_LEFT,
+                "ArrowLeft" : ControlOrder.START_MOVE_LEFT,
                 "ArrowRight": ControlOrder.START_MOVE_RIGHT,
-                "ArrowDown": ControlOrder.START_SOFT_DROP,
-                "KeyX": ControlOrder.ROTATE_CLOCK_WISE,
-                "KeyZ": ControlOrder.ROTATE_COUNTER_CLOCK,
-                "Space": ControlOrder.HARD_DROP,
+                "ArrowDown" : ControlOrder.START_SOFT_DROP,
+                "KeyX"      : ControlOrder.ROTATE_CLOCK_WISE,
+                "KeyZ"      : ControlOrder.ROTATE_COUNTER_CLOCK,
+                "Space"     : ControlOrder.HARD_DROP,
+                "KeyC"      : ControlOrder.HOLD,
+                "ShiftLeft" : ControlOrder.HOLD
             }
             if (Object.keys(controlOrderList).includes(e.code)) {
                 e.preventDefault();
