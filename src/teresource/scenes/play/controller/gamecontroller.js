@@ -9,6 +9,7 @@ export class GameController {
     #controlOrderProvider
     #currentMinoManager
     #minoQueueManager
+    #heldMinoManager
     #boardUpdateState
 
     /**
@@ -20,6 +21,7 @@ export class GameController {
         this.#boardUpdater = $.boardUpdater;
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
+        this.#heldMinoManager = gameContext.heldMinoManager;
         this.#boardUpdateState = gameContext.boardUpdateState;
 
         this.lineClearManager = new LineClearManager(gameContext); //temporary
@@ -28,22 +30,21 @@ export class GameController {
     /** @param {number} deltaTime */
     update(deltaTime) {
 
-        const startNewMinoIfNeeded = () => {
-            if (this.#currentMinoManager.isPlaced) {
-                this.#currentMinoManager.startNextMino(this.#minoQueueManager.takeNextMino());
-                this.#boardUpdateState.startNewMino();
-            }
+        const putNewMino = (mino) => {
+            this.#currentMinoManager.startNextMino(mino);
+            this.#boardUpdateState.startNewMino();
         }
 
-        startNewMinoIfNeeded();
-        //Advance a frame
         /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
+
+        if (this.#currentMinoManager.isPlaced) {
+            putNewMino(this.#minoQueueManager.takeNextMino());
+        }
+
         /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);
         //Clear filled line (row)
         this.lineClearManager.update();
-
-        startNewMinoIfNeeded();
     }
 }
