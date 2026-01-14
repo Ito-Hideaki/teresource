@@ -64,6 +64,12 @@ export class HeldMinoManager {
     constructor() {
     }
 
+    //Edit mino to make it in right condition as a held mino
+    #arrangeMinoState() {
+        if(!this.#mino) return;
+        this.#mino = this.#mino.copyRotated(-this.#mino.rotation);
+    }
+
     resetLimit() {
         this.#recieved = false;
     }
@@ -77,6 +83,7 @@ export class HeldMinoManager {
         if(!this.canRecieveMino()) throw "HeldMinoManager can't recieve mino yet";
         const minoToReturn = this.#mino;
         this.#mino = mino;
+        this.#arrangeMinoState();
         this.#recieved = true;
         return minoToReturn;
     }
