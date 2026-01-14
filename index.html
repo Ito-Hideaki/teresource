@@ -79,6 +79,10 @@
             <td>X</td>
             <td>ミノを90°右回転</td>
           </tr>
+          <tr>
+            <td>C/LShift</td>
+            <td>ホールド</td>
+          </tr>
         </table>
       </div>
       <div>
@@ -88,7 +92,7 @@
           <script type="module">
             import { viteURLify } from "#util";
             const parentElement = document.querySelector(".updatehistorybox");
-            document.addEventListener("DOMContentLoaded", async function() {
+            document.addEventListener("DOMContentLoaded", async function () {
               const response = await fetch(viteURLify("updatehistory.json"));
               const obj = await response.json();
               console.log(obj);
@@ -102,7 +106,8 @@
         </div>
       </div>
       <div style="min-width: 400px; flex-grow: 1;">
-        <h3>コンフィグ</h3><div id="config-container" ></div>
+        <h3>コンフィグ</h3>
+        <div id="config-container"></div>
       </div>
     </div>
     <div id="game-container"></div>
