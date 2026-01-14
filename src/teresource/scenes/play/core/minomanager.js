@@ -55,6 +55,40 @@ export class CurrentMinoManager {
     }
 }
 
+
+/** Manage held mino in the game */
+export class HeldMinoManager {
+    /**  @type {Mino|undefined} */ #mino
+    /** @type {boolean} */ #recieved = false;
+
+    constructor() {
+    }
+
+    resetLimit() {
+        this.#recieved = false;
+    }
+
+    canRecieveMino() {
+        return !this.#recieved;
+    }
+
+    /** @param {Mino} mino */
+    recieveMino(mino) {
+        if(!this.canRecieveMino()) throw "HeldMinoManager can't recieve mino yet";
+        const minoToReturn = this.#mino;
+        this.#mino = mino;
+        this.#recieved = true;
+        return minoToReturn;
+    }
+
+    /** @return {Mino|undefined} */
+    getMino() {
+        return this.#mino;
+    }
+}
+
+
+
 /** @typedef {{minoTypeToUseList:string[]}} BagConfig */
 
 export class Bag {
