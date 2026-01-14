@@ -38,7 +38,12 @@ export class GameController {
         /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
 
         if (this.#currentMinoManager.isPlaced) {
+            this.#heldMinoManager.resetLimit();
             putNewMino(this.#minoQueueManager.takeNextMino());
+        }
+        if (controlOrder.get(0) && this.#heldMinoManager.canRecieveMino()) {
+            const recievedMino = this.#heldMinoManager.recieveMino(this.#currentMinoManager.mino);
+            putNewMino( recievedMino ?? this.#minoQueueManager.takeNextMino());
         }
 
         /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
