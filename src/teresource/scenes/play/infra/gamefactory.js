@@ -1,4 +1,4 @@
-import { CurrentMinoManager, Bag, MinoQueueManager } from "../core/minomanager";
+import { CurrentMinoManager, Bag, MinoQueueManager, HeldMinoManager } from "../core/minomanager";
 import { BoardSize, CellBoard } from "../core/mechanics";
 import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "../controller/boardcontroller";
 import { GameContext, GameViewContext } from "./context";
@@ -40,9 +40,10 @@ export class GameFactory {
         const currentMinoManager = new CurrentMinoManager();
         const cellBoard = new CellBoard(boardSize);
         const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfig(gameConfig)));
+        const heldMinoManager = new HeldMinoManager();
         const boardUpdateState = new BoardUpdateState();
         const gameContext = new GameContext({
-            cellBoard, boardSize, currentMinoManager, minoQueueManager, boardUpdateState, rotationSystem: new RotationSystem_Standard()
+            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, rotationSystem: new RotationSystem_Standard()
         });
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const boardUpdater = new BoardUpdater(gameContext);
