@@ -16,6 +16,11 @@ export class BootloaderScene extends Phaser.Scene {
 
     create() {
         const scene = this;
+
+        const background = this.add.graphics();
+        background.fillStyle(0x000000);
+        background.fillRect(0, 0, scene.game.canvas.width, scene.game.canvas.height);
+
         const bar = this.add.image(scene.game.canvas.width / 2, scene.game.canvas.height / 2, "loading_bar");
         bar.setDisplaySize(scene.game.canvas.width / 2, scene.game.canvas.width / 20);
 
@@ -32,6 +37,10 @@ export class BootloaderScene extends Phaser.Scene {
             this.game.cellSheetParentIndex = createSecondLevelTextures(this);
             document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
             this.scene.start("play");
-        })
+        });
+    }
+
+    update() {
+
     }
 }
