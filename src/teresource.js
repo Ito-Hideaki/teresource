@@ -40,4 +40,6 @@ addEventListener("DOMContentLoaded", () => {
         console.log("blur");
         game.inputEnabled = false;
     });
+
+    gameContainer.focus();
 });
