@@ -1,6 +1,13 @@
 import { GameContext } from "../infra/context";
 import { CellBoard } from "./mechanics";
 
+export const LINE_CLEAR_CODES = [
+    "ichi",
+    "ni",
+    "san",
+    "yon"
+]
+
 export class LineClearManager {
     /** @type {CellBoard} */
     #cellBoard;
