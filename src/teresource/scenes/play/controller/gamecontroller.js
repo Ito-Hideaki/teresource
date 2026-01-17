@@ -50,6 +50,6 @@ export class GameController {
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);
         //Clear filled line (row)
-        this.lineClearManager.update();
+        this.lineClearManager.startClear(this.lineClearManager.findRowToClear());
     }
 }
