@@ -12,9 +12,9 @@ export function getLineClearCodeFromNum(num) {
 /** @type {Object.<string, { time_s: number }>} */
 const LINE_CLEAR_SETTINGS_MAP = {
     "ichi": { time_s: 0.3 },
-    "ni"  : { time_s: 0.37 },
-    "san" : { time_s: 0.44 },
-    "yon" : { time_s: 0.51 }
+    "ni"  : { time_s: 0.36 },
+    "san" : { time_s: 0.42 },
+    "yon" : { time_s: 0.48 }
 }
 
 export class LineClearManager {
@@ -23,6 +23,8 @@ export class LineClearManager {
     #lineClearLastTime_s = 0;
     /** @type {CellBoard} */
     #cellBoard;
+    /** @type {number[]} */
+    #currentRowToClear
 
     /** @param {GameContext} context */
     constructor(context) {
@@ -44,25 +46,38 @@ export class LineClearManager {
         return rowToClear;
     }
 
-    /** @param {number[]} rowToClear */
+    /** clear filled row, then set currentRowToClear with new one @param {number[]} rowToClear */
     startClear(rowToClear) {
         if(rowToClear.length <= 0) return;
 
+        this.#currentRowToClear = rowToClear;
+
         const board = this.#cellBoard;
-        //clear/drop row from bottom to top
-        let nextRow = board.rowCount - 1;
-        for (let row = board.rowCount - 1; row >= 0; row--) {
-            if (rowToClear.includes(row)) continue;
-            board.table[nextRow] = board.table[row];
-            nextRow--;
-        }
-        //generate new row
-        for (; nextRow >= 0; nextRow--) {
-            board.table[nextRow] = board.createRow();
+        //clear row
+        for (let row = 0; row < board.rowCount; row++) {
+            if (rowToClear.includes(row)) {
+                board.table[row] = board.createRow();
+            }
         }
 
         const code = getLineClearCodeFromNum(rowToClear.length);
         this.#lineClearLastTime_s = LINE_CLEAR_SETTINGS_MAP[code].time_s;
+    }
+
+    /** drop cleared row, then set currentRowToClear empty. @param {number[]} rowToClear */
+    endClear(rowToClear) {
+        const board = this.#cellBoard;
+        //drop row from bottom to top and generate new row;
+        let clearedRowNum = 0;
+        for (let row = board.rowCount - 1; row >= 0; row--) {
+            while (rowToClear.includes(row - clearedRowNum)) clearedRowNum++;
+            const rowToCopyFrom = row - clearedRowNum;
+            board.table[row] = rowToCopyFrom >= 0
+                ? board.table[rowToCopyFrom]
+                : board.createRow();
+        }
+
+        this.#currentRowToClear = [];
     }
 
     isDuringLineClear() {
@@ -70,6 +85,13 @@ export class LineClearManager {
     }
 
     update(delta_s) {
-        this.#lineClearLastTime_s = Math.max(0, this.#lineClearLastTime_s - delta_s);
+        if(this.isDuringLineClear()) {
+            this.#lineClearLastTime_s -= delta_s;
+            if(!this.isDuringLineClear()) { //when line clear ends in this frame
+                this.endClear(this.#currentRowToClear);
+            }
+        } else {
+            this.#lineClearLastTime_s = 0;
+        }
     }
 }
