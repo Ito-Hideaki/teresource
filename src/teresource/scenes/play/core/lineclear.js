@@ -65,6 +65,10 @@ export class LineClearManager {
         this.#lineClearLastTime_s = LINE_CLEAR_SETTINGS_MAP[code].time_s;
     }
 
+    isDuringLineClear() {
+        return this.#lineClearLastTime_s < 1 / 120;
+    }
+
     update(delta_s) {
         this.#lineClearLastTime_s = Math.max(0, this.#lineClearLastTime_s - delta_s);
     }
