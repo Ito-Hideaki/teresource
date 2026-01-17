@@ -8,6 +8,14 @@ export const LINE_CLEAR_CODES = [
     "yon"
 ]
 
+/** @type {Object.<string, { time_ms: number }>} */
+const LINE_CLEAR_SETTINGS_MAP = {
+    "ichi": { time_ms: 300 },
+    "ni"  : { time_ms: 370 },
+    "san" : { time_ms: 440 },
+    "yon" : { time_ms: 510 }
+}
+
 export class LineClearManager {
     /** @type {CellBoard} */
     #cellBoard;
