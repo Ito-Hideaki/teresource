@@ -66,7 +66,7 @@ export class LineClearManager {
     }
 
     isDuringLineClear() {
-        return this.#lineClearLastTime_s < 1 / 120;
+        return this.#lineClearLastTime_s >= 1 / 120;
     }
 
     update(delta_s) {

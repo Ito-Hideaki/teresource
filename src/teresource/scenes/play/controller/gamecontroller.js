@@ -30,12 +30,18 @@ export class GameController {
     /** @param {number} deltaTime */
     update(deltaTime) {
 
+        this.lineClearManager.update(deltaTime);
+
+        if(!this.lineClearManager.isDuringLineClear()) {
+            this.#doNormalUpdate(deltaTime);
+        }
+    }
+
+    #doNormalUpdate(deltaTime) {
         const putNewMino = (mino) => {
             this.#currentMinoManager.startNextMino(mino);
             this.#boardUpdateState.startNewMino();
         }
-
-        this.lineClearManager.update(deltaTime);
 
         /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
 
