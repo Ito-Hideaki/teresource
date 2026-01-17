@@ -1,24 +1,29 @@
 import { GameContext } from "../infra/context";
 import { CellBoard } from "./mechanics";
 
-export const LINE_CLEAR_CODES = [
-    "ichi",
-    "ni",
-    "san",
-    "yon"
-]
 
-/** @type {Object.<string, { time_ms: number }>} */
+/** @param {number} num number of cleared rows @return {string} */
+export function getLineClearCodeFromNum(num) {
+    const value =[undefined, "ichi", "ni", "san", "yon"][num];
+    if(typeof value !== "string") throw "nanka okashii";
+    return value;
+}
+
+/** @type {Object.<string, { time_s: number }>} */
 const LINE_CLEAR_SETTINGS_MAP = {
-    "ichi": { time_ms: 300 },
-    "ni"  : { time_ms: 370 },
-    "san" : { time_ms: 440 },
-    "yon" : { time_ms: 510 }
+    "ichi": { time_s: 0.3 },
+    "ni"  : { time_s: 0.37 },
+    "san" : { time_s: 0.44 },
+    "yon" : { time_s: 0.51 }
 }
 
 export class LineClearManager {
+
+    /** @type {number} */
+    #lineClearLastTime_s = 0;
     /** @type {CellBoard} */
     #cellBoard;
+
     /** @param {GameContext} context */
     constructor(context) {
         this.#cellBoard = context.cellBoard;
@@ -41,6 +46,8 @@ export class LineClearManager {
 
     /** @param {number[]} rowToClear */
     startClear(rowToClear) {
+        if(rowToClear.length <= 0) return;
+
         const board = this.#cellBoard;
         //clear/drop row from bottom to top
         let nextRow = board.rowCount - 1;
@@ -53,8 +60,12 @@ export class LineClearManager {
         for (; nextRow >= 0; nextRow--) {
             board.table[nextRow] = board.createRow();
         }
+
+        const code = getLineClearCodeFromNum(rowToClear.length);
+        this.#lineClearLastTime_s = LINE_CLEAR_SETTINGS_MAP[code].time_s;
     }
 
-    update() {
+    update(delta_s) {
+        this.#lineClearLastTime_s = Math.max(0, this.#lineClearLastTime_s - delta_s);
     }
 }

@@ -35,6 +35,8 @@ export class GameController {
             this.#boardUpdateState.startNewMino();
         }
 
+        this.lineClearManager.update(deltaTime);
+
         /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
 
         if (this.#currentMinoManager.isPlaced) {
