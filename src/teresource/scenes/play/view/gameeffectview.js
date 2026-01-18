@@ -14,6 +14,7 @@ export class GameEffectManagerView {
 
     #gvContext;
     #boardContainer;
+    #gameReportStack;
     #scene;
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext */
@@ -21,7 +22,14 @@ export class GameEffectManagerView {
         this.#scene = scene;
         this.#boardContainer = gvContext.boardContainer;
         this.#gvContext = gvContext;
+        this.#gameReportStack = gvContext.gameContext.gameReportStack;
         this.createLineClearEffect([30]);
+    }
+
+    update() {
+        this.#gameReportStack.LineClear.forEach(report => {
+            console.log(report.getData());
+        });
     }
 
     /** @param {number[]} rowToClearList */

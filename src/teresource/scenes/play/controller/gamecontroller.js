@@ -11,6 +11,7 @@ export class GameController {
     #minoQueueManager
     #heldMinoManager
     #boardUpdateState
+    #gameReportStack
 
     /**
      * @param {GameContext} gameContext
@@ -25,10 +26,13 @@ export class GameController {
         this.#currentMinoManager = gameContext.currentMinoManager;
         this.#heldMinoManager = gameContext.heldMinoManager;
         this.#boardUpdateState = gameContext.boardUpdateState;
+        this.#gameReportStack = gameContext.gameReportStack;
     }
 
     /** @param {number} deltaTime */
     update(deltaTime) {
+
+        this.#gameReportStack.renewAll();
 
         this.lineClearManager.update(deltaTime);
 

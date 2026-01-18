@@ -13,6 +13,7 @@ export class LineClearReport extends Report {
     #data;
     /** @param {LineClearReportData} data */
     constructor(data) {
+        super();
         this.#data = data;
     }
     getData() {
@@ -35,13 +36,14 @@ export class ReportStack {
 }
 
 export class GameReportStack {
-    /** @type {LineClearReport} */ LineClear;
+    /** @type {LineClearReport[]} */ LineClear;
 
     /** @param {Report} report */
     add(report) {
         switch(report.getType()) {
             case "LineClear":
                 this.LineClear.push(report);
+                break;
         }
     }
 
