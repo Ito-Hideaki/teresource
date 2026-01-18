@@ -14,17 +14,17 @@ export class GameController {
 
     /**
      * @param {GameContext} gameContext
-     * @param {{boardUpdater: BoardUpdater, controlOrderProvider: ControlOrderProvider}} $
+     * @param {{boardUpdater: BoardUpdater, controlOrderProvider: ControlOrderProvider, lineClearManager: LineClearManager }} $
      */
     constructor(gameContext, $) {
         this.#controlOrderProvider = $.controlOrderProvider;
         this.#boardUpdater = $.boardUpdater;
+        this.lineClearManager = $.lineClearManager;
+
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
         this.#heldMinoManager = gameContext.heldMinoManager;
         this.#boardUpdateState = gameContext.boardUpdateState;
-
-        this.lineClearManager = new LineClearManager(gameContext); //temporary
     }
 
     /** @param {number} deltaTime */

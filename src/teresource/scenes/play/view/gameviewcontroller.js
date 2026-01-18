@@ -3,8 +3,9 @@ import { BoardDeco } from "./boarddeco";
 import { GameViewContext } from "../infra/context";
 import { PlayScene } from "../../play";
 import { HeldMinoView, MinoQueueView } from "./subminoview";
+import { GameEffectManagerView } from "./gameeffectview";
 
-/** @typedef {{ boardDeco: BoardDeco, boardView: BoardView, minoQueueView: MinoQueueView, heldMinoView: HeldMinoView }} GameViewElements */
+/** @typedef {{ boardDeco: BoardDeco, boardView: BoardView, minoQueueView: MinoQueueView, heldMinoView: HeldMinoView, gameEffectManagerView: GameEffectManagerView }} GameViewElements */
 
 /** Represents the game view for each player */
 export class GameViewController {
