@@ -35,7 +35,7 @@ export class GameViewController {
         this.#elements.boardView.update();
         this.#elements.minoQueueView.update();
         this.#elements.heldMinoView.update();
-        this.#elements.gameEffectManagerView.update();
+        this.#elements.gameEffectManagerView.update(deltaTime);
         // let rad = Math.atan2((this.#boardContainer.y - 360) / 15, (this.#boardContainer.x - 540) / 50);
         // rad += 0.1;
         // this.#boardContainer.x = 540 + Math.cos(rad) * 50;
