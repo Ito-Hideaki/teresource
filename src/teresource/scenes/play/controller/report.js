@@ -21,18 +21,26 @@ export class LineClearReport extends Report {
 }
 
 export class ReportStack {
-    /** @type {LineClearReport} */ LineClear;
-
-    constructor(type) {
+    constructor() {
         this.renewAll();
     }
+
+    /** @param {Report} report */
+    add(report) {
+    }
+
+    renewAll() {
+    }
+}
+
+export class GameReportStack {
+    /** @type {LineClearReport} */ LineClear;
 
     /** @param {Report} report */
     add(report) {
         switch(report.getType()) {
             case "LineClear":
                 this.LineClear.push(report);
-                break;
         }
     }
 
