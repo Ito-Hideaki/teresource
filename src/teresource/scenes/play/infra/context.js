@@ -46,7 +46,7 @@ export class GameViewContext {
      * boardContainer   : Phaser.GameObjects.Container,
      * getRelativeBoardX: Function,
      * getRelativeBoardY: Function,
-     * getBoardCellWidth: Function,
+     * getBoardCellWidth: () => number,
      * }} source
      * */
     constructor(source) {

@@ -4,9 +4,9 @@ import Phaser from "phaser";
 
 const LINE_CLEAR_EFFECT_DURATION_MAP = {
     "ichi": 0.3,
-    "ni"  : 0.36,
-    "san" : 0.42,
-    "yon" : 0.48
+    "ni": 0.36,
+    "san": 0.42,
+    "yon": 0.48
 }
 
 class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
@@ -15,6 +15,7 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     #timePassed = 0;
     #getRelativeX;
     #getRelativeY;
+    #cellWidth;
     #boardSize;
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
@@ -25,24 +26,39 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
         this.#effectDuration = LINE_CLEAR_EFFECT_DURATION_MAP[report.getData().code];
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
-        this.#boardSize    = gvContext.gameContext.boardSize;
+        this.#cellWidth = gvContext.getBoardCellWidth();
+        this.#boardSize = gvContext.gameContext.boardSize;
     }
 
     update(delta_s) {
         this.#timePassed += delta_s;
         console.log(this.#timePassed);
-        if(this.#timePassed >= this.#effectDuration) {
+        if (this.#timePassed >= this.#effectDuration) {
             this.destroy();
         } else {
-            console.log("dsadsad");
-            //this.#updateGraphics();
+            this.#updateGraphics();
+        }
+    }
+
+    #drawCell(row, column, timePassed) {
+        this.fillStyle(0xffffff);
+        if (timePassed < 0.3) {
+            this.fillRect(this.#getRelativeX(column), this.#getRelativeY(row), this.#cellWidth, this.#cellWidth);
+        }
+    }
+
+    /** @param {number} timePassed */
+    #drawRow(row, timePassed) {
+        for (let column = 0; column < this.#boardSize.columnCount; column++) {
+            this.#drawCell(row, column, timePassed);
         }
     }
 
     #updateGraphics() {
         this.clear();
         this.#rowToClearList.forEach((row, num) => {
-
+            const delay = 0.06 * num;
+            this.#drawRow(row, this.#timePassed - delay);
         });
     }
 }
