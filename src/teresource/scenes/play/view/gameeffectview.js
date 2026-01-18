@@ -21,7 +21,6 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
     constructor(scene, gvContext, report) {
         super(scene);
-        this.addToUpdateList();
         this.#rowToClearList = report.getData().rowToClearList;
         this.#effectDuration = LINE_CLEAR_EFFECT_DURATION_MAP[report.getData().code];
         this.#getRelativeX = gvContext.getRelativeBoardX;
