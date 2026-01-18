@@ -10,6 +10,9 @@ import { BoardDeco } from "../view/boarddeco";
 import { BoardView } from "../view/boardview";
 import { MinoQueueView, HeldMinoView } from "../view/subminoview";
 import { createRelativePositionGetter } from "#util";
+import { GameEffectManagerView } from "../view/gameeffectview";
+import { GameReportStack } from "../controller/report";
+import { LineClearManager } from "../core/lineclear";
 
 /** 
  * @typedef {{
@@ -61,12 +64,15 @@ export class GameFactory {
         const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfig(gameConfig)));
         const heldMinoManager = new HeldMinoManager();
         const boardUpdateState = new BoardUpdateState();
+        const gameReportStack = new GameReportStack();
         const gameContext = new GameContext({
-            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, rotationSystem: new RotationSystem_Standard()
+            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, gameReportStack, rotationSystem: new RotationSystem_Standard()
         });
+
+        const lineClearManager = new LineClearManager(gameContext);
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const boardUpdater = new BoardUpdater(gameContext);
-        const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider });
+        const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider, lineClearManager });
 
         //Create elements of the scene
         const { gameViewController } = GameFactory.#createView({ gameConfig, gameContext, scene });
@@ -99,8 +105,9 @@ export class GameFactory {
         const boardView = new BoardView(scene, gameViewContext, getBoardViewConfig(gameViewConfig));
         const minoQueueView = new MinoQueueView(scene, gameViewContext);
         const heldMinoView = new HeldMinoView(scene, gameViewContext);
+        const gameEffectManagerView = new GameEffectManagerView(scene, gameViewContext);
         const gameViewController = new GameViewController(scene, gameViewContext, {
-            boardDeco, boardView, minoQueueView, heldMinoView
+            boardDeco, boardView, minoQueueView, heldMinoView, gameEffectManagerView
         }, gameViewConfig);
         gameViewController.x = scene.game.canvas.width / 2;
         gameViewController.y = scene.game.canvas.height / 2;

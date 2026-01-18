@@ -3,6 +3,7 @@ import { CurrentMinoManager, HeldMinoManager, MinoQueueManager } from "../core/m
 import { BoardUpdateState } from "../controller/boardcontroller";
 import { CellSheetParent } from "../view/customtexture";
 import { RotationSystem } from "../core/rotationsystem";
+import { GameReportStack } from "../controller/report";
 
 /** @param {{}} source @return GameContext */
 export class GameContext {
@@ -16,6 +17,7 @@ export class GameContext {
      * heldMinoManager   : HeldMinoManager,
      * boardUpdateState  : BoardUpdateState,
      * rotationSystem    : RotationSystem,
+     * gameReportStack   : GameReportStack
      * }} source
      * */
     constructor(source) {
@@ -26,6 +28,7 @@ export class GameContext {
         this.heldMinoManager    = source.heldMinoManager;
         this.boardUpdateState   = source.boardUpdateState;
         this.rotationSystem     = source.rotationSystem;
+        this.gameReportStack    = source.gameReportStack;
     }
 }
 
