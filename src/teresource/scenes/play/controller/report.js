@@ -20,6 +20,7 @@ export class LineClearReport extends Report {
     }
 }
 
+/** contain report stacks that become empty every frame */
 export class ReportStack {
     constructor() {
         this.renewAll();
