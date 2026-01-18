@@ -96,7 +96,8 @@ export class GameFactory {
             gameContext,
             boardContainer,
             getRelativeBoardX: relativeBoardPositionGetter.getRelativeX,
-            getRelativeBoardY: relativeBoardPositionGetter.getRelativeY
+            getRelativeBoardY: relativeBoardPositionGetter.getRelativeY,
+            getBoardCellWidth: () => boardCellWidth,
         });
 
         /** @type {GameViewConfig} */ const gameViewConfig = { boardCellWidth };
