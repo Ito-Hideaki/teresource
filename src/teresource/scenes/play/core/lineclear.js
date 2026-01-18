@@ -31,7 +31,7 @@ export class LineClearManager {
         this.#cellBoard = context.cellBoard;
     }
 
-    findRowToClear() {
+    findRowToClearList() {
         const board = this.#cellBoard;
         const rowToClearList = [];
         for (let row = 0; row < board.rowCount; row++) {
