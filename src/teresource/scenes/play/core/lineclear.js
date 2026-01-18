@@ -24,7 +24,7 @@ export class LineClearManager {
     /** @type {CellBoard} */
     #cellBoard;
     /** @type {number[]} */
-    #currentRowToClear
+    #currentRowToClearList;
 
     /** @param {GameContext} context */
     constructor(context) {
@@ -33,51 +33,51 @@ export class LineClearManager {
 
     findRowToClear() {
         const board = this.#cellBoard;
-        const rowToClear = [];
+        const rowToClearList = [];
         for (let row = 0; row < board.rowCount; row++) {
             let thisRowValid = true;
             for (let column = 0; column < board.columnCount; column++) {
                 const cell = board.getCell(row, column);
                 if (!cell.isBlock) thisRowValid = false; continue;
             }
-            if (thisRowValid) rowToClear.push(row);
+            if (thisRowValid) rowToClearList.push(row);
         }
 
-        return rowToClear;
+        return rowToClearList;
     }
 
-    /** clear filled row, then set currentRowToClear with new one @param {number[]} rowToClear */
-    startClear(rowToClear) {
-        if(rowToClear.length <= 0) return;
+    /** clear filled row, then set currentRowToClearList with new one @param {number[]} rowToClearList */
+    startClear(rowToClearList) {
+        if(rowToClearList.length <= 0) return;
 
-        this.#currentRowToClear = rowToClear;
+        this.#currentRowToClearList = rowToClearList;
 
         const board = this.#cellBoard;
         //clear row
         for (let row = 0; row < board.rowCount; row++) {
-            if (rowToClear.includes(row)) {
+            if (rowToClearList.includes(row)) {
                 board.table[row] = board.createRow();
             }
         }
 
-        const code = getLineClearCodeFromNum(rowToClear.length);
+        const code = getLineClearCodeFromNum(rowToClearList.length);
         this.#lineClearLastTime_s = LINE_CLEAR_SETTINGS_MAP[code].time_s;
     }
 
-    /** drop cleared row, then set currentRowToClear empty. @param {number[]} rowToClear */
-    endClear(rowToClear) {
+    /** drop cleared row, then set currentRowToClearList empty. @param {number[]} rowToClearList */
+    endClear(rowToClearList) {
         const board = this.#cellBoard;
         //drop row from bottom to top and generate new row;
         let clearedRowNum = 0;
         for (let row = board.rowCount - 1; row >= 0; row--) {
-            while (rowToClear.includes(row - clearedRowNum)) clearedRowNum++;
+            while (rowToClearList.includes(row - clearedRowNum)) clearedRowNum++;
             const rowToCopyFrom = row - clearedRowNum;
             board.table[row] = rowToCopyFrom >= 0
                 ? board.table[rowToCopyFrom]
                 : board.createRow();
         }
 
-        this.#currentRowToClear = [];
+        this.#currentRowToClearList = [];
     }
 
     isDuringLineClear() {
@@ -88,7 +88,7 @@ export class LineClearManager {
         if(this.isDuringLineClear()) {
             this.#lineClearLastTime_s -= delta_s;
             if(!this.isDuringLineClear()) { //when line clear ends in this frame
-                this.endClear(this.#currentRowToClear);
+                this.endClear(this.#currentRowToClearList);
             }
         } else {
             this.#lineClearLastTime_s = 0;
