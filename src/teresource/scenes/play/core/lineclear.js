@@ -12,9 +12,9 @@ export function getLineClearCodeFromNum(num) {
 
 /** @type {Object.<string, { time_s: number }>} */
 const LINE_CLEAR_SETTINGS_MAP = {
-    "ichi": { time_s: 0.3 },
-    "ni"  : { time_s: 0.36 },
-    "san" : { time_s: 0.42 },
+    "ichi": { time_s: 0.24 },
+    "ni"  : { time_s: 0.32 },
+    "san" : { time_s: 0.40 },
     "yon" : { time_s: 0.48 }
 }
 

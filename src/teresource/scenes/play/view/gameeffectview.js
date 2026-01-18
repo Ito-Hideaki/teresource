@@ -3,9 +3,9 @@ import { GameViewContext } from "../infra/context";
 import Phaser from "phaser";
 
 const LINE_CLEAR_EFFECT_DURATION_MAP = {
-    "ichi": 0.3,
-    "ni": 0.36,
-    "san": 0.42,
+    "ichi": 0.24,
+    "ni": 0.32,
+    "san": 0.40,
     "yon": 0.48
 }
 
@@ -42,7 +42,7 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
 
     #drawCell(row, column, timePassed) {
         this.fillStyle(0xffffff);
-        if (timePassed < 0.3) {
+        if (timePassed < 0.24) {
             this.fillRect(this.#getRelativeX(column), this.#getRelativeY(row), this.#cellWidth, this.#cellWidth);
         }
     }
