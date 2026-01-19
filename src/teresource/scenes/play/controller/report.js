@@ -3,21 +3,35 @@
 /** Object that is used to tell what has happened in the last frame.
  *  The data inside must not be changed.  */
 export class Report {
-    getType() { return "Default" }
-    getData() { }
+    static type = "Default";
+    data;
+    parentClass = Report;
+    getData() {
+        return this.data;
+    }
 }
 
 export class LineClearReport extends Report {
     /** @typedef {{ code: string, rowToClearList: number[] }} LineClearReportData */
-    getType() { return "LineClear" }
-    #data;
+    static type = "LineClear";
+    parentClass = LineClearReport;
+    data;
     /** @param {LineClearReportData} data */
     constructor(data) {
         super();
-        this.#data = data;
+        this.data = data;
     }
-    getData() {
-        return this.#data;
+}
+
+export class MinoSpawnReport extends Report {
+    /** @typedef {} MinoSpawnReportData */
+    static type = "MinoSpawn";
+    data;
+    parentClass = MinoSpawnReport;
+    /** @param {MinoSpawnReportData} data */
+    constructor(data) {
+        super();
+        this.data = data;
     }
 }
 
@@ -37,17 +51,22 @@ export class ReportStack {
 
 export class GameReportStack {
     /** @type {LineClearReport[]} */ LineClear;
+    /** @type {MinoSpawnReport[]} */ minoSpawn;
 
     /** @param {Report} report */
     add(report) {
-        switch(report.getType()) {
-            case "LineClear":
+        switch(report.parentClass.type) {
+            case LineClearReport.type:
                 this.LineClear.push(report);
+                break;
+            case MinoSpawnReport.type:
+                this.minoSpawn.push(report);
                 break;
         }
     }
 
     renewAll() {
         this.LineClear = [];
+        this.minoSpawn = [];
     }
 }
