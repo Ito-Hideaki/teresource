@@ -79,7 +79,7 @@ export class GameEffectManagerView {
     }
 
     update(delta_s) {
-        this.#gameReportStack.LineClear.forEach(report => {
+        this.#gameReportStack.lineClear.forEach(report => {
             this.createLineClearEffect(report);
         });
         this.#updateEffectList.forEach(obj => {

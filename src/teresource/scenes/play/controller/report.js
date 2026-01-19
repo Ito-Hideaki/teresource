@@ -50,14 +50,14 @@ export class ReportStack {
 }
 
 export class GameReportStack {
-    /** @type {LineClearReport[]} */ LineClear;
+    /** @type {LineClearReport[]} */ lineClear;
     /** @type {MinoSpawnReport[]} */ minoSpawn;
 
     /** @param {Report} report */
     add(report) {
         switch(report.parentClass.type) {
             case LineClearReport.type:
-                this.LineClear.push(report);
+                this.lineClear.push(report);
                 break;
             case MinoSpawnReport.type:
                 this.minoSpawn.push(report);
@@ -66,7 +66,7 @@ export class GameReportStack {
     }
 
     renewAll() {
-        this.LineClear = [];
+        this.lineClear = [];
         this.minoSpawn = [];
     }
 }
