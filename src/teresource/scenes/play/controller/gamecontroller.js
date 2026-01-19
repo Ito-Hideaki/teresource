@@ -45,6 +45,7 @@ export class GameController {
         const putNewMino = (mino) => {
             this.#currentMinoManager.startNextMino(mino);
             this.#boardUpdateState.startNewMino();
+            this.#controlOrderProvider.resetARR();
         }
 
         /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
