@@ -31,51 +31,46 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
         }
     }
 
-    #drawCell(row, column, timePassed) {
-        const startVanish = 0.03, completeVanish = 0.24;
-        const rectX = this.#getRelativeX(column), rectY =  this.#getRelativeY(row), rectWidth = this.#cellWidth;
+    #drawCell(row, column, vanishProgress) {
+        const rectX = this.#getRelativeX(column), rectY = this.#getRelativeY(row), rectWidth = this.#cellWidth;
 
         this.fillStyle(0xffffff);
-        if(timePassed < startVanish) {
-            this.fillRect(rectX, rectY, rectWidth, rectWidth);
-        }
-        else if (timePassed < completeVanish) {
-            const vanishProgress = (timePassed - startVanish) / (completeVanish - startVanish);
-
-            if (vanishProgress <= 0.5) {
-                //fill polygon (rect without top-left triangle)
-                const triWidth = rectWidth * (vanishProgress * 2);
-                const polygon = new Phaser.Geom.Polygon([
-                    rectX + triWidth,  rectY,               //top 135deg corner
-                    rectX,             rectY + triWidth,    //left 135deg corner
-                    rectX,             rectY + rectWidth,   //bottom left 90deg corner
-                    rectX + rectWidth, rectY + rectWidth,   //bottom right 90deg corner
-                    rectX + rectWidth, rectY,               //top right 90deg corner
-                ]);
-                this.fillPoints(polygon.points, true);
-            } else { // 0.5 < vanishProgress < 1
-                //fill bottom-right triangle
-                const triWidth = rectWidth * (2 - vanishProgress * 2);
-                this.fillTriangle(
-                    rectX + rectWidth - triWidth, rectY + rectWidth,              //left 45deg corner
-                    rectX + rectWidth,            rectY + rectWidth - triWidth,   //top 45deg corner
-                    rectX + rectWidth,            rectY + rectWidth               //bottom right 90deg corner
-                );
-            }
+        if (vanishProgress <= 0.5) {
+            //fill polygon (rect without top-left triangle)
+            const triWidth = rectWidth * (vanishProgress * 2);
+            const polygon = new Phaser.Geom.Polygon([
+                rectX + triWidth, rectY,               //top 135deg corner
+                rectX, rectY + triWidth,    //left 135deg corner
+                rectX, rectY + rectWidth,   //bottom left 90deg corner
+                rectX + rectWidth, rectY + rectWidth,   //bottom right 90deg corner
+                rectX + rectWidth, rectY,               //top right 90deg corner
+            ]);
+            this.fillPoints(polygon.points, true);
+        } else { // 0.5 < vanishProgress < 1
+            //fill bottom-right triangle
+            const triWidth = rectWidth * (2 - vanishProgress * 2);
+            this.fillTriangle(
+                rectX + rectWidth - triWidth, rectY + rectWidth,              //left 45deg corner
+                rectX + rectWidth, rectY + rectWidth - triWidth,   //top 45deg corner
+                rectX + rectWidth, rectY + rectWidth               //bottom right 90deg corner
+            );
         }
     }
 
-    /** @param {number} timePassed */
-    #drawRow(row, timePassed) {
+    /** @param {number} vanishProgress */
+    #drawRow(row, vanishProgress) {
         for (let column = 0; column < this.#boardSize.columnCount; column++) {
-            this.#drawCell(row, column, timePassed);
+            this.#drawCell(row, column, vanishProgress);
         }
     }
 
     #updateGraphics() {
+        const startVanish = 0.03, completeVanish = 0.24;
+        const vanishProgress = this.#timePassed < startVanish ? 0 : (this.#timePassed - startVanish) / (completeVanish - startVanish);
+
         this.clear();
         this.#rowToClearList.forEach((row, num) => {
-            this.#drawRow(row, this.#timePassed);
+            this.#drawRow(row, vanishProgress);
         });
     }
 }
