@@ -83,8 +83,7 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     #updateGraphics() {
         this.clear();
         this.#rowToClearList.forEach((row, num) => {
-            const delay = 0.05 * num;
-            this.#drawRow(row, this.#timePassed - delay);
+            this.#drawRow(row, this.#timePassed);
         });
     }
 }
