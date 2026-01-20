@@ -67,11 +67,14 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     #updateGraphics() {
         const startVanish = 0.03, completeVanish = 0.24;
         const vanishProgress = this.#timePassed < startVanish ? 0 : (this.#timePassed - startVanish) / (completeVanish - startVanish);
+        const pVanishProgress = Math.pow(vanishProgress, 1.7);
 
         this.clear();
-        this.#rowToClearList.forEach((row, num) => {
-            this.#drawRow(row, vanishProgress);
-        });
+        if (vanishProgress < 1) {
+            this.#rowToClearList.forEach((row, num) => {
+                this.#drawRow(row, pVanishProgress);
+            });
+        }
     }
 }
 
