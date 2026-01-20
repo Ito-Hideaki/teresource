@@ -2,17 +2,10 @@ import { LineClearReport } from "../controller/report";
 import { GameViewContext } from "../infra/context";
 import Phaser from "phaser";
 
-const LINE_CLEAR_EFFECT_DURATION_MAP = {
-    "ichi": 0.24,
-    "ni": 0.32,
-    "san": 0.40,
-    "yon": 0.48
-}
-
 class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     #rowToClearList;
-    #effectDuration;
     #timePassed = 0;
+    #effectDuration = 0.24;
     #getRelativeX;
     #getRelativeY;
     #cellWidth;
@@ -22,7 +15,6 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     constructor(scene, gvContext, report) {
         super(scene);
         this.#rowToClearList = report.getData().rowToClearList;
-        this.#effectDuration = LINE_CLEAR_EFFECT_DURATION_MAP[report.getData().code];
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
         this.#cellWidth = gvContext.getBoardCellWidth();
@@ -40,7 +32,7 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     }
 
     #drawCell(row, column, timePassed) {
-        const startVanish = 0.06, completeVanish = 0.24;
+        const startVanish = 0.03, completeVanish = 0.24;
         const rectX = this.#getRelativeX(column), rectY =  this.#getRelativeY(row), rectWidth = this.#cellWidth;
 
         this.fillStyle(0xffffff);
