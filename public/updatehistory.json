@@ -1,5 +1,6 @@
 {
     "datas" : [
+        { "date": "Jan 22 2026", "content" : "ログボックスを追加。"},
         { "date": "Jan 21 2026", "content" : "pikaスキンを更新。"},
         { "date": "Jan 20 2026", "content" : "かっこいいライン消去エフェクトを実装。"},
         { "date": "Jan 19 2026", "content" : "ミノ出現時にARRをリセットするように実装。"},
