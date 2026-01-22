@@ -39,6 +39,11 @@ export class GameController {
         if(!this.lineClearManager.isDuringLineClear()) {
             this.#doNormalUpdate(deltaTime);
         }
+
+        this.#gameReportStack.lineClear.forEach(lineClearReport => {
+            const lineCount = lineClearReport.data.rowToClearList.length;
+            window.log(`${lineCount} line(s) cleared`);
+        });
     }
 
     #doNormalUpdate(deltaTime) {
