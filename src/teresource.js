@@ -2,8 +2,13 @@ import Phaser from "phaser";
 import { PlayScene } from "./teresource/scenes/play";
 import { BootloaderScene } from "./teresource/scenes/bootloader";
 import { createConfigUIBoard } from "./teresource/configUI";
+import { createLogBox } from "./teresource/logUI";
 
 addEventListener("DOMContentLoaded", () => {
+
+    const { box, log } = createLogBox();
+    document.getElementById("log-container").appendChild(box);
+    window.log = log;
 
     const { element, configUIDataHandlerMap } = createConfigUIBoard();
     document.getElementById("config-container").appendChild(element);

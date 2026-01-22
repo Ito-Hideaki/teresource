@@ -44,6 +44,33 @@
         padding: 5px;
         margin: 3px 0px;
       }
+
+      #log-container {
+        overflow-y: hidden;
+        position: relative;
+        margin: 5px 0px;
+        height: 6em;
+      }
+      .loguibox {
+        position: absolute;
+        background-color: #ddd;
+        width: 100%;
+        min-height: 100%;
+        bottom: 0;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        font-family: monospace;
+      }
+      .loguilabel {
+        border: solid #666;
+        border-width: 2px 0 0 0;
+      }
+      .loguilabel:last-child {
+        color: blue;
+        font-weight: bold;
+      }
     </style>
     <link rel="stylesheet" href="/src/teresource/configUI.css">
     </link>
@@ -110,6 +137,7 @@
         <div id="config-container" style="height: calc(20em + 30px); overflow-y: scroll;"></div>
       </div>
     </div>
+    <div id="log-container"></div>
     <div id="game-container"></div>
     <script type="module" src="src/teresource.js"></script>
   </body>
