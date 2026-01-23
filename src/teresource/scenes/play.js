@@ -137,6 +137,9 @@ export class PlayScene extends Phaser.Scene {
         rebootButton.on("click", e => {
             this.scene.start("play");
         });
+        this.input.keyboard.once("keydown-R", e => {
+            this.scene.start("play");
+        });
     }
 
     update(time, delta) {
