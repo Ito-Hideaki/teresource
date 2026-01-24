@@ -65,8 +65,20 @@
         border-width: 2px 0 0 0;
       }
       .loguilabel:last-child {
-        color: blue;
+        animation: loguilabelanimation;
+        animation-fill-mode: forwards;
+        animation-duration: 1s;
+        color: white;
         font-weight: bold;
+      }
+      @keyframes loguilabelanimation {
+        0% {
+          background-color: blue;
+        }
+        100% {
+          background-color: black;
+        }
+
       }
     </style>
     <link rel="stylesheet" href="/src/teresource/configUI.css">
