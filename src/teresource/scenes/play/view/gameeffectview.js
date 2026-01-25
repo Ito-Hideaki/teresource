@@ -83,7 +83,10 @@ class LineClearPopupText extends Phaser.GameObjects.Text {
     constructor(scene, gvContext, report) {
         const width = 200;
         super(scene, gvContext.getRelativeBoardX(0) - width, 0, "しんぐる");
-        this.setFontSize(100);
+        this.setFontSize(50);
+        this.setColor("black");
+        this.setFontStyle("bold");
+        this.setFontFamily('serif');
 
         this.scene.tweens.chain({
             tweens: [
