@@ -82,7 +82,8 @@ class LineClearPopupText extends Phaser.GameObjects.Text {
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
     constructor(scene, gvContext, report) {
         const width = 200;
-        super(scene, gvContext.getRelativeBoardX(0) - width, 0, "しんぐる");
+        const sentence = ["", "しんぐる", "だぶる", "とりぷる", "くあどらぷる"][report.data.rowToClearList.length];
+        super(scene, gvContext.getRelativeBoardX(0) - width, 0, sentence);
         this.setFontSize(50);
         this.setColor("black");
         this.setFontStyle("bold");
