@@ -78,6 +78,15 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     }
 }
 
+class LineClearPopupText extends Phaser.GameObjects.Text {
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    constructor(scene, gvContext, report) {
+        const width = 200;
+        super(scene, gvContext.getRelativeBoardX(0) - width, 0, "しんぐる");
+        this.setFontSize(100);
+    }
+}
+
 export class GameEffectManagerView {
 
     #gvContext;
@@ -97,6 +106,7 @@ export class GameEffectManagerView {
     update(delta_s) {
         this.#gameReportStack.lineClear.forEach(report => {
             this.createLineClearEffect(report);
+            this.createLineClearPopupText(report);
         });
         this.#updateEffectList.forEach(obj => {
             obj.update(delta_s);
@@ -112,5 +122,12 @@ export class GameEffectManagerView {
         });
         this.#scene.add.existing(effect);
         this.#boardContainer.add(effect);
+    }
+
+    /** @param {LineClearReport} report */
+    createLineClearPopupText(report) {
+        const text = new LineClearPopupText(this.#scene, this.#gvContext, report);
+        this.#scene.add.existing(text);
+        this.#boardContainer.add(text);
     }
 }
