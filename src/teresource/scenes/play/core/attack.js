@@ -4,39 +4,40 @@ import { MINO_DATA_INDEX } from "./coredata";
 import { CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
 
-const NONE = 0;
-const SPECIAL = 1;
-const MINI = 2;
-
 /** @param {CellBoard} cellBoard @param {CurrentMinoManager} currentMinoManager */
 function detectTSpecial(cellBoard, currentMinoManager) {
-    if(currentMinoManager.mino.type !== "t") return NONE;
+
+    function isCellBlock(row, column) {
+        return cellBoard.isCellPosOutOfTable(row, column) || cellBoard.getCell(row, column).isBlock;
+    }
+
+    if(currentMinoManager.mino.type !== "t") return false;
 
     //cellPos of the center of the T mino
     const minoRow = currentMinoManager.row, minoColumn = currentMinoManager.column;
     let cornerBlockCount = 0;
-    if(cellBoard.getCell(minoRow - 1, minoColumn - 1).isBlock) cornerBlockCount++;
-    if(cellBoard.getCell(minoRow + 1, minoColumn - 1).isBlock) cornerBlockCount++;
-    if(cellBoard.getCell(minoRow - 1, minoColumn + 1).isBlock) cornerBlockCount++;
-    if(cellBoard.getCell(minoRow + 1, minoColumn + 1).isBlock) cornerBlockCount++;
+    if(isCellBlock(minoRow - 1, minoColumn - 1)) cornerBlockCount++;
+    if(isCellBlock(minoRow - 1, minoColumn + 1)) cornerBlockCount++;
+    if(isCellBlock(minoRow + 1, minoColumn - 1)) cornerBlockCount++;
+    if(isCellBlock(minoRow + 1, minoColumn + 1)) cornerBlockCount++;
 
-    if(cornerBlockCount >= 3) return SPECIAL;
-    else return NONE;
+    return cornerBlockCount >= 3;
 }
 
 /** @param {CellBoard} cellBoard @param {CurrentMinoManager} currentMinoManager */
 function detectTMini(cellBoard, currentMinoManager) {
     //cellPos of the center of the T mino
     const minoRow = currentMinoManager.row, minoColumn = currentMinoManager.column;
-    if(cellBoard.isCellPosOutOfTable(minoRow - 1, minoColumn + 1)) return MINI;
-    if(cellBoard.isCellPosOutOfTable(minoRow + 1, minoColumn + 1)) return MINI;
-    return NONE;
+    if(cellBoard.isCellPosOutOfTable(minoRow - 1, minoColumn + 1)) return true;
+    if(cellBoard.isCellPosOutOfTable(minoRow + 1, minoColumn + 1)) return true;
+    return false;
 }
 
 /** Recieve BoardUpdateDiff every frame and manage attack-related state of the game */
 export class GameAttackState {
-    /** @type {boolean} */ isLastMoveSpecial;
-    /** @type {number} */ combo;
+    /** @type {boolean} */ isLastMoveSpecial = false;
+    /** @type {boolean} */ isLastMoveMini = false;
+    /** @type {number} */ combo = -1;
 
     /** @param {GameContext} context */
     constructor(context) {
@@ -46,14 +47,19 @@ export class GameAttackState {
 
     /** @param {BoardUpdateDiff} boardUpdateDiff @param {number} clearedRowLength*/
     update(boardUpdateDiff, clearedRowLength) {
-        const moveOccured = Boolean(boardUpdateDiff.appliedRotationAngle || boardUpdateDiff.horizontalMinoMove);
-        if(moveOccured) {
-            if(detectTSpecial(this.cellBoard, this.currentMinoManager) === SPECIAL) {
-                this.isLastMoveSpecial = true;
-                window.log("Special!");
-            } else {
-                this.isLastMoveSpecial = false;
-            }
+        //update isLastMoveSpecial
+        const rotateOccured = Boolean(boardUpdateDiff.appliedRotationAngle);
+        const moveOccured = Boolean(boardUpdateDiff.horizontalMinoMove);
+        if(rotateOccured) {
+            this.isLastMoveSpecial = detectTSpecial(this.cellBoard, this.currentMinoManager);
+            this.isLastMoveMini = detectTMini(this.cellBoard, this.currentMinoManager);
+            if(this.isLastMoveSpecial) window.log("Special!");
+        } else if(moveOccured) {
+            this.isLastMoveSpecial = false;
+            this.isLastMoveMini = false;
+        }
+
+        if(boardUpdateDiff.placedByHardDrop || boardUpdateDiff.placedByLockDown) {
         }
     }
 }
