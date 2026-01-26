@@ -100,7 +100,10 @@ class LineClearPopupText extends Phaser.GameObjects.Text {
                     targets: this,
                     alpha: { start: 1, to: 0 },
                     duration: 200,
-                }
+                    onComplete: () => {
+                        this.destroy();
+                    }
+                },
             ]
         }).play();
     }
