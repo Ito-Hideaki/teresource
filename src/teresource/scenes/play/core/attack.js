@@ -46,9 +46,14 @@ export class GameAttackState {
 
     /** @param {BoardUpdateDiff} boardUpdateDiff @param {number} clearedRowLength*/
     update(boardUpdateDiff, clearedRowLength) {
-        if(boardUpdateDiff.appliedRotationAngle % 360 !== 0) {
-            const result = detectTSpecial(this.cellBoard, this.currentMinoManager);
-            if(result === SPECIAL) window.log("Special!");
+        const moveOccured = Boolean(boardUpdateDiff.appliedRotationAngle || boardUpdateDiff.horizontalMinoMove);
+        if(moveOccured) {
+            if(detectTSpecial(this.cellBoard, this.currentMinoManager) === SPECIAL) {
+                this.isLastMoveSpecial = true;
+                window.log("Special!");
+            } else {
+                this.isLastMoveSpecial = false;
+            }
         }
     }
 }
