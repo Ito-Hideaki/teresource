@@ -108,7 +108,12 @@ const POPUP_STYLE_CONFIG = {
 class LineClearPopupText extends Phaser.GameObjects.Text {
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
     constructor(scene, gvContext, report) {
-        const sentence = ["", "しんぐる", "だぶる", "とりぷる", "くあどらぷる"][report.data.rowToClearList.length];
+        let sentence;
+        if(report.data.rowToClearList.length === 1 && report.data.isSpecial && report.data.isMini) {
+            sentence = "みに";
+        } else {
+            sentence  = ["", "しんぐる", "だぶる", "とりぷる", "くあどらぷる"][report.data.rowToClearList.length];
+        }
         super(scene, gvContext.getRelativeBoardX(0) - 20, 10, sentence, {
             ...POPUP_STYLE_CONFIG, fontSize: 40, color: "black"
         });
