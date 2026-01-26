@@ -26,6 +26,7 @@ function detectTSpecial(cellBoard, currentMinoManager) {
 
 /** @param {CellBoard} cellBoard @param {CurrentMinoManager} currentMinoManager */
 function detectTMini(cellBoard, currentMinoManager) {
+    if(currentMinoManager.mino.type !== "t") return false;
     //cellPos of the center of the T mino
     const minoRow = currentMinoManager.row, minoColumn = currentMinoManager.column;
     if(cellBoard.isCellPosOutOfTable(minoRow - 1, minoColumn + 1)) return true;
