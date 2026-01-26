@@ -2,21 +2,14 @@ import { LineClearReport, GameReportStack } from "../controller/report";
 import { GameContext } from "../infra/context";
 import { CellBoard } from "./mechanics";
 
-
-/** @param {number} num number of cleared rows @return {string} */
-export function getLineClearCodeFromNum(num) {
-    const value =[undefined, "ichi", "ni", "san", "yon"][num];
-    if(typeof value !== "string") throw "nanka okashii";
-    return value;
-}
-
-/** @type {Object.<string, { time_s: number }>} */
-const LINE_CLEAR_SETTINGS_MAP = {
-    "ichi": { time_s: 0.24 },
-    "ni"  : { time_s: 0.32 },
-    "san" : { time_s: 0.40 },
-    "yon" : { time_s: 0.48 }
-}
+/** @type {{ time_s: number }[]} */
+const LINE_CLEAR_SETTINGS_LIST = [
+    { time_s: 0 },
+    { time_s: 0.24 }, //single
+    { time_s: 0.32 }, //double
+    { time_s: 0.40 }, //triple
+    { time_s: 0.48 } //quadraple
+]
 
 export class LineClearManager {
 
@@ -64,9 +57,8 @@ export class LineClearManager {
             }
         }
 
-        const code = getLineClearCodeFromNum(rowToClearList.length);
-        this.#lineClearLastTime_s = LINE_CLEAR_SETTINGS_MAP[code].time_s;
-        const report = new LineClearReport({ rowToClearList, code });
+        this.#lineClearLastTime_s = LINE_CLEAR_SETTINGS_LIST[rowToClearList.length].time_s;
+        const report = new LineClearReport({ rowToClearList });
         this.#gameReportStack.add(report);
     }
 

@@ -4,7 +4,6 @@ import { CurrentMinoManager } from "../core/minomanager";
 import { CellBoard } from "../core/mechanics";
 import { GameContext } from "../infra/context";
 import { RotationSystem } from "../core/rotationsystem";
-import { GameReportStack } from "./report";
 
 export class ControlOrder {
 

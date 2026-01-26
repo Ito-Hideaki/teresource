@@ -12,7 +12,7 @@ export class Report {
 }
 
 export class LineClearReport extends Report {
-    /** @typedef {{ code: string, rowToClearList: number[] }} LineClearReportData */
+    /** @typedef {{ rowToClearList: number[] }} LineClearReportData */
     static type = "LineClear";
     parentClass = LineClearReport;
     data;
