@@ -24,6 +24,15 @@ function detectTSpecial(cellBoard, currentMinoManager) {
     else return NONE;
 }
 
+/** @param {CellBoard} cellBoard @param {CurrentMinoManager} currentMinoManager */
+function detectTMini(cellBoard, currentMinoManager) {
+    //cellPos of the center of the T mino
+    const minoRow = currentMinoManager.row, minoColumn = currentMinoManager.column;
+    if(cellBoard.isCellPosOutOfTable(minoRow - 1, minoColumn + 1)) return MINI;
+    if(cellBoard.isCellPosOutOfTable(minoRow + 1, minoColumn + 1)) return MINI;
+    return NONE;
+}
+
 /** Recieve BoardUpdateDiff every frame and manage attack-related state of the game */
 export class GameAttackState {
     /** @type {boolean} */ isLastMoveSpecial;
