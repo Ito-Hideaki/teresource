@@ -1,6 +1,7 @@
 import { ControlOrder, BoardUpdater, ControlOrderProvider, BoardUpdateDiff } from "./boardcontroller";
 import { GameContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
+import { LineClearReport, GameReportStack } from "./report";
 import { GameAttackState } from "../core/attack";
 
 /** Represents the logic og the game attached to each player */
@@ -75,5 +76,13 @@ export class GameController {
 
         //Update attack state
         this.gameAttackState.update(boardUpdateDiff, rowToClearList.length);
+
+        if(rowToClearList.length) {
+            this.#gameReportStack.add(new LineClearReport({
+                rowToClearList,
+                isSpecial: this.gameAttackState.isLastMoveSpecial,
+                isMini: this.gameAttackState.isLastMoveMini
+            }));
+        }
     }
 }

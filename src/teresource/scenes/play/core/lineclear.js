@@ -1,4 +1,3 @@
-import { LineClearReport, GameReportStack } from "../controller/report";
 import { GameContext } from "../infra/context";
 import { CellBoard } from "./mechanics";
 
@@ -19,13 +18,10 @@ export class LineClearManager {
     #cellBoard;
     /** @type {number[]} */
     #currentRowToClearList;
-    /** @type {GameReportStack} */
-    #gameReportStack;
 
     /** @param {GameContext} context */
     constructor(context) {
         this.#cellBoard = context.cellBoard;
-        this.#gameReportStack = context.gameReportStack;
     }
 
     findRowToClearList() {
@@ -58,8 +54,6 @@ export class LineClearManager {
         }
 
         this.#lineClearLastTime_s = LINE_CLEAR_SETTINGS_LIST[rowToClearList.length].time_s;
-        const report = new LineClearReport({ rowToClearList });
-        this.#gameReportStack.add(report);
     }
 
     /** drop cleared row, then set currentRowToClearList empty. @param {number[]} rowToClearList */
