@@ -1,10 +1,45 @@
 import { BoardUpdateDiff } from "../controller/boardcontroller";
+import { GameContext } from "../infra/context";
+import { MINO_DATA_INDEX } from "./coredata";
+import { CellBoard } from "./mechanics";
+import { CurrentMinoManager } from "./minomanager";
 
+const NONE = 0;
+const SPECIAL = 1;
+const MINI = 2;
+
+/** @param {CellBoard} cellBoard @param {CurrentMinoManager} currentMinoManager */
+function detectTSpecial(cellBoard, currentMinoManager) {
+    if(currentMinoManager.mino.type !== "t") return NONE;
+
+    //cellPos of the center of the T mino
+    const minoRow = currentMinoManager.row, minoColumn = currentMinoManager.column;
+    let cornerBlockCount = 0;
+    if(cellBoard.getCell(minoRow - 1, minoColumn - 1).isBlock) cornerBlockCount++;
+    if(cellBoard.getCell(minoRow + 1, minoColumn - 1).isBlock) cornerBlockCount++;
+    if(cellBoard.getCell(minoRow - 1, minoColumn + 1).isBlock) cornerBlockCount++;
+    if(cellBoard.getCell(minoRow + 1, minoColumn + 1).isBlock) cornerBlockCount++;
+
+    if(cornerBlockCount >= 3) return SPECIAL;
+    else return NONE;
+}
+
+/** Recieve BoardUpdateDiff every frame and manage attack-related state of the game */
 export class GameAttackState {
-    /** @type {boolean} */ isLastMoveSpecial = false;
-    /** @type {number} */ combo = -1;
-    /** @param {BoardUpdateDiff} boardUpdateDiff */
-    update(boardUpdateDiff, clearedRowLength) {
+    /** @type {boolean} */ isLastMoveSpecial;
+    /** @type {number} */ combo;
 
+    /** @param {GameContext} context */
+    constructor(context) {
+        this.cellBoard = context.cellBoard;
+        this.currentMinoManager = context.currentMinoManager;
+    }
+
+    /** @param {BoardUpdateDiff} boardUpdateDiff @param {number} clearedRowLength*/
+    update(boardUpdateDiff, clearedRowLength) {
+        if(boardUpdateDiff.appliedRotationAngle % 360 !== 0) {
+            const result = detectTSpecial(this.cellBoard, this.currentMinoManager);
+            if(result === SPECIAL) window.log("Special!");
+        }
     }
 }

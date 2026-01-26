@@ -71,7 +71,7 @@ export class GameFactory {
         });
 
         const lineClearManager = new LineClearManager(gameContext);
-        const gameAttackState = new GameAttackState();
+        const gameAttackState = new GameAttackState(gameContext);
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const boardUpdater = new BoardUpdater(gameContext);
         const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider, lineClearManager, gameAttackState });
