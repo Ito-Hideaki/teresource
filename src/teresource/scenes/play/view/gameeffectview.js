@@ -109,6 +109,28 @@ class LineClearPopupText extends Phaser.GameObjects.Text {
     }
 }
 
+class LineClearPopupView {
+    #gvContext;
+    #boardContainer;
+    #scene;
+    /** @type { LineClearPopupText } */ #mainText;
+
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext */
+    constructor(scene, gvContext) {
+        this.#gvContext = gvContext;
+        this.#boardContainer = gvContext.boardContainer;
+        this.#scene = scene;
+    }
+
+    /** @param {LineClearReport} report */
+    create(report) {
+        const text = new LineClearPopupText(this.#scene, this.#gvContext, report);
+        this.#scene.add.existing(text);
+        this.#boardContainer.add(text);
+        this.#mainText = text;
+    }
+}
+
 export class GameEffectManagerView {
 
     #gvContext;
@@ -116,6 +138,7 @@ export class GameEffectManagerView {
     #gameReportStack;
     #updateEffectList = [];
     #scene;
+    #lineClearPopupView;
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext */
     constructor(scene, gvContext) {
@@ -123,12 +146,14 @@ export class GameEffectManagerView {
         this.#boardContainer = gvContext.boardContainer;
         this.#gvContext = gvContext;
         this.#gameReportStack = gvContext.gameContext.gameReportStack;
+
+        this.#lineClearPopupView = new LineClearPopupView(scene, gvContext);
     }
 
     update(delta_s) {
         this.#gameReportStack.lineClear.forEach(report => {
             this.createLineClearEffect(report);
-            this.createLineClearPopupText(report);
+            this.#lineClearPopupView.create(report);
         });
         this.#updateEffectList.forEach(obj => {
             obj.update(delta_s);
@@ -144,12 +169,5 @@ export class GameEffectManagerView {
         });
         this.#scene.add.existing(effect);
         this.#boardContainer.add(effect);
-    }
-
-    /** @param {LineClearReport} report */
-    createLineClearPopupText(report) {
-        const text = new LineClearPopupText(this.#scene, this.#gvContext, report);
-        this.#scene.add.existing(text);
-        this.#boardContainer.add(text);
     }
 }
