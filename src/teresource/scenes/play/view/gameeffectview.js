@@ -78,34 +78,56 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     }
 }
 
+/** @param {Phaser.GameObjects.GameObject} thisObj @return {Phaser.Types.Tweens.TweenChainBuilderConfig}*/
+function get_POPUP_TWEEN_CHAIN_CONFIG(thisObj) {
+    return {
+        tweens: [
+            {
+                targets: thisObj,
+                alpha: 1,
+                duration: 800,
+            },
+            {
+                targets: thisObj,
+                alpha: { start: 1, to: 0 },
+                duration: 200,
+                onComplete: () => {
+                    thisObj.destroy();
+                }
+            },
+        ]
+    };
+}
+
+/** @type {Phaser.GameObjects.TextStyle} */
+const POPUP_STYLE_CONFIG = {
+    fontStyle: "bold",
+    fontFamily: "serif"
+};
+
 class LineClearPopupText extends Phaser.GameObjects.Text {
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
     constructor(scene, gvContext, report) {
         const sentence = ["", "しんぐる", "だぶる", "とりぷる", "くあどらぷる"][report.data.rowToClearList.length];
-        super(scene, gvContext.getRelativeBoardX(0) - 20, 0, sentence);
-        this.setFontSize(40);
-        this.setColor("black");
-        this.setFontStyle("bold");
-        this.setFontFamily('serif');
+        super(scene, gvContext.getRelativeBoardX(0) - 20, 10, sentence, {
+            ...POPUP_STYLE_CONFIG, fontSize: 40, color: "black"
+        });
         this.setOrigin(1, 0.5);
 
-        this.scene.tweens.chain({
-            tweens: [
-                {
-                    targets: this,
-                    alpha: 1,
-                    duration: 800,
-                },
-                {
-                    targets: this,
-                    alpha: { start: 1, to: 0 },
-                    duration: 200,
-                    onComplete: () => {
-                        this.destroy();
-                    }
-                },
-            ]
-        }).play();
+        this.scene.tweens.chain(get_POPUP_TWEEN_CHAIN_CONFIG(this)).play();
+    }
+}
+
+class LineClearPopupSpecialText extends Phaser.GameObjects.Text {
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    constructor(scene, gvContext, report) {
+        const sentence = "すぺしゃる";
+        super(scene, gvContext.getRelativeBoardX(0) - 20, -25, sentence, {
+            ...POPUP_STYLE_CONFIG, fontSize: 30, color: "#a0a"
+        });
+        this.setOrigin(1, 0.5);
+
+        this.scene.tweens.chain(get_POPUP_TWEEN_CHAIN_CONFIG(this)).play();
     }
 }
 
@@ -114,6 +136,7 @@ class LineClearPopupView {
     #boardContainer;
     #scene;
     /** @type { LineClearPopupText } */ #mainText;
+    /** @type { LineClearPopupSpecialText } */#specialText
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext */
     constructor(scene, gvContext) {
@@ -128,6 +151,13 @@ class LineClearPopupView {
         this.#scene.add.existing(text);
         this.#boardContainer.add(text);
         this.#mainText = text;
+
+        if(report.data.isSpecial) {
+            const special = new LineClearPopupSpecialText(this.#scene, this.#gvContext, report);
+            this.#scene.add.existing(special);
+            this.#boardContainer.add(special);
+            this.#specialText = special;
+        }
     }
 }
 
