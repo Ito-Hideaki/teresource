@@ -1,6 +1,7 @@
 import { ControlOrder, BoardUpdater, ControlOrderProvider, BoardUpdateDiff } from "./boardcontroller";
 import { GameContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
+import { GameAttackState } from "../core/attack";
 
 /** Represents the logic og the game attached to each player */
 export class GameController {
@@ -15,12 +16,13 @@ export class GameController {
 
     /**
      * @param {GameContext} gameContext
-     * @param {{boardUpdater: BoardUpdater, controlOrderProvider: ControlOrderProvider, lineClearManager: LineClearManager }} $
+     * @param {{boardUpdater: BoardUpdater, controlOrderProvider: ControlOrderProvider, lineClearManager: LineClearManager, gameAttackState: GameAttackState }} $
      */
     constructor(gameContext, $) {
         this.#controlOrderProvider = $.controlOrderProvider;
         this.#boardUpdater = $.boardUpdater;
         this.lineClearManager = $.lineClearManager;
+        this.gameAttackState = $.gameAttackState
 
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
@@ -68,6 +70,10 @@ export class GameController {
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);
         //Clear filled line (row)
-        this.lineClearManager.startClear(this.lineClearManager.findRowToClearList());
+        const rowToClearList = this.lineClearManager.findRowToClearList();
+        this.lineClearManager.startClear(rowToClearList);
+
+        //Update attack state
+        this.gameAttackState.update(boardUpdateDiff, rowToClearList.length);
     }
 }

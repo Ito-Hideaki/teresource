@@ -13,6 +13,7 @@ import { createRelativePositionGetter } from "#util";
 import { GameEffectManagerView } from "../view/gameeffectview";
 import { GameReportStack } from "../controller/report";
 import { LineClearManager } from "../core/lineclear";
+import { GameAttackState } from "../core/attack";
 
 /** 
  * @typedef {{
@@ -70,9 +71,10 @@ export class GameFactory {
         });
 
         const lineClearManager = new LineClearManager(gameContext);
+        const gameAttackState = new GameAttackState();
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const boardUpdater = new BoardUpdater(gameContext);
-        const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider, lineClearManager });
+        const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider, lineClearManager, gameAttackState });
 
         //Create elements of the scene
         const { gameViewController } = GameFactory.#createView({ gameConfig, gameContext, scene });
