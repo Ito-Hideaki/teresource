@@ -136,12 +136,23 @@ class LineClearPopupSpecialText extends Phaser.GameObjects.Text {
     }
 }
 
+class LineClearPopupComboText extends Phaser.GameObjects.Text {
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    constructor(scene, gvContext, report) {
+        const sentence = `${report.data.combo}れん`;
+        super(scene, gvContext.getRelativeBoardX(0) - 20, 45, sentence, {
+            ...POPUP_STYLE_CONFIG, fontSize: 30, color: "#0a0"
+        });
+        this.setOrigin(1, 0.5);
+
+        this.scene.tweens.chain(get_POPUP_TWEEN_CHAIN_CONFIG(this)).play();
+    }
+}
+
 class LineClearPopupView {
     #gvContext;
     #boardContainer;
     #scene;
-    /** @type { LineClearPopupText } */ #mainText;
-    /** @type { LineClearPopupSpecialText } */#specialText
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext */
     constructor(scene, gvContext) {
@@ -155,13 +166,17 @@ class LineClearPopupView {
         const text = new LineClearPopupText(this.#scene, this.#gvContext, report);
         this.#scene.add.existing(text);
         this.#boardContainer.add(text);
-        this.#mainText = text;
 
         if(report.data.isSpecial) {
             const special = new LineClearPopupSpecialText(this.#scene, this.#gvContext, report);
             this.#scene.add.existing(special);
             this.#boardContainer.add(special);
-            this.#specialText = special;
+        }
+
+        if(report.data.combo) {
+            const combo = new LineClearPopupComboText(this.#scene, this.#gvContext, report);
+            this.#scene.add.existing(combo);
+            this.#boardContainer.add(combo);
         }
     }
 }
