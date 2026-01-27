@@ -14,7 +14,7 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
     constructor(scene, gvContext, report) {
         super(scene);
-        this.#rowToClearList = report.getData().rowToClearList;
+        this.#rowToClearList = report.data.clearedRowList;
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
         this.#cellWidth = gvContext.getBoardCellWidth();
@@ -109,10 +109,10 @@ class LineClearPopupText extends Phaser.GameObjects.Text {
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
     constructor(scene, gvContext, report) {
         let sentence;
-        if(report.data.rowToClearList.length === 1 && report.data.isSpecial && report.data.isMini) {
+        if(report.data.clearedRowList.length === 1 && report.data.isSpecial && report.data.isMini) {
             sentence = "みに";
         } else {
-            sentence  = ["", "しんぐる", "だぶる", "とりぷる", "くあどらぷる"][report.data.rowToClearList.length];
+            sentence  = ["", "しんぐる", "だぶる", "とりぷる", "くあどらぷる"][report.data.clearedRowList.length];
         }
         super(scene, gvContext.getRelativeBoardX(0) - 20, 10, sentence, {
             ...POPUP_STYLE_CONFIG, fontSize: 40, color: "black"

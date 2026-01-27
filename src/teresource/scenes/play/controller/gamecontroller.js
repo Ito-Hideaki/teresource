@@ -44,7 +44,7 @@ export class GameController {
         }
 
         this.#gameReportStack.lineClear.forEach(lineClearReport => {
-            const lineCount = lineClearReport.data.rowToClearList.length;
+            const lineCount = lineClearReport.data.clearedRowList.length;
             window.log(`${lineCount} line(s) cleared`);
         });
     }
@@ -78,12 +78,8 @@ export class GameController {
         this.gameAttackState.update(boardUpdateDiff, rowToClearList.length);
 
         if(rowToClearList.length) {
-            this.#gameReportStack.add(new LineClearReport({
-                rowToClearList,
-                isSpecial: this.gameAttackState.isLastMoveSpecial,
-                isMini: this.gameAttackState.isLastMoveMini,
-                combo: this.gameAttackState.combo
-            }));
+            const reportData = this.gameAttackState.createLineClearAttackData(rowToClearList);
+            this.#gameReportStack.add(new LineClearReport(reportData));
         }
     }
 }

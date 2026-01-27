@@ -1,3 +1,4 @@
+import { LineClearAttackData } from "../core/attack";
 
 
 /** Object that is used to tell what has happened in the last frame.
@@ -12,11 +13,10 @@ export class Report {
 }
 
 export class LineClearReport extends Report {
-    /** @typedef {{ rowToClearList: number[], isSpecial: boolean, isMini: boolean, combo: number }} LineClearReportData */
     static type = "LineClear";
     parentClass = LineClearReport;
     data;
-    /** @param {LineClearReportData} data */
+    /** @param {LineClearAttackData} data */
     constructor(data) {
         super();
         this.data = data;

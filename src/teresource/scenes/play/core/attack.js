@@ -34,6 +34,18 @@ function detectTMini(cellBoard, currentMinoManager) {
     return false;
 }
 
+export class LineClearAttackData {
+    /** @type {number[]} */ clearedRowList;
+    /** @type {number} */ combo;
+    /** @type {boolean} */ isSpecial;
+    /** @type {boolean} */ isMini;
+
+    /** @param {LineClearAttackData} data */
+    constructor(data = {}) {
+        Object.assign(this, data);
+    }
+}
+
 /** Recieve BoardUpdateDiff every frame and manage attack-related state of the game */
 export class GameAttackState {
     /** @type {boolean} */ isLastMoveSpecial = false;
@@ -73,5 +85,15 @@ export class GameAttackState {
                 this.combo = 0;
             }
         }
+    }
+
+    /** @param {number} clearedRowList */
+    createLineClearAttackData(clearedRowList) {
+        return new LineClearAttackData({
+            clearedRowList,
+            combo: this.combo,
+            isSpecial: this.isLastMoveSpecial,
+            isMini: this.isLastMoveMini
+        });
     }
 }
