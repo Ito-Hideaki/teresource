@@ -36,7 +36,9 @@ BoardController ボード・ミノ・操作の状態を読み込み、時間を�
 ・色
 ・スキン
 
+バグ
+新しいミノが出たときにGameAttackStateのSpecialがリセットされるようにする
+
 リファクタリング
 cellSheetTextureにGhostなどのために複数のsourceImageを使う
 rowToDisplayFrom configに突っ込んでどうにかする
-cellWidthはcellSheetParentに突っ込む cellSheetParentによって違っても問題が起きないようにする 実寸のcellWidthをまた別に用意する
