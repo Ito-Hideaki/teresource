@@ -81,7 +81,8 @@ export class GameController {
             this.#gameReportStack.add(new LineClearReport({
                 rowToClearList,
                 isSpecial: this.gameAttackState.isLastMoveSpecial,
-                isMini: this.gameAttackState.isLastMoveMini
+                isMini: this.gameAttackState.isLastMoveMini,
+                combo: this.gameAttackState.combo
             }));
         }
     }
