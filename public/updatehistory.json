@@ -1,5 +1,6 @@
 {
     "datas" : [
+        { "date": "Jan 27 2026", "content" : "コンボを実装。"},
         { "date": "Jan 26 2026", "content" : "Special判定とMini判定を実装。"},
         { "date": "Jan 25 2026", "content" : "ライン消去の文字エフェクトを簡易に実装。"},
         { "date": "Jan 24 2026", "content" : "ログに時刻を追加して見た目を改善。"},
