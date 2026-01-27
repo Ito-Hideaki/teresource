@@ -38,7 +38,8 @@ function detectTMini(cellBoard, currentMinoManager) {
 export class GameAttackState {
     /** @type {boolean} */ isLastMoveSpecial = false;
     /** @type {boolean} */ isLastMoveMini = false;
-    /** @type {number} */ combo = -1;
+    /** @type {number} */ combo = 0;
+    /*8 @type {boolean} */ preCombo = false;
 
     /** @param {GameContext} context */
     constructor(context) {
@@ -61,6 +62,16 @@ export class GameAttackState {
         }
 
         if(boardUpdateDiff.placedByHardDrop || boardUpdateDiff.placedByLockDown) {
+            if(clearedRowLength) {
+                if(this.preCombo) {
+                    this.combo++;
+                } else {
+                    this.preCombo = true;
+                }
+            } else {
+                this.preCombo = false;
+                this.combo = 0;
+            }
         }
     }
 }
