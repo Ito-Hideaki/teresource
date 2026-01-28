@@ -149,6 +149,19 @@ class LineClearPopupComboText extends Phaser.GameObjects.Text {
     }
 }
 
+class LineClearPopupB2BText extends Phaser.GameObjects.Text {
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    constructor(scene, gvContext, report) {
+        const sentence = `ばっくとぅーばっく`;
+        super(scene, gvContext.getRelativeBoardX(0) - 20, 75, sentence, {
+            ...POPUP_STYLE_CONFIG, fontSize: 30, color: "#40b"
+        });
+        this.setOrigin(1, 0.5);
+
+        this.scene.tweens.chain(get_POPUP_TWEEN_CHAIN_CONFIG(this)).play();
+    }
+}
+
 class LineClearPopupView {
     #gvContext;
     #boardContainer;
@@ -177,6 +190,12 @@ class LineClearPopupView {
             const combo = new LineClearPopupComboText(this.#scene, this.#gvContext, report);
             this.#scene.add.existing(combo);
             this.#boardContainer.add(combo);
+        }
+
+        if(report.data.B2B) {
+            const b2b = new LineClearPopupB2BText(this.#scene, this.#gvContext, report);
+            this.#scene.add.existing(b2b);
+            this.#boardContainer.add(b2b);
         }
     }
 }
