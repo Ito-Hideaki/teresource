@@ -39,6 +39,7 @@ export class LineClearAttackData {
     /** @type {number} */ combo;
     /** @type {boolean} */ isSpecial;
     /** @type {boolean} */ isMini;
+    /** @type {boolean} */ B2B;
 
     /** @param {LineClearAttackData} data */
     constructor(data = {}) {
@@ -51,7 +52,9 @@ export class GameAttackState {
     /** @type {boolean} */ isLastMoveSpecial = false;
     /** @type {boolean} */ isLastMoveMini = false;
     /** @type {number} */ combo = 0;
-    /*8 @type {boolean} */ preCombo = false;
+    /** @type {boolean} */ preCombo = false;
+    /** @type {boolean} */ preB2B = false;
+    /** @type {boolean} */ B2B = false;
 
     /** @param {GameContext} context */
     constructor(context) {
@@ -75,12 +78,22 @@ export class GameAttackState {
 
         if(boardUpdateDiff.placedByHardDrop || boardUpdateDiff.placedByLockDown) {
             if(clearedRowLength) {
+                //update combo
                 if(this.preCombo) {
                     this.combo++;
                 } else {
                     this.preCombo = true;
                 }
+                //update back to back
+                if((clearedRowLength === 4) || this.isLastMoveSpecial) {
+                    if(this.preB2B) { this.B2B = true; window.log("B2B");}
+                    else this.preB2B = true;
+                } else {
+                    this.preB2B = false;
+                    this.B2B = false;
+                }
             } else {
+                //update combo
                 this.preCombo = false;
                 this.combo = 0;
             }
@@ -93,7 +106,8 @@ export class GameAttackState {
             clearedRowList,
             combo: this.combo,
             isSpecial: this.isLastMoveSpecial,
-            isMini: this.isLastMoveMini
+            isMini: this.isLastMoveMini,
+            B2B: this.B2B
         });
     }
 }
