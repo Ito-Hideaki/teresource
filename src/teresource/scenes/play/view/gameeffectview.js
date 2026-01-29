@@ -109,10 +109,10 @@ class LineClearPopupText extends Phaser.GameObjects.Text {
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
     constructor(scene, gvContext, report) {
         let sentence;
-        if(report.data.clearedRowList.length === 1 && report.data.isSpecial && report.data.isMini) {
+        if (report.data.clearedRowList.length === 1 && report.data.isSpecial && report.data.isMini) {
             sentence = "みに";
         } else {
-            sentence  = ["", "しんぐる", "だぶる", "とりぷる", "くあどらぷる"][report.data.clearedRowList.length];
+            sentence = ["", "しんぐる", "だぶる", "とりぷる", "くあどらぷる"][report.data.clearedRowList.length];
         }
         super(scene, gvContext.getRelativeBoardX(0) - 20, 10, sentence, {
             ...POPUP_STYLE_CONFIG, fontSize: 40, color: "black"
@@ -180,23 +180,52 @@ class LineClearPopupView {
         this.#scene.add.existing(text);
         this.#boardContainer.add(text);
 
-        if(report.data.isSpecial) {
+        if (report.data.isSpecial) {
             const special = new LineClearPopupSpecialText(this.#scene, this.#gvContext, report);
             this.#scene.add.existing(special);
             this.#boardContainer.add(special);
         }
 
-        if(report.data.combo) {
+        if (report.data.combo) {
             const combo = new LineClearPopupComboText(this.#scene, this.#gvContext, report);
             this.#scene.add.existing(combo);
             this.#boardContainer.add(combo);
         }
 
-        if(report.data.B2B) {
+        if (report.data.B2B) {
             const b2b = new LineClearPopupB2BText(this.#scene, this.#gvContext, report);
             this.#scene.add.existing(b2b);
             this.#boardContainer.add(b2b);
         }
+    }
+}
+
+class AllClearText extends Phaser.GameObjects.Text {
+    /** @param {Phaser.Scene} scene */
+    constructor(scene) {
+        super(scene, 0, 0, "ぜんけし");
+        this.setFontSize(60);
+        this.setFontFamily("sans-serif");
+        this.setFontStyle("bold");
+        this.setColor("yellow");
+        this.setOrigin(0.5, 0.5);
+        scene.tweens.chain({
+            tweens: [
+                {
+                    targets: this,
+                    scale: {from: 1.2, to: 1},
+                    duration: 50,
+                },
+                {
+                    delay: 800,
+                    targets: this,
+                    scale: 0.001,
+                    alpha: 0,
+                    duration: 100,
+                    onComplete: this.destroy,
+                },
+            ]
+        });
     }
 }
 
@@ -223,6 +252,11 @@ export class GameEffectManagerView {
         this.#gameReportStack.lineClear.forEach(report => {
             this.createLineClearEffect(report);
             this.#lineClearPopupView.create(report);
+            if(report.data.isAllClear) {
+                const allClearText = new AllClearText(this.#scene);
+                this.#scene.add.existing(allClearText);
+                this.#boardContainer.add(allClearText);
+            }
         });
         this.#updateEffectList.forEach(obj => {
             obj.update(delta_s);
