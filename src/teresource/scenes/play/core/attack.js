@@ -4,6 +4,16 @@ import { MINO_DATA_INDEX } from "./coredata";
 import { CellBoard } from "./mechanics";
 import { CurrentMinoManager } from "./minomanager";
 
+/** @param { CellBoard } cellBoard */
+function detectAllClear(cellBoard) {
+    for(let row = 0; row < cellBoard.rowCount; row++) {
+        for(let column = 0; column < cellBoard.columnCount; column++) {
+            if(cellBoard.getCell(row, column).isBlock) return false;
+        }
+    }
+    return true;
+}
+
 /** @param {CellBoard} cellBoard @param {CurrentMinoManager} currentMinoManager */
 function detectTSpecial(cellBoard, currentMinoManager) {
 
@@ -39,6 +49,7 @@ export class LineClearAttackData {
     /** @type {number} */ combo;
     /** @type {boolean} */ isSpecial;
     /** @type {boolean} */ isMini;
+    /** @type {boolean} */ isAllClear;
     /** @type {boolean} */ B2B;
 
     /** @param {LineClearAttackData} data */
@@ -102,11 +113,13 @@ export class GameAttackState {
 
     /** @param {number} clearedRowList */
     createLineClearAttackData(clearedRowList) {
+        if(detectAllClear(this.cellBoard)) window.log("All Clear!");
         return new LineClearAttackData({
             clearedRowList,
             combo: this.combo,
             isSpecial: this.isLastMoveSpecial,
             isMini: this.isLastMoveMini,
+            isAllClear: detectAllClear(this.cellBoard),
             B2B: this.B2B
         });
     }
