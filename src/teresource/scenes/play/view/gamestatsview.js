@@ -5,11 +5,13 @@ export class GameStatsView {
 
     #gameReportStack;
     #gameStats;
+    #scene;
 
     clearedLineText;
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext */
     constructor(scene, gvContext) {
+        this.#scene = scene;
         this.#gameReportStack = gvContext.gameContext.gameReportStack;
         this.#gameStats = gvContext.gameHighContext.gameStats;
 
@@ -20,9 +22,16 @@ export class GameStatsView {
     }
 
     update() {
-        if(this.#gameReportStack.lineClear[0]) {
+        if (this.#gameReportStack.lineClear[0]) {
             const report = this.#gameReportStack.lineClear[0];
             this.clearedLineText.setText(`${this.#gameStats.clearedLines}ライン消した`);
+            this.#scene.add.tween({
+                targets: this.clearedLineText,
+                duration: 50,
+                y: "-=10",
+                ease: "Power2",
+                yoyo: true
+            });
         }
     }
 }
