@@ -23,18 +23,6 @@ export class LineClearReport extends Report {
     }
 }
 
-export class MinoSpawnReport extends Report {
-    /** @typedef {} MinoSpawnReportData */
-    static type = "MinoSpawn";
-    data;
-    parentClass = MinoSpawnReport;
-    /** @param {MinoSpawnReportData} data */
-    constructor(data) {
-        super();
-        this.data = data;
-    }
-}
-
 /** contain report stacks that become empty every frame */
 export class ReportStack {
     constructor() {
