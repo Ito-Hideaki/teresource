@@ -9,13 +9,15 @@ import { GameStatsManager } from "./stats";
 export class GameController {
 
     #boardUpdater
-    #controlOrderProvider
+    /** @type {ControlOrderProvider} */#controlOrderProvider
     #currentMinoManager
     #minoQueueManager
     #heldMinoManager
     #boardUpdateState
-    #gameReportStack
-    #gameStatsManager
+    /** @type {GameReportStack} */#gameReportStack
+    /** @type {GameStatsManager} */ #gameStatsManager
+    /** @type {LineClearManager} */ lineClearManager
+    /** @type {GameAttackState} */ gameAttackState
 
     /**
      * @param {GameContext} gameContext
