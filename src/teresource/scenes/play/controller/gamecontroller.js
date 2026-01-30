@@ -3,6 +3,7 @@ import { GameContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
 import { LineClearReport, GameReportStack } from "./report";
 import { GameAttackState } from "../core/attack";
+import { GameStatsManager } from "./stats";
 
 /** Represents the logic og the game attached to each player */
 export class GameController {
@@ -14,16 +15,18 @@ export class GameController {
     #heldMinoManager
     #boardUpdateState
     #gameReportStack
+    #gameStatsManager
 
     /**
      * @param {GameContext} gameContext
-     * @param {{boardUpdater: BoardUpdater, controlOrderProvider: ControlOrderProvider, lineClearManager: LineClearManager, gameAttackState: GameAttackState }} $
+     * @param {{boardUpdater: BoardUpdater, controlOrderProvider: ControlOrderProvider, lineClearManager: LineClearManager, gameAttackState: GameAttackState, gameStatsManager: GameStatsManager }} $
      */
     constructor(gameContext, $) {
         this.#controlOrderProvider = $.controlOrderProvider;
         this.#boardUpdater = $.boardUpdater;
         this.lineClearManager = $.lineClearManager;
-        this.gameAttackState = $.gameAttackState
+        this.gameAttackState = $.gameAttackState;
+        this.#gameStatsManager = $.gameStatsManager;
 
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
@@ -42,6 +45,8 @@ export class GameController {
         if(!this.lineClearManager.isDuringLineClear()) {
             this.#doNormalUpdate(deltaTime);
         }
+
+        this.#gameStatsManager.update();
 
         this.#gameReportStack.lineClear.forEach(lineClearReport => {
             const lineCount = lineClearReport.data.clearedRowList.length;
@@ -77,9 +82,11 @@ export class GameController {
         //Update attack state
         this.gameAttackState.update(boardUpdateDiff, rowToClearList.length);
 
+        //do line clear effect
         if(rowToClearList.length) {
             const reportData = this.gameAttackState.createLineClearAttackData(rowToClearList);
             this.#gameReportStack.add(new LineClearReport(reportData));
+            this.#gameStatsManager.setNewLineClearAttackData(reportData);
         }
     }
 }

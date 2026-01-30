@@ -14,6 +14,7 @@ import { GameEffectManagerView } from "../view/gameeffectview";
 import { GameReportStack } from "../controller/report";
 import { LineClearManager } from "../core/lineclear";
 import { GameAttackState } from "../core/attack";
+import { GameStatsManager, GameStats } from "../controller/stats";
 
 /** 
  * @typedef {{
@@ -74,7 +75,8 @@ export class GameFactory {
         const gameAttackState = new GameAttackState(gameContext);
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const boardUpdater = new BoardUpdater(gameContext);
-        const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider, lineClearManager, gameAttackState });
+        const gameStatsManager = new GameStatsManager(new GameStats());
+        const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider, lineClearManager, gameAttackState, gameStatsManager });
 
         //Create elements of the scene
         const { gameViewController } = GameFactory.#createView({ gameConfig, gameContext, scene });
