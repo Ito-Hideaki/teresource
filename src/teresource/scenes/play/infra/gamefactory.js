@@ -82,7 +82,7 @@ export class GameFactory {
         const gameController = new GameController(gameContext, gameHighContext);
 
         //Create elements of the scene
-        const { gameViewController } = GameFactory.#createView({ gameConfig, gameContext, scene });
+        const { gameViewController } = GameFactory.#createView({ gameConfig, gameHighContext, gameContext, scene });
 
         return {
             gameController,
@@ -92,8 +92,8 @@ export class GameFactory {
         }
     }
 
-    /** @param {{ gameConfig: GameConfig, gameContext: GameContext, scene: Phaser.Scene }} */
-    static #createView({ gameConfig, gameContext, scene }) {
+    /** @param {{ gameConfig: GameConfig, gameHighContext: GameHighContext, gameContext: GameContext, scene: Phaser.Scene }} */
+    static #createView({ gameConfig, gameContext, gameHighContext, scene }) {
         const boardCellWidth = 26;
         const skin = gameConfig.skin;
         const boardContainer = scene.add.container();
@@ -101,6 +101,7 @@ export class GameFactory {
         const gameViewContext = new GameViewContext({
             cellSheetParent: scene.cellSheetParentIndex[skin],
             gameContext,
+            gameHighContext,
             boardContainer,
             getRelativeBoardX: relativeBoardPositionGetter.getRelativeX,
             getRelativeBoardY: relativeBoardPositionGetter.getRelativeY,

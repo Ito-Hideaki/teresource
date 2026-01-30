@@ -57,6 +57,7 @@ export class GameHighContext {
 export class GameViewContext {
     /** @type {CellSheetParent} */ cellSheetParent
     /** @type {GameContext} */ gameContext
+    /** @type {GameHighContext} */ gameHighContext
     /** @type {Phaser.GameObjects.Container} */ boardContainer
     /** @type {Function} */ getRelativeBoardY
     /** @type {Function} */ getRelativeBoardX
@@ -65,6 +66,7 @@ export class GameViewContext {
      * @param {{
      * cellSheetParent  : CellSheetParent,
      * gameContext      : GameContext,
+     * gameHighContext  : GameHighContext,
      * boardContainer   : Phaser.GameObjects.Container,
      * getRelativeBoardX: Function,
      * getRelativeBoardY: Function,
@@ -74,6 +76,7 @@ export class GameViewContext {
     constructor(source) {
         this.cellSheetParent = source.cellSheetParent;
         this.gameContext     = source.gameContext;
+        this.gameHighContext = source.gameHighContext; 
         this.boardContainer  = source.boardContainer;
         this.getRelativeBoardX    = source.getRelativeBoardX;
         this.getRelativeBoardY    = source.getRelativeBoardY;
