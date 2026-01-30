@@ -23,7 +23,6 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
 
     update(delta_s) {
         this.#timePassed += delta_s;
-        console.log(this.#timePassed);
         if (this.#timePassed >= this.#effectDuration) {
             this.destroy();
         } else {
