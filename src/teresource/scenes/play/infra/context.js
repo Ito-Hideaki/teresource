@@ -1,9 +1,12 @@
 import { CellBoard, BoardSize } from "../core/mechanics";
 import { CurrentMinoManager, HeldMinoManager, MinoQueueManager } from "../core/minomanager";
-import { BoardUpdateState } from "../controller/boardcontroller";
+import { BoardUpdateState, ControlOrderProvider } from "../controller/boardcontroller";
 import { CellSheetParent } from "../view/customtexture";
 import { RotationSystem } from "../core/rotationsystem";
 import { GameReportStack } from "../controller/report";
+import { GameStats, GameStatsManager } from "../controller/stats";
+import { GameAttackState } from "../core/attack";
+import { LineClearManager } from "../core/lineclear";
 
 /** @param {{}} source @return GameContext */
 export class GameContext {
@@ -29,6 +32,25 @@ export class GameContext {
         this.boardUpdateState   = source.boardUpdateState;
         this.rotationSystem     = source.rotationSystem;
         this.gameReportStack    = source.gameReportStack;
+    }
+}
+
+export class GameHighContext {
+    /**
+     *  @param {{
+     *     gameStats: GameStats,
+     *     gameStatsManager: GameStatsManager,
+     *     gameAttackState: GameAttackState,
+     *     controlOrderProvider: ControlOrderProvider,
+     *     lineClearManager : LineClearManager
+     * }} source
+     * */
+    constructor(source) {
+        this.gameStats        = source.gameStats;
+        this.gameStatsManager = source.gameStatsManager;
+        this.gameAttackState  = source.gameAttackState;
+        this.controlOrderProvider = source.controlOrderProvider;
+        this.lineClearManager = source.lineClearManager;
     }
 }
 

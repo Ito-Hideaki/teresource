@@ -1,7 +1,7 @@
 import { CurrentMinoManager, Bag, MinoQueueManager, HeldMinoManager } from "../core/minomanager";
 import { BoardSize, CellBoard } from "../core/mechanics";
 import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "../controller/boardcontroller";
-import { GameContext, GameViewContext } from "./context";
+import { GameContext, GameHighContext, GameViewContext } from "./context";
 import { GameViewController } from "../view/gameviewcontroller";
 import { GameController } from "../controller/gamecontroller";
 import { PlayScene } from "../../play";
@@ -74,9 +74,12 @@ export class GameFactory {
         const lineClearManager = new LineClearManager(gameContext);
         const gameAttackState = new GameAttackState(gameContext);
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
-        const boardUpdater = new BoardUpdater(gameContext);
-        const gameStatsManager = new GameStatsManager(new GameStats());
-        const gameController = new GameController(gameContext, { boardUpdater, controlOrderProvider, lineClearManager, gameAttackState, gameStatsManager });
+        const gameStats = new GameStats();
+        const gameStatsManager = new GameStatsManager(gameStats);
+        const gameHighContext = new GameHighContext({
+            gameStats, gameStatsManager, gameAttackState, controlOrderProvider, lineClearManager
+        })
+        const gameController = new GameController(gameContext, gameHighContext);
 
         //Create elements of the scene
         const { gameViewController } = GameFactory.#createView({ gameConfig, gameContext, scene });

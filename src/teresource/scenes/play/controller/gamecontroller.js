@@ -1,5 +1,5 @@
 import { ControlOrder, BoardUpdater, ControlOrderProvider, BoardUpdateDiff } from "./boardcontroller";
-import { GameContext } from "../infra/context";
+import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
 import { LineClearReport, GameReportStack } from "./report";
 import { GameAttackState } from "../core/attack";
@@ -19,14 +19,14 @@ export class GameController {
 
     /**
      * @param {GameContext} gameContext
-     * @param {{boardUpdater: BoardUpdater, controlOrderProvider: ControlOrderProvider, lineClearManager: LineClearManager, gameAttackState: GameAttackState, gameStatsManager: GameStatsManager }} $
+     * @param {GameHighContext} gameHighContext
      */
-    constructor(gameContext, $) {
-        this.#controlOrderProvider = $.controlOrderProvider;
-        this.#boardUpdater = $.boardUpdater;
-        this.lineClearManager = $.lineClearManager;
-        this.gameAttackState = $.gameAttackState;
-        this.#gameStatsManager = $.gameStatsManager;
+    constructor(gameContext, gameHighContext) {
+        this.#controlOrderProvider = gameHighContext.controlOrderProvider;
+        this.#boardUpdater = new BoardUpdater(gameContext);
+        this.lineClearManager = gameHighContext.lineClearManager;
+        this.gameAttackState = gameHighContext.gameAttackState;
+        this.#gameStatsManager = gameHighContext.gameStatsManager;
 
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
