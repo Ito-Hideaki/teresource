@@ -15,6 +15,7 @@ import { GameReportStack } from "../controller/report";
 import { LineClearManager } from "../core/lineclear";
 import { GameAttackState } from "../core/attack";
 import { GameStatsManager, GameStats } from "../controller/stats";
+import { GameStatsView } from "../view/gamestatsview";
 
 /** 
  * @typedef {{
@@ -115,8 +116,9 @@ export class GameFactory {
         const minoQueueView = new MinoQueueView(scene, gameViewContext);
         const heldMinoView = new HeldMinoView(scene, gameViewContext);
         const gameEffectManagerView = new GameEffectManagerView(scene, gameViewContext);
+        const gameStatsView = new GameStatsView(scene, gameViewContext);
         const gameViewController = new GameViewController(scene, gameViewContext, {
-            boardDeco, boardView, minoQueueView, heldMinoView, gameEffectManagerView
+            boardDeco, boardView, minoQueueView, heldMinoView, gameEffectManagerView, gameStatsView
         }, gameViewConfig);
         gameViewController.x = scene.game.canvas.width / 2;
         gameViewController.y = scene.game.canvas.height / 2;

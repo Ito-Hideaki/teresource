@@ -4,8 +4,9 @@ import { GameViewContext } from "../infra/context";
 import { PlayScene } from "../../play";
 import { HeldMinoView, MinoQueueView } from "./subminoview";
 import { GameEffectManagerView } from "./gameeffectview";
+import { GameStatsView } from "./gamestatsview";
 
-/** @typedef {{ boardDeco: BoardDeco, boardView: BoardView, minoQueueView: MinoQueueView, heldMinoView: HeldMinoView, gameEffectManagerView: GameEffectManagerView }} GameViewElements */
+/** @typedef {{ boardDeco: BoardDeco, boardView: BoardView, minoQueueView: MinoQueueView, heldMinoView: HeldMinoView, gameEffectManagerView: GameEffectManagerView, gameStatsView: GameStatsView }} GameViewElements */
 
 /** Represents the game view for each player */
 export class GameViewController {
@@ -36,6 +37,7 @@ export class GameViewController {
         this.#elements.minoQueueView.update();
         this.#elements.heldMinoView.update();
         this.#elements.gameEffectManagerView.update(deltaTime);
+        this.#elements.gameStatsView.update();
         // let rad = Math.atan2((this.#boardContainer.y - 360) / 15, (this.#boardContainer.x - 540) / 50);
         // rad += 0.1;
         // this.#boardContainer.x = 540 + Math.cos(rad) * 50;
