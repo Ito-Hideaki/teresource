@@ -44,8 +44,6 @@ export class GameStatsManager {
         if(this.lineClearAttackData) {
             this.stats.clearedLines += this.lineClearAttackData.clearedRowList.length;
             this.stats.score += getLineClearScore(this.lineClearAttackData);
-
-            console.log(this.stats.score);
         }
 
         //Ready for next frame

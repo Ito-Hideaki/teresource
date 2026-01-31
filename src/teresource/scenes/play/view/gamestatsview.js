@@ -19,6 +19,8 @@ export class GameStatsView {
         this.clearedLineText.setFontSize(20);
         this.clearedLineText.setColor("black");
         this.clearedLineText.setFontFamily("monospace");
+
+        this.scoreText = scene.add.text(300, 530, "スコア　00000", {fontSize: 20, color: "black", fontFamily: "monospace"});
     }
 
     update() {
@@ -27,6 +29,15 @@ export class GameStatsView {
             this.clearedLineText.setText(`${this.#gameStats.clearedLines}ライン消した`);
             this.#scene.add.tween({
                 targets: this.clearedLineText,
+                duration: 50,
+                y: "-=10",
+                ease: "Power2",
+                yoyo: true
+            });
+
+            this.scoreText.setText(`スコア　${this.#gameStats.score.toString().padStart(5, "0")}`);
+            this.#scene.add.tween({
+                targets: this.scoreText,
                 duration: 50,
                 y: "-=10",
                 ease: "Power2",
