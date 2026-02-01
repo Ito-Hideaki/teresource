@@ -1,13 +1,14 @@
 import Phaser from "phaser";
 import { GameViewContext } from "../infra/context";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+dayjs.extend(duration);
 
 export class GameStatsView {
 
     #gameReportStack;
     #gameStats;
     #scene;
-
-    clearedLineText;
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext */
     constructor(scene, gvContext) {
@@ -20,6 +21,8 @@ export class GameStatsView {
         this.clearedLineText = scene.add.text(300, 500, "まだ消していない", styleConfig);
 
         this.scoreText = scene.add.text(300, 530, "スコア　00000", styleConfig);
+
+        this.timeText = scene.add.text(200, 560, "経過　", styleConfig);
     }
 
     update() {
@@ -34,5 +37,6 @@ export class GameStatsView {
                 yoyo: true
             });
         }
+        this.timeText.setText(`経過　${dayjs.duration(Math.floor(1000 * this.#gameStats.timePassed)).format("HH:mm:ss\"SSS")}`);
     }
 }
