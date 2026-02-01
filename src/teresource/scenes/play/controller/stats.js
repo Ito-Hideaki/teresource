@@ -27,6 +27,7 @@ function getLineClearScore(data) {
 export class GameStats {
     /** @type {number} */ clearedLines = 0;
     /** @type {number} */ score = 0;
+    /** @type {number} */ timePassed = 0;
 }
 
 export class GameStatsManager {
@@ -40,7 +41,10 @@ export class GameStatsManager {
         this.lineClearAttackData = lineClearAttackData;
     }
 
-    update() {
+    /** @param {number} deltaTime */
+    update(deltaTime) {
+        this.stats.timePassed += deltaTime;
+
         if(this.lineClearAttackData) {
             this.stats.clearedLines += this.lineClearAttackData.clearedRowList.length;
             this.stats.score += getLineClearScore(this.lineClearAttackData);

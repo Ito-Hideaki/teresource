@@ -48,7 +48,7 @@ export class GameController {
             this.#doNormalUpdate(deltaTime);
         }
 
-        this.#gameStatsManager.update();
+        this.#gameStatsManager.update(deltaTime);
 
         this.#gameReportStack.lineClear.forEach(lineClearReport => {
             const lineCount = lineClearReport.data.clearedRowList.length;
