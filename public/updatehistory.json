@@ -1,5 +1,6 @@
 {
     "datas" : [
+        { "date": "Feb 1 2026", "content" : "経過時間の表示を追加。"},
         { "date": "Jan 31 2026", "content" : "スコアの表示を追加。"},
         { "date": "Jan 30 2026", "content" : "消したライン数の表示を追加。"},
         { "date": "Jan 29 2026", "content" : "全消し判定を実装。"},
