@@ -28,7 +28,7 @@ export class GameSession {
     }
 
     shouldBeGameOver() {
-        switch(this.gameOverType) {
+        switch (this.gameOverType) {
             case GameSession.GameOverType.Line:
                 return this.#gameStats.clearedLines >= this.targetLines;
             case GameSession.GameOverType.None:
@@ -55,6 +55,7 @@ export class GameController {
     /** @type {GameStatsManager} */ #gameStatsManager
     /** @type {LineClearManager} */ lineClearManager
     /** @type {GameAttackState} */ gameAttackState
+    /** @type {GameSession} */ session
 
     /**
      * @param {GameContext} gameContext
@@ -66,6 +67,7 @@ export class GameController {
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.#gameStatsManager = gameHighContext.gameStatsManager;
+        this.session = new GameSession(gameHighContext);
 
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
@@ -81,16 +83,27 @@ export class GameController {
 
         this.lineClearManager.update(deltaTime);
 
-        if(!this.lineClearManager.isDuringLineClear()) {
-            this.#doNormalUpdate(deltaTime);
+        //judge if the game is over
+        if (!this.lineClearManager.isDuringLineClear()) {
+            if (this.session.shouldBeGameOver()) {
+                this.session.markAsOver();
+            }
         }
 
-        this.#gameStatsManager.update(deltaTime);
+        //update status when game isn't over
+        if (this.session.isOver) {
 
-        this.#gameReportStack.lineClear.forEach(lineClearReport => {
-            const lineCount = lineClearReport.data.clearedRowList.length;
-            window.log(`${lineCount} line(s) cleared`);
-        });
+        } else {
+            if (!this.lineClearManager.isDuringLineClear()) {
+                this.#doNormalUpdate(deltaTime);
+            }
+            this.#gameStatsManager.update(deltaTime);
+
+            this.#gameReportStack.lineClear.forEach(lineClearReport => {
+                const lineCount = lineClearReport.data.clearedRowList.length;
+                window.log(`${lineCount} line(s) cleared`);
+            });
+        }
     }
 
     #doNormalUpdate(deltaTime) {
@@ -108,7 +121,7 @@ export class GameController {
         }
         if (controlOrder.get(ControlOrder.HOLD) && this.#heldMinoManager.canRecieveMino()) {
             const recievedMino = this.#heldMinoManager.recieveMino(this.#currentMinoManager.mino);
-            putNewMino( recievedMino ?? this.#minoQueueManager.takeNextMino());
+            putNewMino(recievedMino ?? this.#minoQueueManager.takeNextMino());
         }
 
         /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
@@ -122,10 +135,15 @@ export class GameController {
         this.gameAttackState.update(boardUpdateDiff, rowToClearList.length);
 
         //do line clear effect
-        if(rowToClearList.length) {
+        if (rowToClearList.length) {
             const reportData = this.gameAttackState.createLineClearAttackData(rowToClearList);
             this.#gameReportStack.add(new LineClearReport(reportData));
             this.#gameStatsManager.setNewLineClearAttackData(reportData);
         }
+    }
+
+    /** Can be called anytime @type {GameSession} session */
+    setSession(session) {
+        this.session = session;
     }
 }
