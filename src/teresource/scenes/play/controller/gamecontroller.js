@@ -5,6 +5,43 @@ import { LineClearReport, GameReportStack } from "./report";
 import { GameAttackState } from "../core/attack";
 import { GameStatsManager } from "./stats";
 
+export class GameSession {
+
+    static GameOverType = {
+        None: "None",
+        Line: "Line"
+    }
+
+    //Readonly
+    gameOverType = GameSession.GameOverType.None;
+    /** @type {number} */ targetLines;
+    /** @type {boolean} */ isOver = false;
+
+    #gameStats;
+
+    /** @param {GameHighContext} gameHighContext */
+    constructor(gameHighContext) {
+        this.#gameStats = gameHighContext.gameStats;
+
+        this.gameOverType = GameSession.GameOverType.Line;
+        this.targetLines = 40;
+    }
+
+    shouldBeGameOver() {
+        switch(this.gameOverType) {
+            case GameSession.GameOverType.Line:
+                return this.#gameStats.clearedLines >= this.targetLines;
+            case GameSession.GameOverType.None:
+            default:
+                return false;
+        }
+    }
+
+    markAsOver() {
+        this.isOver = true;
+    }
+}
+
 /** Represents the logic og the game attached to each player */
 export class GameController {
 
