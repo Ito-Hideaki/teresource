@@ -55,6 +55,7 @@ export class GameController {
     /** @type {GameStatsManager} */ #gameStatsManager
     /** @type {LineClearManager} */ lineClearManager
     /** @type {GameAttackState} */ gameAttackState
+
     /** @type {GameSession} */ session
 
     /**
@@ -83,20 +84,34 @@ export class GameController {
 
         this.lineClearManager.update(deltaTime);
 
-        //judge if the game is over
-        if (!this.lineClearManager.isDuringLineClear()) {
-            if (this.session.shouldBeGameOver()) {
-                this.session.markAsOver();
-            }
+        if (!this.lineClearManager.isDuringLineClear() && !this.session.isOver) {
+            (() => {
+                //check if the game has reached session goal
+                if (this.session.shouldBeGameOver()) {
+                    this.session.markAsOver();
+                    return;
+                }
+
+                //Take new mino from queue
+                if (this.#currentMinoManager.isPlaced) {
+                    this.#heldMinoManager.resetLimit();
+                    this.#putNewMino(this.#minoQueueManager.takeNextMino());
+                }
+
+                //Take held mino
+                /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
+                if (controlOrder.get(ControlOrder.HOLD) && this.#heldMinoManager.canRecieveMino()) {
+                    const recievedMino = this.#heldMinoManager.recieveMino(this.#currentMinoManager.mino);
+                    this.#putNewMino(recievedMino ?? this.#minoQueueManager.takeNextMino());
+                }
+
+                //Finally update board
+                this.#doNormalUpdate(deltaTime, controlOrder);
+            })();
         }
 
-        //update status when game isn't over
-        if (this.session.isOver) {
-
-        } else {
-            if (!this.lineClearManager.isDuringLineClear()) {
-                this.#doNormalUpdate(deltaTime);
-            }
+        //update status
+        if (!this.session.isOver) {
             this.#gameStatsManager.update(deltaTime);
 
             this.#gameReportStack.lineClear.forEach(lineClearReport => {
@@ -106,24 +121,8 @@ export class GameController {
         }
     }
 
-    #doNormalUpdate(deltaTime) {
-        const putNewMino = (mino) => {
-            this.#currentMinoManager.startNextMino(mino);
-            this.#boardUpdateState.startNewMino();
-            this.#controlOrderProvider.resetARR();
-        }
-
-        /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
-
-        if (this.#currentMinoManager.isPlaced) {
-            this.#heldMinoManager.resetLimit();
-            putNewMino(this.#minoQueueManager.takeNextMino());
-        }
-        if (controlOrder.get(ControlOrder.HOLD) && this.#heldMinoManager.canRecieveMino()) {
-            const recievedMino = this.#heldMinoManager.recieveMino(this.#currentMinoManager.mino);
-            putNewMino(recievedMino ?? this.#minoQueueManager.takeNextMino());
-        }
-
+    /** @param {ControlOrder} controlOrder */
+    #doNormalUpdate(deltaTime, controlOrder) {
         /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);
@@ -142,8 +141,18 @@ export class GameController {
         }
     }
 
+    #putNewMino(mino) {
+        this.#currentMinoManager.startNextMino(mino);
+        this.#boardUpdateState.startNewMino();
+        this.#controlOrderProvider.resetARR();
+    }
+
     /** Can be called anytime @type {GameSession} session */
     setSession(session) {
         this.session = session;
+    }
+
+    isOver() {
+        return this.session.isOver;
     }
 }
