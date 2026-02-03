@@ -4,6 +4,7 @@ import { LineClearManager } from "../core/lineclear";
 import { LineClearReport, GameReportStack } from "./report";
 import { GameAttackState } from "../core/attack";
 import { GameStatsManager } from "./stats";
+import { createFunction_DoesCurrentMinoCollide } from "./gameover";
 
 export class GameSession {
 
@@ -55,6 +56,7 @@ export class GameController {
     /** @type {GameStatsManager} */ #gameStatsManager
     /** @type {LineClearManager} */ lineClearManager
     /** @type {GameAttackState} */ gameAttackState
+    #doesCurrentMinoCollide
 
     /** @type {GameSession} */ session
 
@@ -75,6 +77,7 @@ export class GameController {
         this.#heldMinoManager = gameContext.heldMinoManager;
         this.#boardUpdateState = gameContext.boardUpdateState;
         this.#gameReportStack = gameContext.gameReportStack;
+        this.#doesCurrentMinoCollide = createFunction_DoesCurrentMinoCollide(gameContext);
     }
 
     /** @param {number} deltaTime */
@@ -98,11 +101,21 @@ export class GameController {
                     this.#putNewMino(this.#minoQueueManager.takeNextMino());
                 }
 
+                if (this.#doesCurrentMinoCollide()) {
+                    this.session.markAsOver();
+                    return;
+                }
+
                 //Take held mino
                 /** @type {ControlOrder} */ const controlOrder = this.#controlOrderProvider.provideControlOrder();
                 if (controlOrder.get(ControlOrder.HOLD) && this.#heldMinoManager.canRecieveMino()) {
                     const recievedMino = this.#heldMinoManager.recieveMino(this.#currentMinoManager.mino);
                     this.#putNewMino(recievedMino ?? this.#minoQueueManager.takeNextMino());
+                }
+
+                if (this.#doesCurrentMinoCollide()) {
+                    this.session.markAsOver();
+                    return;
                 }
 
                 //Finally update board
