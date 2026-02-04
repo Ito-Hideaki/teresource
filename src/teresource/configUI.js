@@ -190,8 +190,6 @@ function createConfigUIBoard(configList, initialConfigValueList, exportMap) {
 
 export function createConfigUIElement() {
 
-    const configUIElement = document.createElement("div");
-
     /** @type {Object.<string, Object.<string, any>>} */
     const initialConfigStateMap = {
         gamePersonalization: {
@@ -209,13 +207,21 @@ export function createConfigUIElement() {
         handling: "ハンドリング",
     }
 
+    const configUIElement = document.createElement("div");
+
+    const categoryBox = document.createElement("div");
+    configUIElement.appendChild(categoryBox);
+
+    const boardBox = document.createElement("div");
+    configUIElement.appendChild(boardBox);
+
     /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
 
     for (let key in CONFIGUI_CONFIG_DATA) {
         //add heading
         {
             const headingDisplayText = configUIHeadingDisplayText[key];
-            configUIElement.appendChild(createItemHeading(headingDisplayText));
+            categoryBox.appendChild(createItemHeading(headingDisplayText));
         }
 
         //create board
@@ -223,7 +229,7 @@ export function createConfigUIElement() {
         const itemDataHandlerList = [];
         const initialConfigState = initialConfigStateMap[key];
         const { board, configUIDataHandler } = createConfigUIBoard(configList, initialConfigState, CONFIGUI_EXPORT_MAP_INDEX[key]);
-        configUIElement.appendChild(board);
+        boardBox.appendChild(board);
         configUIDataHandlerMap[key] = configUIDataHandler;
     }
 
