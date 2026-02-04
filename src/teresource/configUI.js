@@ -24,7 +24,7 @@ class ItemElementFactory {
         const box = document.createElement("div");
         const input = document.createElement("input");
         input.type = "text";
-        input.classList.add("configui_item_inputbox");
+        input.classList.add("configui_item_input");
         box.appendChild(input);
         const getter = () => {
             return input.value;
@@ -39,7 +39,7 @@ class ItemElementFactory {
         const box = document.createElement("div");
         const input = document.createElement("input");
         input.type = "number";
-        input.classList.add("configui_item_inputbox");
+        input.classList.add("configui_item_input");
         box.appendChild(input);
         const getter = () => {
             return input.value;
@@ -56,6 +56,7 @@ class ItemElementFactory {
         /** @type {HTMLElement[]} */ const itemList = [];
         choiceList.forEach(choice => {
             const item = document.createElement("div");
+            item.classList.add("configui_item_selectable")
             item.innerHTML = choice.name;
             box.appendChild(item);
             itemList.push(item);
