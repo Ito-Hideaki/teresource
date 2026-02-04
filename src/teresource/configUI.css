@@ -23,3 +23,24 @@
     width: 15em;
     font-size: 0.8em;
 }
+
+.configui_item_selectbox {
+    display: flex;
+    flex-wrap:wrap;
+    gap: 0.3em;
+    align-content: flex-start;
+}
+
+.configui_item_selectable {
+    font-size:0.8em;
+    min-width: 3em;
+    border: 0.2em solid #00000022;
+    user-select: none;
+    text-align: center;
+}
+
+.configui_item_selectable.configui_selected {
+    color: white;
+    font-weight: bold;
+    background-color: green;
+}

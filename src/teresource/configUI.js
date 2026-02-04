@@ -53,6 +53,7 @@ class ItemElementFactory {
     /** @param {import("./configUIData").ConfigChoice[]} choiceList */
     static createSelectBox(choiceList = []) {
         const box = document.createElement("div");
+        box.classList.add("configui_item_selectbox");
         /** @type {HTMLElement[]} */ const itemList = [];
         choiceList.forEach(choice => {
             const item = document.createElement("div");
