@@ -1,10 +1,16 @@
-/** @typedef {{ name: string, displayText: string, type: string }} ConfigItemConfig */
+/** @typedef {{ displayText: string, value: string }} ConfigChoice */
+/** @typedef {{ name: string, displayText: string, type: string, choiceList: undefined | ConfigChoice[] }} ConfigItemConfig */
 /** @typedef {Object.<string, any>} ConfigUIExportMap value is string or another ConfigUIExportMap*/
 
 /** @type {Object.<string, ConfigItemConfig[]>} */
 export const CONFIGUI_CONFIG_DATA = {
     gamePersonalization: [
-        { name: "skin", type: "string", displayText: "skin (次のうちどれか: pika, nine, nine-s, tikin)" }
+        { name: "skin", type: "select", displayText: "skin (次のうちどれか: pika, nine, nine-s, tikin)", choiceList: [
+            { displayText: "pika", value: "pika" },
+            { displayText: "nine", value: "nine" },
+            { displayText: "nine-s", value: "nine-s" },
+            { displayText: "tikin", value: "tikin" }
+        ] }
     ],
     handling: [
         { name: "DAS", type: "number", displayText: "DAS, 連射が発動するまでの時間" },
@@ -26,4 +32,5 @@ export const CONFIGUI_EXPORT_MAP = {
 export const CONFIG_DATA_TYPE = {
     STRING: "string",
     NUMBER: "number",
+    SELECT: "select" 
 }
