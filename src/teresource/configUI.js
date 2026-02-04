@@ -207,6 +207,7 @@ export function createConfigUIElement() {
         handling: "ハンドリング",
     }
 
+    //create boxes
     const configUIElement = document.createElement("div");
     configUIElement.classList.add("configui");
 
@@ -220,6 +221,7 @@ export function createConfigUIElement() {
 
     /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
 
+    //create config elements
     for (let key in CONFIGUI_CONFIG_DATA) {
         //add heading
         {
@@ -234,6 +236,29 @@ export function createConfigUIElement() {
         const { board, configUIDataHandler } = createConfigUIBoard(configList, initialConfigState, CONFIGUI_EXPORT_MAP_INDEX[key]);
         boardBox.appendChild(board);
         configUIDataHandlerMap[key] = configUIDataHandler;
+    }
+
+    //add config display selection system
+    const selectCategory = (index) => {
+        const classStr = "configui_selected";
+        for(let i = 0; i < categoryBox.children.length; i++) {
+            const headingElement = categoryBox.children[i];
+            const boardElement = boardBox.children[i];
+            if(i === index) {
+                headingElement.classList.add(classStr);
+                boardElement.classList.add(classStr);
+            } else {
+                headingElement.classList.remove(classStr);
+                boardElement.classList.remove(classStr);
+            }
+        }
+    } 
+
+    for(let i = 0; i < categoryBox.children.length; i++) {
+        const headingElement = categoryBox.children[i];
+        headingElement.addEventListener("click", () => {
+            selectCategory(i);
+        });
     }
 
     return { element: configUIElement, configUIDataHandlerMap };

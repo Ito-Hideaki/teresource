@@ -18,6 +18,12 @@
     font-weight: bold;
     font-style: italic;
     border-bottom: 0.1em solid gray;
+    user-select: none;
+}
+
+.configui_itemheading.configui_selected {
+    background-color: green;
+    color: white;
 }
 
 .configui_boardbox {
@@ -26,7 +32,12 @@
 }
 
 .configui_board {
-    
+    height: 0;
+    overflow-y: hidden;
+}
+
+.configui_board.configui_selected {
+    height: auto;
 }
 
 .configui_item {
