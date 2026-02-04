@@ -1,46 +1,12 @@
 import { CONFIGUI_CONFIG_DATA, CONFIGUI_EXPORT_MAP, CONFIG_DATA_TYPE } from "./configUIData";
 
 class ItemDataHandler {
-    /** @param {HTMLElement} element item element that must contain needed things @param {string} type data type */
-    constructor(element, type) {
+    /** @param {HTMLElement} element item element that must contain needed things @param {string} type data type @param {() => any} getter @param {(value: any) => void} setter*/
+    constructor(element, type, getter, setter) {
         this.element = element;
         this.type = type;
-        this.getValue();
-    }
-
-    getValue() {
-        switch(this.type) {
-            case CONFIG_DATA_TYPE.STRING:
-            case CONFIG_DATA_TYPE.NUMBER:
-                const inputElement = this.element.getElementsByTagName("input")[0];
-                if(!inputElement) throw "invalid item element";
-                switch(this.type) {
-                    case CONFIG_DATA_TYPE.STRING:
-                        return inputElement.value;
-                    case CONFIG_DATA_TYPE.NUMBER:
-                        return Number(inputElement.value);
-                }
-            case CONFIG_DATA_TYPE.SELECT:
-                return "tikin";
-        }
-        throw "couldn't get data";
-    }
-
-    setValue(value) {
-        switch(this.type) {
-            case CONFIG_DATA_TYPE.STRING:
-            case CONFIG_DATA_TYPE.NUMBER:
-                const inputElement = this.element.getElementsByTagName("input")[0];
-                if(!inputElement) throw "invalid item element";
-                switch(this.type) {
-                    case CONFIG_DATA_TYPE.STRING:
-                    case CONFIG_DATA_TYPE.NUMBER:
-                        inputElement.value = value;
-                }
-                break;
-            case CONFIG_DATA_TYPE.SELECT:
-                break;
-        }
+        this.getValue = getter;
+        this.setValue = setter;
     }
 }
 
@@ -55,32 +21,66 @@ class ItemElementFactory {
     }
 
     static createStringInputBox() {
-        const elm = document.createElement("div");
-        const box = document.createElement("input");
-        box.type = "text";
-        box.classList.add("configui_item_inputbox");
-        elm.appendChild(box);
-        return elm;
+        const box = document.createElement("div");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.classList.add("configui_item_inputbox");
+        box.appendChild(input);
+        const getter = () => {
+            return input.value;
+        }
+        const setter = (value) => {
+            input.value = value;
+        }
+        return { box, getter, setter };
     }
 
     static createNumberInputBox() {
-        const elm = document.createElement("div");
-        const box = document.createElement("input");
-        box.type = "number";
-        box.classList.add("configui_item_inputbox");
-        elm.appendChild(box);
-        return elm;
+        const box = document.createElement("div");
+        const input = document.createElement("input");
+        input.type = "number";
+        input.classList.add("configui_item_inputbox");
+        box.appendChild(input);
+        const getter = () => {
+            return input.value;
+        }
+        const setter = (value) => {
+            input.value = value;
+        }
+        return { box, getter, setter };
     }
 
     /** @param {import("./configUIData").ConfigChoice[]} choiceList */
     static createSelectBox(choiceList = []) {
-        const elm = document.createElement("div");
+        const box = document.createElement("div");
+        /** @type {HTMLElement[]} */ const itemList = [];
         choiceList.forEach(choice => {
             const item = document.createElement("div");
-            item.innerHTML = choice.displayText;
-            elm.appendChild(item);
+            item.innerHTML = choice.name;
+            box.appendChild(item);
+            itemList.push(item);
         });
-        return elm;
+        const setter = (value) => {
+            console.log(value);
+            for(let i = 0; i < itemList.length; i++) {
+                const choice = choiceList[i];
+                const item = itemList[i];
+                if(choice.value === value) {
+                    item.classList.add("configui_selected");
+                } else {
+                    item.classList.remove("cofigui_selected");
+                }
+            }
+        };
+        const getter = () => {
+            for(let i = 0; i < itemList.length; i++) {
+                const choice = choiceList[i];
+                const item = itemList[i];
+                if(item.classList.contains("configui_selected")) return choice.value;
+            }
+            throw "no element has selected";
+        };
+        return { box, getter, setter };
     }
 
     /**
@@ -92,18 +92,20 @@ class ItemElementFactory {
         elm.classList.add("configui_item");
         const Factory = ItemElementFactory;
         elm.appendChild(Factory.createNameElm(config.displayText));
+        let result;
         switch(config.type) {
             case CONFIG_DATA_TYPE.STRING:
-                elm.appendChild(Factory.createStringInputBox());
+                result = Factory.createNumberInputBox();
                 break;
             case CONFIG_DATA_TYPE.NUMBER:
-                elm.appendChild(Factory.createNumberInputBox());
+                result = Factory.createNumberInputBox();
                 break;
             case CONFIG_DATA_TYPE.SELECT:
-                elm.appendChild(Factory.createSelectBox(config.choiceList));
+                result = Factory.createSelectBox(config.choiceList);
                 break;
         }
-        const itemDataHandler = new ItemDataHandler(elm, config.type);
+        elm.appendChild(result.box);
+        const itemDataHandler = new ItemDataHandler(elm, config.type, result.getter, result.setter);
         itemDataHandler.setValue(initialValue);
         return { element: elm, itemDataHandler };
     }

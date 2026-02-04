@@ -1,4 +1,4 @@
-/** @typedef {{ displayText: string, value: string }} ConfigChoice */
+/** @typedef {{ name: string, value: string }} ConfigChoice */
 /** @typedef {{ name: string, displayText: string, type: string, choiceList: undefined | ConfigChoice[] }} ConfigItemConfig */
 /** @typedef {Object.<string, any>} ConfigUIExportMap value is string or another ConfigUIExportMap*/
 
@@ -6,10 +6,10 @@
 export const CONFIGUI_CONFIG_DATA = {
     gamePersonalization: [
         { name: "skin", type: "select", displayText: "skin (次のうちどれか: pika, nine, nine-s, tikin)", choiceList: [
-            { displayText: "pika", value: "pika" },
-            { displayText: "nine", value: "nine" },
-            { displayText: "nine-s", value: "nine-s" },
-            { displayText: "tikin", value: "tikin" }
+            { name: "pika", value: "pika" },
+            { name: "nine", value: "nine" },
+            { name: "nine-s", value: "nine-s" },
+            { name: "tikin", value: "tikin" }
         ] }
     ],
     handling: [
