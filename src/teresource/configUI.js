@@ -20,6 +20,8 @@ class ItemDataHandler {
                     case CONFIG_DATA_TYPE.NUMBER:
                         return Number(inputElement.value);
                 }
+            case CONFIG_DATA_TYPE.SELECT:
+                return "tikin";
         }
         throw "couldn't get data";
     }
@@ -35,6 +37,9 @@ class ItemDataHandler {
                     case CONFIG_DATA_TYPE.NUMBER:
                         inputElement.value = value;
                 }
+                break;
+            case CONFIG_DATA_TYPE.SELECT:
+                break;
         }
     }
 }
@@ -67,6 +72,17 @@ class ItemElementFactory {
         return elm;
     }
 
+    /** @param {import("./configUIData").ConfigChoice[]} choiceList */
+    static createSelectBox(choiceList = []) {
+        const elm = document.createElement("div");
+        choiceList.forEach(choice => {
+            const item = document.createElement("div");
+            item.innerHTML = choice.displayText;
+            elm.appendChild(item);
+        });
+        return elm;
+    }
+
     /**
      *  @param {import("./configUIData").ConfigItemConfig} config
      *  @param {any} initialValue
@@ -82,6 +98,9 @@ class ItemElementFactory {
                 break;
             case CONFIG_DATA_TYPE.NUMBER:
                 elm.appendChild(Factory.createNumberInputBox());
+                break;
+            case CONFIG_DATA_TYPE.SELECT:
+                elm.appendChild(Factory.createSelectBox(config.choiceList));
                 break;
         }
         const itemDataHandler = new ItemDataHandler(elm, config.type);
