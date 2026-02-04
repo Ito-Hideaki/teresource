@@ -252,14 +252,30 @@ export function createConfigUIElement() {
                 boardElement.classList.remove(classStr);
             }
         }
-    } 
+    }
+
+    const selectDefault = () => {
+        const classStr = "configui_selected";
+        for(let i = 0; i < categoryBox.children.length; i++) {
+            const headingElement = categoryBox.children[i];
+            const boardElement = boardBox.children[i];
+            headingElement.classList.remove(classStr);
+            boardElement.classList.add(classStr);
+        }
+    }
 
     for(let i = 0; i < categoryBox.children.length; i++) {
         const headingElement = categoryBox.children[i];
         headingElement.addEventListener("click", () => {
-            selectCategory(i);
+            if(categoryBox.children[i].classList.contains("configui_selected")) {
+                selectDefault();
+            } else {
+                selectCategory(i);
+            }
         });
     }
+
+    selectDefault();
 
     return { element: configUIElement, configUIDataHandlerMap };
 }
