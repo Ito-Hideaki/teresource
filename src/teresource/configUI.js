@@ -55,13 +55,6 @@ class ItemElementFactory {
         const box = document.createElement("div");
         box.classList.add("configui_item_selectbox");
         /** @type {HTMLElement[]} */ const itemList = [];
-        choiceList.forEach(choice => {
-            const item = document.createElement("div");
-            item.classList.add("configui_item_selectable")
-            item.innerHTML = choice.name;
-            box.appendChild(item);
-            itemList.push(item);
-        });
         const setter = (value) => {
             console.log(value);
             for(let i = 0; i < itemList.length; i++) {
@@ -70,7 +63,7 @@ class ItemElementFactory {
                 if(choice.value === value) {
                     item.classList.add("configui_selected");
                 } else {
-                    item.classList.remove("cofigui_selected");
+                    item.classList.remove("configui_selected");
                 }
             }
         };
@@ -82,6 +75,16 @@ class ItemElementFactory {
             }
             throw "no element has selected";
         };
+        choiceList.forEach(choice => {
+            const item = document.createElement("div");
+            item.classList.add("configui_item_selectable")
+            item.innerHTML = choice.name;
+            item.onclick = () => {
+                setter(choice.value);
+            }
+            box.appendChild(item);
+            itemList.push(item);
+        });
         return { box, getter, setter };
     }
 
