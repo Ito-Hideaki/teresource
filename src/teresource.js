@@ -38,11 +38,9 @@ addEventListener("DOMContentLoaded", () => {
     });
 
     gameContainer.addEventListener("focus", e => {
-        console.log("focus");
         game.inputEnabled = true;
     });
     gameContainer.addEventListener("blur", e => {
-        console.log("blur");
         game.inputEnabled = false;
     });
 

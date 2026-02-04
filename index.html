@@ -135,7 +135,6 @@
             document.addEventListener("DOMContentLoaded", async function () {
               const response = await fetch(viteURLify("updatehistory.json"));
               const obj = await response.json();
-              console.log(obj);
               obj.datas.forEach(data => {
                 const elm = document.createElement("div");
                 elm.innerHTML = `<p><strong>${data.date}</strong> ${data.content}</p>`;

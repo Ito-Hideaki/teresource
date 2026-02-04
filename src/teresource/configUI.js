@@ -56,7 +56,6 @@ class ItemElementFactory {
         box.classList.add("configui_item_selectbox");
         /** @type {HTMLElement[]} */ const itemList = [];
         const setter = (value) => {
-            console.log(value);
             for (let i = 0; i < itemList.length; i++) {
                 const choice = choiceList[i];
                 const item = itemList[i];
@@ -165,7 +164,6 @@ export class ConfigUIDataHandler {
 
     getConfig() {
         const config = this.#getConfigForExportMap(this.#exportMap);
-        console.log(config);
         return config;
     }
 }
