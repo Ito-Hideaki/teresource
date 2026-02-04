@@ -1,4 +1,4 @@
-import { CONFIGUI_CONFIG_DATA, CONFIGUI_EXPORT_MAP, CONFIG_DATA_TYPE } from "./configUIData";
+import { CONFIGUI_CONFIG_DATA, CONFIGUI_EXPORT_MAP_INDEX, CONFIG_DATA_TYPE } from "./configUIData";
 
 class ItemDataHandler {
     /** @param {HTMLElement} element item element that must contain needed things @param {string} type data type @param {() => any} getter @param {(value: any) => void} setter*/
@@ -57,10 +57,10 @@ class ItemElementFactory {
         /** @type {HTMLElement[]} */ const itemList = [];
         const setter = (value) => {
             console.log(value);
-            for(let i = 0; i < itemList.length; i++) {
+            for (let i = 0; i < itemList.length; i++) {
                 const choice = choiceList[i];
                 const item = itemList[i];
-                if(choice.value === value) {
+                if (choice.value === value) {
                     item.classList.add("configui_selected");
                 } else {
                     item.classList.remove("configui_selected");
@@ -68,10 +68,10 @@ class ItemElementFactory {
             }
         };
         const getter = () => {
-            for(let i = 0; i < itemList.length; i++) {
+            for (let i = 0; i < itemList.length; i++) {
                 const choice = choiceList[i];
                 const item = itemList[i];
-                if(item.classList.contains("configui_selected")) return choice.value;
+                if (item.classList.contains("configui_selected")) return choice.value;
             }
             throw "no element has selected";
         };
@@ -98,7 +98,7 @@ class ItemElementFactory {
         const Factory = ItemElementFactory;
         elm.appendChild(Factory.createNameElm(config.displayText));
         let result;
-        switch(config.type) {
+        switch (config.type) {
             case CONFIG_DATA_TYPE.STRING:
                 result = Factory.createNumberInputBox();
                 break;
@@ -170,19 +170,36 @@ export class ConfigUIDataHandler {
     }
 }
 
-export function createConfigUIBoard() {
-
+/** @param {import("./configUIData").ConfigItemConfig[]} configList @param {Object.<string, any>} initialConfigValueList @param {import("./configUIData").ConfigUIExportMap} exportMap */
+function createConfigUIBoard(configList, initialConfigValueList, exportMap) {
     const boardElement = document.createElement("div");
     boardElement.classList.add("configui_board");
+
+    const itemDataHandlerList = [];
+
+    //add items
+    configList.forEach(configItemConfig => {
+        const { element, itemDataHandler } = ItemElementFactory.create(configItemConfig, initialConfigValueList[configItemConfig.name]);
+        boardElement.appendChild(element);
+        itemDataHandlerList.push(itemDataHandler);
+    });
+    const configUIDataHandler = new ConfigUIDataHandler(boardElement, configList, itemDataHandlerList, exportMap);
+
+    return { board: boardElement, configUIDataHandler };
+}
+
+export function createConfigUIElement() {
+
+    const configUIElement = document.createElement("div");
 
     /** @type {Object.<string, Object.<string, any>>} */
     const initialConfigStateMap = {
         gamePersonalization: {
-            "skin" : "pika",
+            "skin": "pika",
         },
         handling: {
-            "DAS" : 10,
-            "ARR" : 2,
+            "DAS": 10,
+            "ARR": 2,
         }
     }
 
@@ -195,23 +212,20 @@ export function createConfigUIBoard() {
     /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
 
     for (let key in CONFIGUI_CONFIG_DATA) {
-        const configList = CONFIGUI_CONFIG_DATA[key];
-        const itemDataHandlerList = [];
-        const initialConfigState = initialConfigStateMap[key];
         //add heading
         {
             const headingDisplayText = configUIHeadingDisplayText[key];
-            boardElement.appendChild(createItemHeading(headingDisplayText));
+            configUIElement.appendChild(createItemHeading(headingDisplayText));
         }
-        //add items
-        configList.forEach(configItemConfig => {
-            const { element, itemDataHandler } = ItemElementFactory.create(configItemConfig, initialConfigState[configItemConfig.name]);
-            boardElement.appendChild(element);
-            itemDataHandlerList.push(itemDataHandler);
-        });
-        const configUIDataHandler = new ConfigUIDataHandler(boardElement, configList, itemDataHandlerList, CONFIGUI_EXPORT_MAP[key]);
+
+        //create board
+        const configList = CONFIGUI_CONFIG_DATA[key];
+        const itemDataHandlerList = [];
+        const initialConfigState = initialConfigStateMap[key];
+        const { board, configUIDataHandler } = createConfigUIBoard(configList, initialConfigState, CONFIGUI_EXPORT_MAP_INDEX[key]);
+        configUIElement.appendChild(board);
         configUIDataHandlerMap[key] = configUIDataHandler;
     }
 
-    return { element: boardElement, configUIDataHandlerMap };
+    return { element: configUIElement, configUIDataHandlerMap };
 }

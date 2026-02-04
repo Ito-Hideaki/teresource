@@ -5,7 +5,7 @@
 /** @type {Object.<string, ConfigItemConfig[]>} */
 export const CONFIGUI_CONFIG_DATA = {
     gamePersonalization: [
-        { name: "skin", type: "select", displayText: "skin (次のうちどれか: pika, nine, nine-s, tikin)", choiceList: [
+        { name: "skin", type: "select", displayText: "ゲームスキン", choiceList: [
             { name: "pika", value: "pika" },
             { name: "nine", value: "nine" },
             { name: "nine-s", value: "nine-s" },
@@ -19,7 +19,7 @@ export const CONFIGUI_CONFIG_DATA = {
 }
 
 /** @type {Object.<string, ConfigUIExportMap>} */
-export const CONFIGUI_EXPORT_MAP = {
+export const CONFIGUI_EXPORT_MAP_INDEX = {
     gamePersonalization : {
         "gameSkin": "skin"
     },
