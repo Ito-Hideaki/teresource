@@ -1,12 +1,32 @@
-.configui_board {
+.configui {
+    height: 100%;
     font-size: 1.3em;
+    display: flex;
+
+    >* {
+        border: 0.2em solid #bbb;
+        padding: 0.5em;
+    }
+}
+
+.configui_category {
+    width: 10em;
 }
 
 .configui_itemheading {
-    font-size: 1.6em;
+    font-size: 1.2em;
     font-weight: bold;
     font-style: italic;
-    margin-top: 0.3em;
+    border-bottom: 0.1em solid gray;
+}
+
+.configui_boardbox {
+    flex-grow: 2;
+    overflow-y: scroll;
+}
+
+.configui_board {
+    
 }
 
 .configui_item {

@@ -208,11 +208,14 @@ export function createConfigUIElement() {
     }
 
     const configUIElement = document.createElement("div");
+    configUIElement.classList.add("configui");
 
     const categoryBox = document.createElement("div");
+    categoryBox.classList.add("configui_category");
     configUIElement.appendChild(categoryBox);
 
     const boardBox = document.createElement("div");
+    boardBox.classList.add("configui_boardbox");
     configUIElement.appendChild(boardBox);
 
     /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
