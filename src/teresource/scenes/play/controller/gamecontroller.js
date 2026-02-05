@@ -10,6 +10,8 @@ import { GameSession } from "./gamesession";
 /** Represents the logic og the game attached to each player */
 export class GameController {
 
+    #gameHighContext;
+
     #boardUpdater
     /** @type {ControlOrderProvider} */#controlOrderProvider
     #currentMinoManager
@@ -34,7 +36,6 @@ export class GameController {
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.#gameStatsManager = gameHighContext.gameStatsManager;
-        this.session = new GameSession(gameHighContext);
 
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
@@ -42,6 +43,8 @@ export class GameController {
         this.#boardUpdateState = gameContext.boardUpdateState;
         this.#gameReportStack = gameContext.gameReportStack;
         this.#doesCurrentMinoCollide = createFunction_DoesCurrentMinoCollide(gameContext);
+
+        this.#gameHighContext = gameHighContext;
     }
 
     /** @param {number} deltaTime */
@@ -127,6 +130,11 @@ export class GameController {
     /** Can be called anytime @type {GameSession} session */
     setSession(session) {
         this.session = session;
+    }
+
+    /** Can be called anytime @param {import("./gamesession").GameSessionConfig} config */
+    setSessionFromConfig(config) {
+        this.session = new GameSession(this.#gameHighContext, config);
     }
 
     isOver() {

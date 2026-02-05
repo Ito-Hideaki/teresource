@@ -9,6 +9,7 @@ import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontr
 import { CellSheetParent } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 import { ConfigUIDataHandler } from "../configUI";
+import { GameSession } from "./play/controller/gamesession";
 
 
 /** @param {ConfigUIDataHandler} configUIDataHandler @return {import("./play/infra/gamefactory").GameConfig} */
@@ -95,6 +96,9 @@ export class PlayScene extends Phaser.Scene {
         this.#gameController = gameElements.gameController;
         this.#gameViewController = gameElements.gameViewController;
         this.#controlOrderProvider = gameElements.controlOrderProvider;
+
+        /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = { type: GameSession.SessionType.Line, targetLines: 40 };
+        this.#gameController.setSessionFromConfig(sessionConfig);
 
         this.input.keyboard.on("keydown", e => {
             if(!this.game.inputEnabled) return;
