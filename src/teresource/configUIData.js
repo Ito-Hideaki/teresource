@@ -18,8 +18,8 @@ export const CONFIGUI_CONFIG_DATA = {
     ],
     objective: [
         { name: "type", type: "select", displayText: "目標の種類", choiceList: [
-            { name: "None", value: "None" },
-            { name: "Line", value: "Line" }
+            { name: "なし", value: "None" },
+            { name: "ライン数", value: "Line" }
         ]},
         { name: "targetLines", type: "number", displayText: "(Line)目標ライン数" }
     ]
