@@ -5,43 +5,7 @@ import { LineClearReport, GameReportStack } from "./report";
 import { GameAttackState } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
-
-export class GameSession {
-
-    static SessionType = {
-        None: "None",
-        Line: "Line"
-    }
-
-    //Readonly
-    type = GameSession.SessionType.None;
-    /** @type {number} */ targetLines;
-    /** @type {boolean} */ isOver = false;
-
-    #gameStats;
-
-    /** @param {GameHighContext} gameHighContext */
-    constructor(gameHighContext) {
-        this.#gameStats = gameHighContext.gameStats;
-
-        this.gameOverType = GameSession.SessionType.Line;
-        this.targetLines = 40;
-    }
-
-    isTargetCompleted() {
-        switch (this.type) {
-            case GameSession.SessionType.Line:
-                return this.#gameStats.clearedLines >= this.targetLines;
-            case GameSession.SessionType.None:
-            default:
-                return false;
-        }
-    }
-
-    markAsOver() {
-        this.isOver = true;
-    }
-}
+import { GameSession } from "./gamesession";
 
 /** Represents the logic og the game attached to each player */
 export class GameController {
