@@ -197,7 +197,7 @@ export function createConfigUIElement() {
             "DAS": 10,
             "ARR": 2,
         },
-        session: {
+        objective: {
             "type":"None",
             "targetLines":40,
         }
@@ -207,7 +207,7 @@ export function createConfigUIElement() {
     const configUIHeadingDisplayText = {
         gamePersonalization: "ゲームのみため",
         handling: "ハンドリング",
-        session: "ゲーム目標",
+        objective: "ゲーム目標",
     }
 
     //create boxes

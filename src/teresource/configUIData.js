@@ -16,7 +16,7 @@ export const CONFIGUI_CONFIG_DATA = {
         { name: "DAS", type: "number", displayText: "DAS, 連射が発動するまでの時間" },
         { name: "ARR", type: "number", displayText: "ARR, 連射間隔"  },
     ],
-    session: [
+    objective: [
         { name: "type", type: "select", displayText: "目標の種類", choiceList: [
             { name: "None", value: "None" },
             { name: "Line", value: "Line" }
@@ -34,9 +34,11 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
         "DAS" : "DAS",
         "ARR" : "ARR",
     },
-    session : {
-        "type" : "type",
-        "targetLines" : "targetLines"
+    objective : {
+        session: {
+            "type" : "type",
+            "targetLines" : "targetLines"
+        }
     }
 }
 
