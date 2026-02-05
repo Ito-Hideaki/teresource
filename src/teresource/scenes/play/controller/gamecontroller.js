@@ -8,13 +8,13 @@ import { createFunction_DoesCurrentMinoCollide } from "./gameover";
 
 export class GameSession {
 
-    static GameOverType = {
+    static SessionType = {
         None: "None",
         Line: "Line"
     }
 
     //Readonly
-    gameOverType = GameSession.GameOverType.None;
+    type = GameSession.SessionType.None;
     /** @type {number} */ targetLines;
     /** @type {boolean} */ isOver = false;
 
@@ -24,15 +24,15 @@ export class GameSession {
     constructor(gameHighContext) {
         this.#gameStats = gameHighContext.gameStats;
 
-        this.gameOverType = GameSession.GameOverType.Line;
+        this.gameOverType = GameSession.SessionType.Line;
         this.targetLines = 40;
     }
 
-    shouldBeGameOver() {
-        switch (this.gameOverType) {
-            case GameSession.GameOverType.Line:
+    isTargetCompleted() {
+        switch (this.type) {
+            case GameSession.SessionType.Line:
                 return this.#gameStats.clearedLines >= this.targetLines;
-            case GameSession.GameOverType.None:
+            case GameSession.SessionType.None:
             default:
                 return false;
         }
@@ -90,7 +90,7 @@ export class GameController {
         if (!this.lineClearManager.isDuringLineClear() && !this.session.isOver) {
             (() => {
                 //check if the game has reached session goal
-                if (this.session.shouldBeGameOver()) {
+                if (this.session.isTargetCompleted()) {
                     this.session.markAsOver();
                     return;
                 }
