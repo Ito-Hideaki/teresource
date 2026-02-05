@@ -97,7 +97,7 @@ export class PlayScene extends Phaser.Scene {
         this.#gameViewController = gameElements.gameViewController;
         this.#controlOrderProvider = gameElements.controlOrderProvider;
 
-        /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = { type: GameSession.SessionType.Line, targetLines: 40 };
+        /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = this.game.configUIDataHandlerMap.session.getConfig();
         this.#gameController.setSessionFromConfig(sessionConfig);
 
         this.input.keyboard.on("keydown", e => {
