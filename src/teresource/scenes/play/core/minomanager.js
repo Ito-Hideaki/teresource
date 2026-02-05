@@ -11,10 +11,14 @@ export class CurrentMinoManager {
     row = 0;
     /** y of the center of the mino shape @type number */
     column = 0;
+    /** @type {number} */
+    #spawnColumn;
     /** @type boolean */
     #isPlaced = true;
 
-    constructor() {
+    /** @param {number} spawnColumn */
+    constructor(spawnColumn) {
+        this.#spawnColumn = spawnColumn;
     }
 
     get mino() {
@@ -37,7 +41,7 @@ export class CurrentMinoManager {
         this.#isPlaced = false;
         this.#currentMino = mino;
         this.row = 20;
-        this.column = 4;
+        this.column = this.#spawnColumn;
     }
 
     get isPlaced() {
@@ -46,7 +50,7 @@ export class CurrentMinoManager {
 
     /** Copy public and private members and returns it @return {CurrentMinoManager} */
     duplicate() {
-        const copied = new CurrentMinoManager();
+        const copied = new CurrentMinoManager(this.#spawnColumn);
         copied.row = this.row;
         copied.column = this.column;
         copied.#currentMino = this.#currentMino;

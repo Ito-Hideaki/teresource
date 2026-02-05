@@ -62,7 +62,7 @@ export class GameFactory {
     /** @param {PlayScene} scene @param {GameConfig} gameConfig */
     static create(scene, gameConfig) {
         const boardSize = new BoardSize(40, 10);
-        const currentMinoManager = new CurrentMinoManager();
+        const currentMinoManager = new CurrentMinoManager(Math.ceil(boardSize.columnCount / 2) - 1);
         const cellBoard = new CellBoard(boardSize);
         const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfig(gameConfig)));
         const heldMinoManager = new HeldMinoManager();
