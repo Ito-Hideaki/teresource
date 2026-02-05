@@ -11,21 +11,6 @@ import { viteURLify } from "#util";
 import { ConfigUIDataHandler } from "../configUI";
 import { GameSession } from "./play/controller/gamesession";
 
-
-/** @param {ConfigUIDataHandler} configUIDataHandler @return {import("./play/infra/gamefactory").GameConfig} */
-function getGameConfigFrom_GamePersonalization(configUIDataHandler) {
-    const config = configUIDataHandler.getConfig();
-    return {
-        skin: config.gameSkin
-    };
-}
-
-/** @param {ConfigUIDataHandler} configUIDataHandler @return {import("./play/infra/gamefactory").GameConfig} */
-function getGameConfigFrom_Handling(configUIDataHandler) {
-    return { handling: configUIDataHandler.getConfig() };
-}
-
-
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene) {
     // url style must be like: viteURLify("/image/path/to/file.png");
@@ -85,12 +70,14 @@ export class PlayScene extends Phaser.Scene {
     create() {
         this.cellSheetParentIndex = this.game.cellSheetParentIndex;
 
+        /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = this.game.configUIDataHandlerMap;
+
         /** @type {import("./play/infra/gamefactory").GameConfig} */ const gameConfig = {
             bag: {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
-            ...getGameConfigFrom_GamePersonalization(this.game.configUIDataHandlerMap.gamePersonalization),
-            ...getGameConfigFrom_Handling(this.game.configUIDataHandlerMap.handling),
+            ...configUIDataHandlerMap.gamePersonalization.getConfig(),
+            handling: configUIDataHandlerMap.handling.getConfig(),
         }
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;

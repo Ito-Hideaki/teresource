@@ -28,7 +28,7 @@ export const CONFIGUI_CONFIG_DATA = {
 /** @type {Object.<string, ConfigUIExportMap>} */
 export const CONFIGUI_EXPORT_MAP_INDEX = {
     gamePersonalization : {
-        "gameSkin": "skin"
+        "skin": "skin"
     },
     handling : {
         "DAS" : "DAS",
