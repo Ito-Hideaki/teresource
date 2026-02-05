@@ -1,6 +1,13 @@
 import { GameHighContext } from "../infra/context";
 import { GameStats } from "./stats";
 
+/**
+ *  @typedef {{
+ *      type: string,
+ *      targetLines: number
+ *  }}
+ * GameSessionConfig */
+
 export class GameSession {
 
     static SessionType = {
@@ -15,12 +22,12 @@ export class GameSession {
 
     /** @type {GameStats} */ #gameStats;
 
-    /** @param {GameHighContext} gameHighContext */
-    constructor(gameHighContext) {
+    /** @param {GameHighContext} gameHighContext @param {GameSessionConfig} config */
+    constructor(gameHighContext, config) {
         this.#gameStats = gameHighContext.gameStats;
 
-        this.type = GameSession.SessionType.Line;
-        this.targetLines = 40;
+        this.type = config.type;
+        this.targetLines = config.targetLines;
     }
 
     isTargetCompleted() {
