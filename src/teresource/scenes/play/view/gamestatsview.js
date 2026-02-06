@@ -37,6 +37,7 @@ export class GameStatsView {
                 yoyo: true
             });
         }
-        this.timeText.setText(`経過　${dayjs.duration(Math.floor(1000 * this.#gameStats.timePassed)).format("HH:mm:ss\"SSS")}`);
+        const durationText = dayjs.duration(Math.floor(1000 * this.#gameStats.timePassed)).format("HH:mm:ss\"SSS");
+        this.timeText.setText(`経過　${durationText.slice(0, durationText.length - 1)}`);
     }
 }
