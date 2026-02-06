@@ -200,6 +200,7 @@ export function createConfigUIElement() {
         objective: {
             "type":"None",
             "targetLines":40,
+            "timeLimit": 180,
         }
     }
 

@@ -19,9 +19,11 @@ export const CONFIGUI_CONFIG_DATA = {
     objective: [
         { name: "type", type: "select", displayText: "目標の種類", choiceList: [
             { name: "なし", value: "None" },
-            { name: "ライン数", value: "Line" }
+            { name: "Line", value: "Line" },
+            { name: "Timed", value: "Timed" }
         ]},
-        { name: "targetLines", type: "number", displayText: "(Line)目標ライン数" }
+        { name: "targetLines", type: "number", displayText: "(Line)目標ライン数" },
+        { name: "timeLimit", type: "number", displayText: "(Timed)制限時間" }
     ]
 }
 
@@ -37,7 +39,8 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
     objective : {
         session: {
             "type" : "type",
-            "targetLines" : "targetLines"
+            "targetLines" : "targetLines",
+            "timeLimit" : "timeLimit"
         }
     }
 }
