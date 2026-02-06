@@ -87,6 +87,13 @@ class ItemElementFactory {
         return { box, getter, setter };
     }
 
+    static createPrefixBox(str) {
+        const box = document.createElement("div");
+        box.innerHTML = str;
+        box.classList.add("configui_item_prefix");
+        return box;
+    }
+
     /**
      *  @param {import("./configUIData").ConfigItemConfig} config
      *  @param {any} initialValue
@@ -95,6 +102,7 @@ class ItemElementFactory {
         const elm = document.createElement("div");
         elm.classList.add("configui_item");
         const Factory = ItemElementFactory;
+
         elm.appendChild(Factory.createNameElm(config.displayText));
         let result;
         switch (config.type) {
@@ -109,6 +117,10 @@ class ItemElementFactory {
                 break;
         }
         elm.appendChild(result.box);
+        if(config.prefix) {
+            elm.appendChild(Factory.createPrefixBox(config.prefix));
+        }
+
         const itemDataHandler = new ItemDataHandler(elm, config.type, result.getter, result.setter);
         itemDataHandler.setValue(initialValue);
         return { element: elm, itemDataHandler };

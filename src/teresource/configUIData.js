@@ -1,5 +1,5 @@
 /** @typedef {{ name: string, value: string }} ConfigChoice */
-/** @typedef {{ name: string, displayText: string, type: string, choiceList: undefined | ConfigChoice[] }} ConfigItemConfig */
+/** @typedef {{ name: string, displayText: string, type: string, choiceList: undefined | ConfigChoice[], prefix: string | undefined, }} ConfigItemConfig */
 /** @typedef {Object.<string, any>} ConfigUIExportMap value is string or another ConfigUIExportMap*/
 
 /** @type {Object.<string, ConfigItemConfig[]>} */
@@ -13,17 +13,17 @@ export const CONFIGUI_CONFIG_DATA = {
         ] }
     ],
     handling: [
-        { name: "DAS", type: "number", displayText: "DAS, 連射が発動するまでの時間" },
-        { name: "ARR", type: "number", displayText: "ARR, 連射間隔"  },
+        { name: "DAS", type: "number", displayText: "DAS, 連射が発動するまでの時間", prefix: "f" },
+        { name: "ARR", type: "number", displayText: "ARR, 連射間隔", prefix: "f"  },
     ],
-    objective: [
+    objective: [ 
         { name: "type", type: "select", displayText: "目標の種類", choiceList: [
             { name: "なし", value: "None" },
             { name: "Line", value: "Line" },
             { name: "Timed", value: "Timed" }
         ]},
-        { name: "targetLines", type: "number", displayText: "(Line)目標ライン数" },
-        { name: "timeLimit", type: "number", displayText: "(Timed)制限時間" }
+        { name: "targetLines", type: "number", displayText: "(Line)目標ライン数", prefix: "lines" },
+        { name: "timeLimit", type: "number", displayText: "(Timed)制限時間", prefix: "sec" }
     ]
 }
 
