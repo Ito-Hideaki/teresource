@@ -90,9 +90,13 @@ export class PlayScene extends Phaser.Scene {
 
         this.input.keyboard.on("keydown", e => {
             if(!this.game.inputEnabled) return;
-            if (e.repeat) {
-                e.preventDefault(); return;
+            e.preventDefault();
+            if (e.repeat) return;
+
+            if(e.code === "KeyR") {
+                this.scene.start("play");
             }
+
             //list of controlOrders assigned to a perticulay key
             const controlOrderList = {
                 "ArrowLeft" : ControlOrder.START_MOVE_LEFT,
@@ -105,7 +109,6 @@ export class PlayScene extends Phaser.Scene {
                 "ShiftLeft" : ControlOrder.HOLD
             }
             if (Object.keys(controlOrderList).includes(e.code)) {
-                e.preventDefault();
                 this.#controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
             }
         });
@@ -130,7 +133,7 @@ export class PlayScene extends Phaser.Scene {
             this.scene.start("play");
         });
         this.input.keyboard.once("keydown-R", e => {
-            this.scene.start("play");
+            
         });
     }
 
