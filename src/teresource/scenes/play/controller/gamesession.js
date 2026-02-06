@@ -12,7 +12,8 @@ export class GameSession {
 
     static SessionType = {
         None: "None",
-        Line: "Line"
+        Line: "Line",
+        Timed: "Timed"
     }
 
     //Readonly
@@ -28,12 +29,15 @@ export class GameSession {
 
         this.type = config.type;
         this.targetLines = config.targetLines;
+        this.timeLimit = config.timeLimit;
     }
 
     isTargetCompleted() {
         switch (this.type) {
             case GameSession.SessionType.Line:
                 return this.#gameStats.clearedLines >= this.targetLines;
+            case GameSession.SessionType.Timed:
+                return this.#gameStats.timePassed >= this.timeLimit;
             case GameSession.SessionType.None:
             default:
                 return false;
