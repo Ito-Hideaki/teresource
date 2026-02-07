@@ -77,7 +77,7 @@ export class PlayScene extends Phaser.Scene {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
             ...configUIDataHandlerMap.game.getConfig(),
-            ...configUIDataHandlerMap.gamePersonalization.getConfig(),
+            personalization: configUIDataHandlerMap.personalization.getConfig(),
             handling: configUIDataHandlerMap.handling.getConfig(),
         }
         const gameElements = GameFactory.create(this, gameConfig);

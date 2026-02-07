@@ -42,7 +42,7 @@ class ItemElementFactory {
         input.classList.add("configui_item_input");
         box.appendChild(input);
         const getter = () => {
-            return input.value;
+            return Number(input.value);
         }
         const setter = (value) => {
             input.value = value;
@@ -205,7 +205,7 @@ export function createConfigUIElement() {
         game: {
             "boardWidth": 10
         },
-        gamePersonalization: {
+        personalization: {
             "skin": "pika",
         },
         handling: {
@@ -222,7 +222,7 @@ export function createConfigUIElement() {
     /** @type {Object.<string, string>} */
     const configUIHeadingDisplayText = {
         game: "ゲーム設定",
-        gamePersonalization: "ゲームのみため",
+        personalization: "お好み",
         handling: "ハンドリング",
         objective: "ゲーム目標",
     }

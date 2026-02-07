@@ -7,7 +7,16 @@ export const CONFIGUI_CONFIG_DATA = {
     game: [
         { name: "boardWidth", type: "number", displayText: "ボードの幅" }
     ],
-    gamePersonalization: [
+    objective: [
+        { name: "type", type: "select", displayText: "目標の種類", choiceList: [
+            { name: "なし", value: "None" },
+            { name: "Line", value: "Line" },
+            { name: "Timed", value: "Timed" }
+        ]},
+        { name: "targetLines", type: "number", displayText: "(Line)目標ライン数", prefix: "lines" },
+        { name: "timeLimit", type: "number", displayText: "(Timed)制限時間", prefix: "sec" }
+    ],
+    personalization: [
         { name: "skin", type: "select", displayText: "ゲームスキン", choiceList: [
             { name: "pika", value: "pika" },
             { name: "nine", value: "nine" },
@@ -18,21 +27,12 @@ export const CONFIGUI_CONFIG_DATA = {
     handling: [
         { name: "DAS", type: "number", displayText: "DAS, 連射が発動するまでの時間", prefix: "f" },
         { name: "ARR", type: "number", displayText: "ARR, 連射間隔", prefix: "f"  },
-    ],
-    objective: [
-        { name: "type", type: "select", displayText: "目標の種類", choiceList: [
-            { name: "なし", value: "None" },
-            { name: "Line", value: "Line" },
-            { name: "Timed", value: "Timed" }
-        ]},
-        { name: "targetLines", type: "number", displayText: "(Line)目標ライン数", prefix: "lines" },
-        { name: "timeLimit", type: "number", displayText: "(Timed)制限時間", prefix: "sec" }
     ]
 }
 
 /** @type {Object.<string, ConfigUIExportMap>} */
 export const CONFIGUI_EXPORT_MAP_INDEX = {
-    gamePersonalization : {
+    personalization : {
         "skin": "skin"
     },
     handling : {
@@ -45,6 +45,9 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
             "targetLines" : "targetLines",
             "timeLimit" : "timeLimit"
         }
+    },
+    game : {
+        "boardWidth" : "boardWidth"
     }
 }
 

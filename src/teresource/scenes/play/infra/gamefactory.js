@@ -20,7 +20,9 @@ import { GameStatsView } from "../view/gamestatsview";
 /** 
  * @typedef {{
  *    bag: import("../core/minomanager").BagConfig
- *    skin: string,
+ *    personalization: {
+ *        skin: string
+ *    },
  *    boardWidth: number,
  *    handling: {
  *        DAS: number,
@@ -97,7 +99,7 @@ export class GameFactory {
     /** @param {{ gameConfig: GameConfig, gameHighContext: GameHighContext, gameContext: GameContext, scene: Phaser.Scene }} */
     static #createView({ gameConfig, gameContext, gameHighContext, scene }) {
         const boardCellWidth = 26;
-        const skin = gameConfig.skin;
+        const skin = gameConfig.personalization.skin;
         const boardContainer = scene.add.container();
         const relativeBoardPositionGetter = createRelativePositionGetter(boardCellWidth, 20, gameContext.boardSize.columnCount, -20, 0);
         const gameViewContext = new GameViewContext({
