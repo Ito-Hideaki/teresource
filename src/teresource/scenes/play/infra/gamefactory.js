@@ -21,6 +21,7 @@ import { GameStatsView } from "../view/gamestatsview";
  * @typedef {{
  *    bag: import("../core/minomanager").BagConfig
  *    skin: string,
+ *    boardWidth: number,
  *    handling: {
  *        DAS: number,
  *        ARR: number,
@@ -61,7 +62,7 @@ export class GameFactory {
 
     /** @param {PlayScene} scene @param {GameConfig} gameConfig */
     static create(scene, gameConfig) {
-        const boardSize = new BoardSize(40, 10);
+        const boardSize = new BoardSize(40, gameConfig.boardWidth);
         const currentMinoManager = new CurrentMinoManager(Math.ceil(boardSize.columnCount / 2) - 1);
         const cellBoard = new CellBoard(boardSize);
         const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfig(gameConfig)));
