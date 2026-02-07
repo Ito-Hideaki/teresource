@@ -4,6 +4,9 @@
 
 /** @type {Object.<string, ConfigItemConfig[]>} */
 export const CONFIGUI_CONFIG_DATA = {
+    game: [
+        { name: "boardWidth", type: "number", displayText: "ボードの幅" }
+    ],
     gamePersonalization: [
         { name: "skin", type: "select", displayText: "ゲームスキン", choiceList: [
             { name: "pika", value: "pika" },
@@ -16,7 +19,7 @@ export const CONFIGUI_CONFIG_DATA = {
         { name: "DAS", type: "number", displayText: "DAS, 連射が発動するまでの時間", prefix: "f" },
         { name: "ARR", type: "number", displayText: "ARR, 連射間隔", prefix: "f"  },
     ],
-    objective: [ 
+    objective: [
         { name: "type", type: "select", displayText: "目標の種類", choiceList: [
             { name: "なし", value: "None" },
             { name: "Line", value: "Line" },

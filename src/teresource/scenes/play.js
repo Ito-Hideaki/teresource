@@ -76,7 +76,7 @@ export class PlayScene extends Phaser.Scene {
             bag: {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
-            boardWidth: 20,
+            ...configUIDataHandlerMap.game.getConfig(),
             ...configUIDataHandlerMap.gamePersonalization.getConfig(),
             handling: configUIDataHandlerMap.handling.getConfig(),
         }

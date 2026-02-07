@@ -202,6 +202,9 @@ export function createConfigUIElement() {
 
     /** @type {Object.<string, Object.<string, any>>} */
     const initialConfigStateMap = {
+        game: {
+            "boardWidth": 10
+        },
         gamePersonalization: {
             "skin": "pika",
         },
@@ -218,6 +221,7 @@ export function createConfigUIElement() {
 
     /** @type {Object.<string, string>} */
     const configUIHeadingDisplayText = {
+        game: "ゲーム設定",
         gamePersonalization: "ゲームのみため",
         handling: "ハンドリング",
         objective: "ゲーム目標",
