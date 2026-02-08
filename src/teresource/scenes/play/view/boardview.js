@@ -5,16 +5,11 @@ import { createCellViewParamsFromCell } from "./celltexturecore";
 import { GameViewContext, GameContext } from "../infra/context";
 import { ImageBoard, CellImage } from "./cellimage";
 
-/** @typedef {{  }} BoardViewConfig */
+/** @typedef {{ displayedBoardArea: BoardArea }} BoardViewConfig */
 
 /** Draws all the cells of the board */
 export class BoardView {
 
-
-
-
-
-    #image
     /** Board of Cell images. @type {ImageBoard} */
     #imageBoard
     /** @type {CellBoard} */
@@ -25,14 +20,7 @@ export class BoardView {
     #getRelativeX;
     /** @type {Function} */
     #getRelativeY;
-    /** @param {number} num */
-    set x(num) {
-        this.#image.x = num;
-    }
-    /** @param {number} num */
-    set y(num) {
-        this.#image.y = num;
-    }
+    #displayedBoardArea;
 
     /**
      *  @param { Phaser.Scene } scene
@@ -46,6 +34,7 @@ export class BoardView {
         this.#currentMinoManager = gContext.currentMinoManager;
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
+        this.#displayedBoardArea = config.displayedBoardArea;
 
         this.#initImageBoard(scene, gvContext.getBoardCellWidth(), gvContext);
     }
@@ -88,12 +77,21 @@ export class BoardView {
         })();
 
         compositedBoard.table.forEach((array, row) => {
-            array.forEach((/** @type {Cell} */cell, column) => {
-                /** @type {CellImage} */
-                const cellImage = this.#imageBoard.table[row][column];
-                const cellViewParams = createCellViewParamsFromCell(cell);
-                cellImage.setView(cellViewParams);
-            });
+            if (row < this.#displayedBoardArea.topRow) {
+                array.forEach((_, column) => {
+                    /** @type {CellImage} */
+                    const cellImage = this.#imageBoard.table[row][column];
+                    const cellViewParams = createCellViewParamsFromCell(new Cell(false));
+                    cellImage.setView(cellViewParams);
+                });
+            } else {
+                array.forEach((/** @type {Cell} */cell, column) => {
+                    /** @type {CellImage} */
+                    const cellImage = this.#imageBoard.table[row][column];
+                    const cellViewParams = createCellViewParamsFromCell(cell);
+                    cellImage.setView(cellViewParams);
+                });
+            }
         })
     }
 }
