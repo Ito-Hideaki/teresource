@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { Board, BoardSize } from "../core/mechanics";
-import {  generateCellSheetTextureFrameKey, GOBI } from "./viewmechanics";
+import {  generateCellSheetTextureFrameKey, GOBI } from "./celltexturecore";
 import { CellSheetParent } from "./customtexture";
 
 export class CellImage extends Phaser.GameObjects.Image {
@@ -22,7 +22,7 @@ export class CellImage extends Phaser.GameObjects.Image {
         this.setView({ color: "black", gobi: GOBI.invisible });
     }
 
-    /** @param {import("./viewmechanics").CellViewParams} cellViewParams */
+    /** @param {import("./celltexturecore").CellViewParams} cellViewParams */
     setView(cellViewParams) {
         if(cellViewParams.gobi === GOBI.invisible) {
             this.setVisible(false);

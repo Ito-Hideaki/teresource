@@ -3,7 +3,7 @@ import { MINO_DATA_INDEX } from "./play/core/coredata";
 import { GameController } from "./play/controller/gamecontroller";
 import { GameViewController } from "./play/view/gameviewcontroller";
 import { cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, IMG_SKIN_DATA_INDEX } from "./play/view/viewdata";
-import { calcSkinCellViewParams, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/viewmechanics";
+import { calcSkinCellViewParams, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/celltexturecore";
 import { GameFactory } from "./play/infra/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontroller";
 import { CellSheetParent } from "./play/view/customtexture";

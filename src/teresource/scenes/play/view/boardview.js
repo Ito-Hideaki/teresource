@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { Cell, CellBoard, BoardSize } from "../core/mechanics";
 import { CurrentMinoManager } from "../core/minomanager";
-import { createCellViewParamsFromCell } from "./viewmechanics";
+import { createCellViewParamsFromCell } from "./celltexturecore";
 import { GameViewContext, GameContext } from "../infra/context";
 import { ImageBoard, CellImage } from "./cellimage";
 

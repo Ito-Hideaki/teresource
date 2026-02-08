@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { viteURLify } from "#util";
 import { createSecondLevelTextures, loadFirstLevelTextures as loadFirstLevelTexturesOfPlayScene } from "./play";
-import { generateCellSheetTextureKey } from "./play/view/viewmechanics";
+import { generateCellSheetTextureKey } from "./play/view/celltexturecore";
 
 export class BootloaderScene extends Phaser.Scene {
     constructor() {

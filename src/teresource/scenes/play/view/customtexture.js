@@ -1,9 +1,9 @@
 import Phaser from "phaser";
 import { cellColorStr } from "../core/coredata";
 import {  cellImgSkins_fromImgs, cellImgSkins_fromSheet } from "./viewdata";
-import { calcSkinCellViewParams, generateCellTextureKey, visibleGobis, generateCellSheetTextureKey, generateCellSheetTextureFrameKey } from "./viewmechanics";
+import { calcSkinCellViewParams, generateCellTextureKey, visibleGobis, generateCellSheetTextureKey, generateCellSheetTextureFrameKey } from "./celltexturecore";
 
-/**  @param {import("./viewmechanics").CellViewParams} cellViewParams */
+/**  @param {import("./celltexturecore").CellViewParams} cellViewParams */
 function getFramePosition(cellViewParams) {
     let column = 0;
     column += cellColorStr.indexOf(cellViewParams.color);
@@ -11,7 +11,7 @@ function getFramePosition(cellViewParams) {
     return { column, row };
 }
 
-/** @param {number} cellWidth @param {import("./viewmechanics").CellViewParams} cellViewParams @return {{ x: number, y: number }} */
+/** @param {number} cellWidth @param {import("./celltexturecore").CellViewParams} cellViewParams @return {{ x: number, y: number }} */
 function getFrameXY(cellWidth, cellViewParams) {
     const pos = getFramePosition(cellViewParams);
     return { x: pos.column * cellWidth, y: pos.row * cellWidth };
