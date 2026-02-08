@@ -122,8 +122,6 @@ export class GameFactory {
         const gameViewController = new GameViewController(scene, gameViewContext, {
             boardDeco, boardView, minoQueueView, heldMinoView, gameEffectManagerView, gameStatsView
         });
-        gameViewController.x = scene.game.canvas.width / 2;
-        gameViewController.y = scene.game.canvas.height / 2;
 
         return { gameViewController };
     }

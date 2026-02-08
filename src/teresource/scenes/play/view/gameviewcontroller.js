@@ -11,13 +11,7 @@ import { GameStatsView } from "./gamestatsview";
 /** Represents the game view for each player */
 export class GameViewController {
     #elements;
-    #boardContainer;
-    set x(x) {
-        this.#boardContainer.x = x;
-    }
-    set y(y) {
-        this.#boardContainer.y = y;
-    }
+    boardContainer;
 
     /**
      *  @param {PlayScene} scene
@@ -25,8 +19,8 @@ export class GameViewController {
      * @param {GameViewElements} elements
      */
     constructor(scene, gvContext, elements) {
-        this.#boardContainer = gvContext.boardContainer;
         this.#elements = elements;
+        this.boardContainer = gvContext.boardContainer;
     }
 
     /** @param {number} deltaTime */
@@ -37,9 +31,5 @@ export class GameViewController {
         this.#elements.heldMinoView.update();
         this.#elements.gameEffectManagerView.update(deltaTime);
         this.#elements.gameStatsView.update();
-        // let rad = Math.atan2((this.#boardContainer.y - 360) / 15, (this.#boardContainer.x - 540) / 50);
-        // rad += 0.1;
-        // this.#boardContainer.x = 540 + Math.cos(rad) * 50;
-        // this.#boardContainer.y = 360 + Math.sin(rad) * 15;
     }
 }

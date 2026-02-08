@@ -83,6 +83,9 @@ export class PlayScene extends Phaser.Scene {
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;
         this.#gameViewController = gameElements.gameViewController;
+        const container = this.#gameViewController.boardContainer;
+        container.x = this.game.canvas.width / 2;
+        container.y = this.game.canvas.height / 2;
         this.#controlOrderProvider = gameElements.controlOrderProvider;
 
         const UIObjectiveConfig = this.game.configUIDataHandlerMap.objective.getConfig();
