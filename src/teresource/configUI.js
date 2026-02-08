@@ -203,7 +203,8 @@ export function createConfigUIElement() {
     /** @type {Object.<string, Object.<string, any>>} */
     const initialConfigStateMap = {
         game: {
-            "boardWidth": 10
+            "boardWidth": 10,
+            "boardHeight": 20,
         },
         personalization: {
             "skin": "pika",

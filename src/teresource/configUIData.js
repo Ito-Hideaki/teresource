@@ -5,7 +5,8 @@
 /** @type {Object.<string, ConfigItemConfig[]>} */
 export const CONFIGUI_CONFIG_DATA = {
     game: [
-        { name: "boardWidth", type: "number", displayText: "ボードの幅" }
+        { name: "boardWidth", type: "number", displayText: "ボードの幅" },
+        { name: "boardHeight", type: "number", displayText: "ボードの高さ" }
     ],
     objective: [
         { name: "type", type: "select", displayText: "目標の種類", choiceList: [
@@ -47,7 +48,8 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
         }
     },
     game : {
-        "boardWidth" : "boardWidth"
+        "boardWidth" : "boardWidth",
+        "boardHeight" : "boardHeight"
     }
 }
 
