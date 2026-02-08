@@ -1,0 +1,5 @@
+/**
+ * @typedef {{
+ *      topRow: number
+ * }} BoardArea
+ * */

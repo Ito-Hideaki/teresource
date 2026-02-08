@@ -7,6 +7,7 @@ const utkg = new UniqueTextureKeyGenerator("boarddeco");
 
 /** 
  * @typedef {{
+ *      displayedBoardArea: BoardArea
  * }} BoardDecoConfig
  *  */
 
@@ -25,6 +26,7 @@ export class BoardDeco {
     #scene;
     #boardContainer;
     #boardCellWidth;
+    #displayedBoardArea;
 
     get #boardWidth() {
         return this.#boardCellWidth * this.#boardSize.rowCount;
@@ -51,6 +53,7 @@ export class BoardDeco {
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
         this.#boardCellWidth = gvContext.getBoardCellWidth();
+        this.#displayedBoardArea = config.displayedBoardArea;
         this.#init();
     }
 
@@ -82,12 +85,12 @@ export class BoardDeco {
     /**
      * Stroke board background grids, centered at (0,0).
      * @param {CanvasRenderingContext2D} ctx
-     * @param {number} rowCount
-     * @param {number} rowToDisplayFrom
      */
-    #strokeGrid(ctx, rowCount, rowToDisplayFrom) {
+    #strokeGrid(ctx) {
         const columnCount = this.#boardSize.columnCount;
         const cellWidth = this.#boardCellWidth;
+        const rowToDisplayFrom = this.#displayedBoardArea.topRow;
+        const rowCount = this.#boardSize.rowCount - rowToDisplayFrom;
         ctx.strokeStyle = "#323232ff";
         ctx.lineWidth = cellWidth / 10;
 
@@ -115,11 +118,11 @@ export class BoardDeco {
     /**
      * Fill board background, centered at (0,0).
      * @param {CanvasRenderingContext2D} ctx
-     * @param {number} rowCount
-     * @param {number} rowToDisplayFrom
      */
-    #fillBackground(ctx, rowCount, rowToDisplayFrom) {
+    #fillBackground(ctx) {
         const columnCount = this.#boardSize.columnCount;
+        const rowToDisplayFrom = this.#displayedBoardArea.topRow;
+        const rowCount = this.#boardSize.rowCount - rowToDisplayFrom;
         ctx.fillStyle = "#000";
         ctx.fillRect(
             this.#getRelativeX(0),

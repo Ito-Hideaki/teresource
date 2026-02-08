@@ -50,16 +50,6 @@ function getControlOrderProviderConfig(gameConfig) {
  * }} GameViewConfig
  *  */
 
-/** @param {GameViewConfig} gameViewConfig @return {import("./boarddeco").BoardDecoConfig} */
-function getBoardDecoConfig(gameViewConfig) {
-    return { boardCellWidth : gameViewConfig.boardCellWidth };
-}
-
-/** @param {GameViewConfig} gameViewConfig @return {import("./boardview").BoardViewConfig}*/
-function getBoardViewConfig(gameViewConfig) {
-    return { boardCellWidth : gameViewConfig.boardCellWidth };
-}
-
 export class GameFactory {
 
     /** @param {PlayScene} scene @param {GameConfig} gameConfig */
@@ -112,17 +102,15 @@ export class GameFactory {
             getBoardCellWidth: () => boardCellWidth,
         });
 
-        /** @type {GameViewConfig} */ const gameViewConfig = { boardCellWidth };
-
-        const boardDeco = new BoardDeco(scene, gameViewContext, getBoardDecoConfig(gameViewConfig));
-        const boardView = new BoardView(scene, gameViewContext, getBoardViewConfig(gameViewConfig));
+        const boardDeco = new BoardDeco(scene, gameViewContext, { displayedBoardArea: { topRow: 20 } });
+        const boardView = new BoardView(scene, gameViewContext, { displayedBoardArea: { topRow: 20 } });
         const minoQueueView = new MinoQueueView(scene, gameViewContext);
         const heldMinoView = new HeldMinoView(scene, gameViewContext);
         const gameEffectManagerView = new GameEffectManagerView(scene, gameViewContext);
         const gameStatsView = new GameStatsView(scene, gameViewContext);
         const gameViewController = new GameViewController(scene, gameViewContext, {
             boardDeco, boardView, minoQueueView, heldMinoView, gameEffectManagerView, gameStatsView
-        }, gameViewConfig);
+        });
         gameViewController.x = scene.game.canvas.width / 2;
         gameViewController.y = scene.game.canvas.height / 2;
 

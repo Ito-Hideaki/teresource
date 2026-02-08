@@ -55,13 +55,6 @@ export class GameHighContext {
 }
 
 export class GameViewContext {
-    /** @type {CellSheetParent} */ cellSheetParent
-    /** @type {GameContext} */ gameContext
-    /** @type {GameHighContext} */ gameHighContext
-    /** @type {Phaser.GameObjects.Container} */ boardContainer
-    /** @type {Function} */ getRelativeBoardY
-    /** @type {Function} */ getRelativeBoardX
-
     /** 
      * @param {{
      * cellSheetParent  : CellSheetParent,
