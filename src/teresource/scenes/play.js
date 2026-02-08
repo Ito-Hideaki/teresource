@@ -77,6 +77,7 @@ export class PlayScene extends Phaser.Scene {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
             ...configUIDataHandlerMap.game.getConfig(),
+            boardHeight: 15,
             personalization: configUIDataHandlerMap.personalization.getConfig(),
             handling: configUIDataHandlerMap.handling.getConfig(),
         }

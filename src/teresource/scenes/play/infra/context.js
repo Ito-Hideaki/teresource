@@ -64,15 +64,17 @@ export class GameViewContext {
      * getRelativeBoardX: Function,
      * getRelativeBoardY: Function,
      * getBoardCellWidth: () => number,
+     * displayedBoardArea: BoardArea
      * }} source
      * */
     constructor(source) {
         this.cellSheetParent = source.cellSheetParent;
         this.gameContext     = source.gameContext;
-        this.gameHighContext = source.gameHighContext; 
+        this.gameHighContext = source.gameHighContext;
         this.boardContainer  = source.boardContainer;
         this.getRelativeBoardX    = source.getRelativeBoardX;
         this.getRelativeBoardY    = source.getRelativeBoardY;
         this.getBoardCellWidth    = source.getBoardCellWidth;
+        this.displayedBoardArea = source.displayedBoardArea;
     }
 }

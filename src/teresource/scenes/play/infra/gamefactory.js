@@ -110,9 +110,10 @@ export class GameFactory {
             getRelativeBoardX: relativeBoardPositionGetter.getRelativeX,
             getRelativeBoardY: relativeBoardPositionGetter.getRelativeY,
             getBoardCellWidth: () => boardCellWidth,
+            displayedBoardArea: { topRow: gameContext.boardSize.rowCount - gameConfig.boardHeight }
         });
 
-        const boardDeco = new BoardDeco(scene, gameViewContext, { displayedBoardArea: { topRow: gameContext.boardSize.rowCount - gameConfig.boardHeight } });
+        const boardDeco = new BoardDeco(scene, gameViewContext, {  });
         const boardView = new BoardView(scene, gameViewContext, { displayedBoardArea: { topRow: 0 } });
         const minoQueueView = new MinoQueueView(scene, gameViewContext);
         const heldMinoView = new HeldMinoView(scene, gameViewContext);

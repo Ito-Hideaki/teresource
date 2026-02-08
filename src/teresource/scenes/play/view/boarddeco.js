@@ -7,7 +7,6 @@ const utkg = new UniqueTextureKeyGenerator("boarddeco");
 
 /** 
  * @typedef {{
- *      displayedBoardArea: BoardArea
  * }} BoardDecoConfig
  *  */
 
@@ -53,7 +52,7 @@ export class BoardDeco {
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
         this.#boardCellWidth = gvContext.getBoardCellWidth();
-        this.#displayedBoardArea = config.displayedBoardArea;
+        this.#displayedBoardArea = gvContext.displayedBoardArea;
         this.#init();
     }
 
