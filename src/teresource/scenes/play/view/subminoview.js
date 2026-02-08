@@ -140,7 +140,7 @@ export class MinoQueueView {
             const size = 90;
             const subMinoBox = new SubMinoBox(scene, size, context);
             subMinoBox.x = context.getRelativeBoardX(context.gameContext.boardSize.columnCount) + 10;
-            subMinoBox.y = context.getRelativeBoardY(context.displayedBoardArea.topRow) + subMinoBoxYOffset;
+            subMinoBox.y = context.getBoardCellWidth() * -10 + subMinoBoxYOffset;
             this.#subMinoBoxList.push(subMinoBox);
             subMinoBoxYOffset += size + 3;
         }
@@ -170,7 +170,7 @@ export class HeldMinoView {
         const size = 90;
         this.#subMinoBox = new SubMinoBox(scene, size, context);
         this.#subMinoBox.x = context.getRelativeBoardX(0) - 10 - size;
-        this.#subMinoBox.y = context.getRelativeBoardY(context.displayedBoardArea.topRow);
+        this.#subMinoBox.y = context.getBoardCellWidth() * -10;
         this.#heldMinoManager = context.gameContext.heldMinoManager;
     }
 
