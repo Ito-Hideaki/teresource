@@ -23,9 +23,8 @@ export class GameViewController {
      *  @param {PlayScene} scene
      * @param {GameViewContext} gvContext
      * @param {GameViewElements} elements
-     * @param {GameViewConfig} config
      */
-    constructor(scene, gvContext, elements, config) {
+    constructor(scene, gvContext, elements) {
         this.#boardContainer = gvContext.boardContainer;
         this.#elements = elements;
     }

@@ -7,7 +7,6 @@ const utkg = new UniqueTextureKeyGenerator("boarddeco");
 
 /** 
  * @typedef {{
- *    boardCellWidth: number
  * }} BoardDecoConfig
  *  */
 
@@ -25,10 +24,10 @@ export class BoardDeco {
     #image;
     #scene;
     #boardContainer;
-    /** @type {BoardDecoConfig} */ #config;
+    #boardCellWidth;
 
     get #boardWidth() {
-        return this.#config.boardCellWidth * this.#boardSize.rowCount;
+        return this.#boardCellWidth * this.#boardSize.rowCount;
     }
 
     set x(num) {
@@ -51,7 +50,7 @@ export class BoardDeco {
         this.#boardContainer = gvContext.boardContainer;
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
-        this.#config = config;
+        this.#boardCellWidth = gvContext.getBoardCellWidth();
         this.#init();
     }
 
@@ -88,7 +87,7 @@ export class BoardDeco {
      */
     #strokeGrid(ctx, rowCount, rowToDisplayFrom) {
         const columnCount = this.#boardSize.columnCount;
-        const cellWidth = this.#config.boardCellWidth;
+        const cellWidth = this.#boardCellWidth;
         ctx.strokeStyle = "#323232ff";
         ctx.lineWidth = cellWidth / 10;
 

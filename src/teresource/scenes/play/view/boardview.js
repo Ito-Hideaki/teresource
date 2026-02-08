@@ -5,7 +5,7 @@ import { createCellViewParamsFromCell } from "./celltexturecore";
 import { GameViewContext, GameContext } from "../infra/context";
 import { ImageBoard, CellImage } from "./cellimage";
 
-/** @typedef {{ boardCellWidth: number }} BoardViewConfig */
+/** @typedef {{  }} BoardViewConfig */
 
 /** Draws all the cells of the board */
 export class BoardView {
@@ -47,7 +47,7 @@ export class BoardView {
         this.#getRelativeX = gvContext.getRelativeBoardX;
         this.#getRelativeY = gvContext.getRelativeBoardY;
 
-        this.#initImageBoard(scene, config.boardCellWidth, gvContext);
+        this.#initImageBoard(scene, gvContext.getBoardCellWidth(), gvContext);
     }
 
     /**
