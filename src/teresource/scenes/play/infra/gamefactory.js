@@ -92,7 +92,7 @@ export class GameFactory {
 
     /** @param {{ gameConfig: GameConfig, gameHighContext: GameHighContext, gameContext: GameContext, scene: Phaser.Scene }} */
     static #createView({ gameConfig, gameContext, gameHighContext, scene }) {
-        const boardCellWidth = 26;
+        const boardCellWidth = 26 / Math.max(gameConfig.boardHeight / 20, gameConfig.boardWidth / 20);
         const skin = gameConfig.personalization.skin;
         const boardContainer = scene.add.container();
         const relativeBoardPositionGetter = createRelativePositionGetter(
