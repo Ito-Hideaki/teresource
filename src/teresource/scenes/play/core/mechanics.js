@@ -132,7 +132,7 @@ export class BoardSize {
     #columnCount;
     get rowCount() { return this.#rowCount };
     get columnCount() { return this.#columnCount };
-    constructor(rowCount = 40, columnCount = 10) {
+    constructor(rowCount, columnCount) {
         this.#rowCount = rowCount;
         this.#columnCount = columnCount;
     }
