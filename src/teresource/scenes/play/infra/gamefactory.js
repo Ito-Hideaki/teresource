@@ -24,6 +24,7 @@ import { GameStatsView } from "../view/gamestatsview";
  *        skin: string
  *    },
  *    boardWidth: number,
+ *    boardHeight: number,
  *    handling: {
  *        DAS: number,
  *        ARR: number,
@@ -54,8 +55,11 @@ export class GameFactory {
 
     /** @param {PlayScene} scene @param {GameConfig} gameConfig */
     static create(scene, gameConfig) {
-        const boardSize = new BoardSize(40, gameConfig.boardWidth);
-        const currentMinoManager = new CurrentMinoManager(Math.ceil(boardSize.columnCount / 2) - 1);
+        const boardSize = new BoardSize(gameConfig.boardHeight * 2, gameConfig.boardWidth);
+        const currentMinoManager = new CurrentMinoManager(
+            boardSize.rowCount - gameConfig.boardHeight,
+            Math.ceil(boardSize.columnCount / 2) - 1
+        );
         const cellBoard = new CellBoard(boardSize);
         const minoQueueManager = new MinoQueueManager(new Bag(Bag.TYPES.SEVEN, getBagConfig(gameConfig)));
         const heldMinoManager = new HeldMinoManager();
@@ -91,7 +95,13 @@ export class GameFactory {
         const boardCellWidth = 26;
         const skin = gameConfig.personalization.skin;
         const boardContainer = scene.add.container();
-        const relativeBoardPositionGetter = createRelativePositionGetter(boardCellWidth, 20, gameContext.boardSize.columnCount, -20, 0);
+        const relativeBoardPositionGetter = createRelativePositionGetter(
+            boardCellWidth, //cell width
+            gameConfig.boardHeight, //displayed board row count
+            gameContext.boardSize.columnCount, //displayed board column count
+            gameConfig.boardHeight - gameContext.boardSize.rowCount, //row offset
+            0 //column offset
+        );
         const gameViewContext = new GameViewContext({
             cellSheetParent: scene.cellSheetParentIndex[skin],
             gameContext,
@@ -102,8 +112,8 @@ export class GameFactory {
             getBoardCellWidth: () => boardCellWidth,
         });
 
-        const boardDeco = new BoardDeco(scene, gameViewContext, { displayedBoardArea: { topRow: 20 } });
-        const boardView = new BoardView(scene, gameViewContext, { displayedBoardArea: { topRow: 20 } });
+        const boardDeco = new BoardDeco(scene, gameViewContext, { displayedBoardArea: { topRow: gameContext.boardSize.rowCount - gameConfig.boardHeight } });
+        const boardView = new BoardView(scene, gameViewContext, { displayedBoardArea: { topRow: 0 } });
         const minoQueueView = new MinoQueueView(scene, gameViewContext);
         const heldMinoView = new HeldMinoView(scene, gameViewContext);
         const gameEffectManagerView = new GameEffectManagerView(scene, gameViewContext);

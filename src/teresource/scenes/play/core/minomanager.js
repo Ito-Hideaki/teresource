@@ -13,12 +13,14 @@ export class CurrentMinoManager {
     column = 0;
     /** @type {number} */
     #spawnColumn;
+    #spawnRow;
     /** @type boolean */
     #isPlaced = true;
 
-    /** @param {number} spawnColumn */
-    constructor(spawnColumn) {
+    /** @param {number} spawnRow @param {number} spawnColumn */
+    constructor(spawnRow, spawnColumn) {
         this.#spawnColumn = spawnColumn;
+        this.#spawnRow = spawnRow;
     }
 
     get mino() {
@@ -40,7 +42,7 @@ export class CurrentMinoManager {
     startNextMino(mino) {
         this.#isPlaced = false;
         this.#currentMino = mino;
-        this.row = 20;
+        this.row = this.#spawnRow;
         this.column = this.#spawnColumn;
     }
 
@@ -50,7 +52,7 @@ export class CurrentMinoManager {
 
     /** Copy public and private members and returns it @return {CurrentMinoManager} */
     duplicate() {
-        const copied = new CurrentMinoManager(this.#spawnColumn);
+        const copied = new CurrentMinoManager(this.#spawnRow, this.#spawnColumn);
         copied.row = this.row;
         copied.column = this.column;
         copied.#currentMino = this.#currentMino;
