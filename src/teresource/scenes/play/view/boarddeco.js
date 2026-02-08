@@ -27,10 +27,6 @@ export class BoardDeco {
     #boardCellWidth;
     #displayedBoardArea;
 
-    get #boardWidth() {
-        return this.#boardCellWidth * this.#boardSize.rowCount;
-    }
-
     set x(num) {
         this.#image.x = num;
     }
@@ -59,7 +55,7 @@ export class BoardDeco {
     #init() {
         //Create image
         const canvasTextureKey = utkg.get();
-        this.#scene.textures.createCanvas(canvasTextureKey, this.#boardWidth * 1.25, this.#boardWidth * 2.25);
+        this.#scene.textures.createCanvas(canvasTextureKey, this.#boardSize.columnCount * this.#boardCellWidth * 1.25, this.#boardSize.rowCount * this.#boardCellWidth * 1.25);
         this.#image = this.#scene.add.image(0, 0, canvasTextureKey);
         this.#boardContainer.add(this.#image);
 
