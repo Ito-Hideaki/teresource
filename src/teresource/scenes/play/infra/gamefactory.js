@@ -16,7 +16,7 @@ import { LineClearManager } from "../core/lineclear";
 import { GameAttackState } from "../core/attack";
 import { GameStatsManager, GameStats } from "../controller/stats";
 import { GameStatsView } from "../view/gamestatsview";
-import { GarbageGenerator } from "../core/garbage";
+import { GameScheduledDamageState, GarbageGenerator } from "../core/garbage";
 
 /** 
  * @typedef {{
@@ -66,18 +66,19 @@ export class GameFactory {
         const heldMinoManager = new HeldMinoManager();
         const boardUpdateState = new BoardUpdateState();
         const gameReportStack = new GameReportStack();
-        const garbageGenerator = new GarbageGenerator(cellBoard);
         const gameContext = new GameContext({
-            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, garbageGenerator, gameReportStack, rotationSystem: new RotationSystem_Standard()
+            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, gameReportStack, rotationSystem: new RotationSystem_Standard()
         });
 
         const lineClearManager = new LineClearManager(gameContext);
         const gameAttackState = new GameAttackState(gameContext);
+        const garbageGenerator = new GarbageGenerator(cellBoard);
+        const scheduledDamageState = new GameScheduledDamageState();
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const gameStats = new GameStats();
         const gameStatsManager = new GameStatsManager(gameStats);
         const gameHighContext = new GameHighContext({
-            gameStats, gameStatsManager, gameAttackState, controlOrderProvider, lineClearManager
+            gameStats, gameStatsManager, gameAttackState, controlOrderProvider, lineClearManager,  garbageGenerator, scheduledDamageState
         })
         const gameController = new GameController(gameContext, gameHighContext);
 

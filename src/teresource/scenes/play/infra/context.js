@@ -7,6 +7,7 @@ import { GameReportStack } from "../controller/report";
 import { GameStats, GameStatsManager } from "../controller/stats";
 import { GameAttackState } from "../core/attack";
 import { LineClearManager } from "../core/lineclear";
+import { GameScheduledDamageState } from "../core/garbage";
 
 /** @param {{}} source @return GameContext */
 export class GameContext {
@@ -20,7 +21,6 @@ export class GameContext {
      * heldMinoManager   : HeldMinoManager,
      * boardUpdateState  : BoardUpdateState,
      * rotationSystem    : RotationSystem,
-     * garbageGenerator  : GarbageGenerator,
      * gameReportStack   : GameReportStack
      * }} source
      * */
@@ -32,7 +32,6 @@ export class GameContext {
         this.heldMinoManager    = source.heldMinoManager;
         this.boardUpdateState   = source.boardUpdateState;
         this.rotationSystem     = source.rotationSystem;
-        this.garbageGenerator   = source.garbageGenerator;
         this.gameReportStack    = source.gameReportStack;
     }
 }
@@ -44,7 +43,9 @@ export class GameHighContext {
      *     gameStatsManager: GameStatsManager,
      *     gameAttackState: GameAttackState,
      *     controlOrderProvider: ControlOrderProvider,
-     *     lineClearManager : LineClearManager
+     *     lineClearManager : LineClearManager,
+     * garbageGenerator  : GarbageGenerator,
+     * scheduledDamageState : GameScheduledDamageState,
      * }} source
      * */
     constructor(source) {
@@ -53,6 +54,8 @@ export class GameHighContext {
         this.gameAttackState  = source.gameAttackState;
         this.controlOrderProvider = source.controlOrderProvider;
         this.lineClearManager = source.lineClearManager;
+        this.garbageGenerator   = source.garbageGenerator;
+        this.scheduledDamageState = source.scheduledDamageState;
     }
 }
 

@@ -6,7 +6,7 @@ import { GameAttackState } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
 import { GameSession } from "./gamesession";
-import { GarbageGenerator } from "../core/garbage";
+import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from "../core/garbage";
 
 /** Represents the logic og the game attached to each player */
 export class GameController {
@@ -25,7 +25,8 @@ export class GameController {
     /** @type {GameAttackState} */ gameAttackState
     #doesCurrentMinoCollide
     /** @type {GarbageGenerator} */ #garbageGenerator
-
+    /** @type {GameScheduledDamageState} */ #scheduledDamageState
+    /** @type {LinearDamageProvider} */ #damageProviderPerMino
     /** @type {boolean} set in every NormalUpdate. Garbage is allowed to be added only when it's true. */
     allowGarbageNext
 
@@ -41,8 +42,11 @@ export class GameController {
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.#gameStatsManager = gameHighContext.gameStatsManager;
+        this.#scheduledDamageState = gameHighContext.scheduledDamageState;
+        this.#garbageGenerator = gameHighContext.garbageGenerator;
 
-        this.#garbageGenerator = gameContext.garbageGenerator;
+        this.#damageProviderPerMino = new LinearDamageProvider(0.5);
+
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
         this.#heldMinoManager = gameContext.heldMinoManager;
@@ -63,8 +67,13 @@ export class GameController {
         if (!this.lineClearManager.isDuringLineClear() && !this.session.isOver) {
             (() => {
                 //add garbage
-                if(this.allowGarbageNext) {
-                    this.#garbageGenerator.addGarbage(1);
+                if (this.allowGarbageNext) {
+                    const damageStack = this.#scheduledDamageState.damageStack;
+                    while(damageStack.length) { //currently use all damages as soon as possible
+                        const scheduledDamage = damageStack[0];
+                        this.#garbageGenerator.addGarbage(scheduledDamage.length);
+                        damageStack.splice(0, 1);
+                    }
                 }
 
                 //check if the game has reached session goal
@@ -118,9 +127,6 @@ export class GameController {
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);
 
-        //Garbage
-        this.allowGarbageNext = boardUpdateDiff.placed;
-
         //Clear filled line (row)
         const rowToClearList = this.lineClearManager.findRowToClearList();
         this.lineClearManager.startClear(rowToClearList);
@@ -128,11 +134,23 @@ export class GameController {
         //Update attack state
         this.gameAttackState.update(boardUpdateDiff, rowToClearList.length);
 
-        //do line clear effect
+        //Start line clear effect
         if (rowToClearList.length) {
             const reportData = this.gameAttackState.createLineClearAttackData(rowToClearList);
             this.#gameReportStack.add(new LineClearReport(reportData));
             this.#gameStatsManager.setNewLineClearAttackData(reportData);
+        }
+
+        //Garbage
+        this.allowGarbageNext = boardUpdateDiff.placed;
+
+        //Auto Damage
+        if(boardUpdateDiff.placed) {
+            this.#damageProviderPerMino.count();
+            const damageLength = this.#damageProviderPerMino.provide();
+            if(damageLength) {
+                this.#scheduledDamageState.damageStack.push({ length: damageLength });
+            }
         }
     }
 
