@@ -79,6 +79,7 @@ export class PlayScene extends Phaser.Scene {
             ...configUIDataHandlerMap.game.getConfig(),
             personalization: configUIDataHandlerMap.personalization.getConfig(),
             handling: configUIDataHandlerMap.handling.getConfig(),
+            autoDamage: { damagePerMino: 0.5 }
         }
         const gameElements = GameFactory.create(this, gameConfig);
         this.#gameController = gameElements.gameController;

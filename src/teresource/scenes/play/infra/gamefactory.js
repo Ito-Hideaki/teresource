@@ -20,16 +20,17 @@ import { GameScheduledDamageState, GarbageGenerator } from "../core/garbage";
 
 /** 
  * @typedef {{
- *    bag: import("../core/minomanager").BagConfig
- *    personalization: {
- *        skin: string
- *    },
- *    boardWidth: number,
- *    boardHeight: number,
- *    handling: {
- *        DAS: number,
- *        ARR: number,
- *    }
+ *  bag: import("../core/minomanager").BagConfig
+ *  personalization: {
+ *      skin: string
+ *  },
+ *  boardWidth: number,
+ *  boardHeight: number,
+ *  handling: {
+ *      DAS: number,
+ *      ARR: number,
+ *  },
+ *  autoDamage: import("../controller/gamecontroller").AutoDamageConfig
  * }} GameConfig
  *  */
 
@@ -80,7 +81,7 @@ export class GameFactory {
         const gameHighContext = new GameHighContext({
             gameStats, gameStatsManager, gameAttackState, controlOrderProvider, lineClearManager,  garbageGenerator, scheduledDamageState
         })
-        const gameController = new GameController(gameContext, gameHighContext);
+        const gameController = new GameController(gameContext, gameHighContext, gameConfig.autoDamage);
 
         //Create elements of the scene
         const { gameViewController } = GameFactory.#createView({ gameConfig, gameHighContext, gameContext, scene });

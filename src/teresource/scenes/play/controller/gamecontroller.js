@@ -8,7 +8,13 @@ import { createFunction_DoesCurrentMinoCollide } from "./gameover";
 import { GameSession } from "./gamesession";
 import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from "../core/garbage";
 
-/** Represents the logic og the game attached to each player */
+/**
+ *  @typedef {{
+ *      damagePerMino: number
+ *  }}
+ * AutoDamageConfig */
+
+/** Represents the logic of the game attached to each player */
 export class GameController {
 
     #gameHighContext;
@@ -35,8 +41,9 @@ export class GameController {
     /**
      * @param {GameContext} gameContext
      * @param {GameHighContext} gameHighContext
+     * @param {AutoDamageConfig} autoDamageConfig
      */
-    constructor(gameContext, gameHighContext) {
+    constructor(gameContext, gameHighContext, { damagePerMino }) {
         this.#controlOrderProvider = gameHighContext.controlOrderProvider;
         this.#boardUpdater = new BoardUpdater(gameContext);
         this.lineClearManager = gameHighContext.lineClearManager;
@@ -45,7 +52,7 @@ export class GameController {
         this.#scheduledDamageState = gameHighContext.scheduledDamageState;
         this.#garbageGenerator = gameHighContext.garbageGenerator;
 
-        this.#damageProviderPerMino = new LinearDamageProvider(0.5);
+        this.#damageProviderPerMino = new LinearDamageProvider(damagePerMino);
 
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
