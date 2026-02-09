@@ -20,6 +20,7 @@ export class GameContext {
      * heldMinoManager   : HeldMinoManager,
      * boardUpdateState  : BoardUpdateState,
      * rotationSystem    : RotationSystem,
+     * garbageGenerator  : GarbageGenerator,
      * gameReportStack   : GameReportStack
      * }} source
      * */
@@ -31,6 +32,7 @@ export class GameContext {
         this.heldMinoManager    = source.heldMinoManager;
         this.boardUpdateState   = source.boardUpdateState;
         this.rotationSystem     = source.rotationSystem;
+        this.garbageGenerator   = source.garbageGenerator;
         this.gameReportStack    = source.gameReportStack;
     }
 }

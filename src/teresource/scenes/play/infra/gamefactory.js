@@ -16,6 +16,7 @@ import { LineClearManager } from "../core/lineclear";
 import { GameAttackState } from "../core/attack";
 import { GameStatsManager, GameStats } from "../controller/stats";
 import { GameStatsView } from "../view/gamestatsview";
+import { GarbageGenerator } from "../core/garbage";
 
 /** 
  * @typedef {{
@@ -65,8 +66,9 @@ export class GameFactory {
         const heldMinoManager = new HeldMinoManager();
         const boardUpdateState = new BoardUpdateState();
         const gameReportStack = new GameReportStack();
+        const garbageGenerator = new GarbageGenerator(cellBoard);
         const gameContext = new GameContext({
-            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, gameReportStack, rotationSystem: new RotationSystem_Standard()
+            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, garbageGenerator, gameReportStack, rotationSystem: new RotationSystem_Standard()
         });
 
         const lineClearManager = new LineClearManager(gameContext);

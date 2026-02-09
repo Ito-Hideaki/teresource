@@ -6,6 +6,7 @@ import { GameAttackState } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
 import { GameSession } from "./gamesession";
+import { GarbageGenerator } from "../core/garbage";
 
 /** Represents the logic og the game attached to each player */
 export class GameController {
@@ -23,6 +24,7 @@ export class GameController {
     /** @type {LineClearManager} */ lineClearManager
     /** @type {GameAttackState} */ gameAttackState
     #doesCurrentMinoCollide
+    #garbageGenerator
 
     /** @type {GameSession} */ session
 
@@ -37,6 +39,7 @@ export class GameController {
         this.gameAttackState = gameHighContext.gameAttackState;
         this.#gameStatsManager = gameHighContext.gameStatsManager;
 
+        this.#garbageGenerator = gameContext.garbageGenerator;
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
         this.#heldMinoManager = gameContext.heldMinoManager;
