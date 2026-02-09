@@ -24,7 +24,7 @@ export class GameController {
     /** @type {LineClearManager} */ lineClearManager
     /** @type {GameAttackState} */ gameAttackState
     #doesCurrentMinoCollide
-    #garbageGenerator
+    /** @type {GarbageGenerator} */ #garbageGenerator
 
     /** @type {boolean} set in every NormalUpdate. Garbage is allowed to be added only when it's true. */
     allowGarbageNext

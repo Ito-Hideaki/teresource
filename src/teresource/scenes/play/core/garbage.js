@@ -49,3 +49,31 @@ export class GarbageGenerator {
         }
     }
 }
+
+export class LinearDamageProvider {
+
+/** @param {number} damagePerCount */
+    constructor(damagePerCount) {
+        this.chargedDamage = 0;
+        this.damagePerCount = damagePerCount;
+    }
+    count() {
+        this.chargedDamage += this.damagePerCount;
+    }
+    provide() {
+        const damage = Math.floor(this.chargedDamage);
+        this.chargedDamage -= damage;
+        return damage;
+    }
+}
+
+
+/**
+ * @typedef {{
+ *      length: number
+ * }} ScheduledDamage
+ * */
+
+export class GameScheduledDamageState {
+    /** @type {ScheduledDamage[]} */ damageStack = [];
+}
