@@ -26,6 +26,9 @@ export class GameController {
     #doesCurrentMinoCollide
     #garbageGenerator
 
+    /** @type {boolean} set in every NormalUpdate. Garbage is allowed to be added only when it's true. */
+    allowGarbageNext
+
     /** @type {GameSession} */ session
 
     /**
@@ -59,6 +62,11 @@ export class GameController {
 
         if (!this.lineClearManager.isDuringLineClear() && !this.session.isOver) {
             (() => {
+                //add garbage
+                if(this.allowGarbageNext) {
+                    this.#garbageGenerator.addGarbage(1);
+                }
+
                 //check if the game has reached session goal
                 if (this.session.isTargetCompleted()) {
                     this.session.markAsOver();
@@ -109,6 +117,10 @@ export class GameController {
         /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);
+
+        //Garbage
+        this.allowGarbageNext = boardUpdateDiff.placed;
+
         //Clear filled line (row)
         const rowToClearList = this.lineClearManager.findRowToClearList();
         this.lineClearManager.startClear(rowToClearList);

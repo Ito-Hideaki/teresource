@@ -69,6 +69,9 @@ export class BoardUpdateDiff {
     /** @type {number} */ verticalMinoMove = 0;
     /** @type {boolean} */ placedByHardDrop = false;
     /** @type {boolean} */ placedByLockDown = false;
+    get placed() {
+        return this.placedByHardDrop || this.placedByLockDown;
+    }
     /** @type {number} */ appliedRotationAngle = 0;
     /** @type {BoardUpdateState} */ newState = new BoardUpdateState();
 }
@@ -330,7 +333,7 @@ export class BoardUpdater {
         cmg.row += diff.verticalMinoMove;
         cmg.column += diff.horizontalMinoMove;
         cmg.rotateMino(diff.appliedRotationAngle);
-        if (diff.placedByHardDrop || diff.placedByLockDown) {
+        if (diff.placed) {
             this.#currentMinoManager.place();
             const { table, topLeft } = cmg.mino.convertToTable();
             this.#cellBoard.compositeMinoTable(table, cmg.row + topLeft.row, cmg.column + topLeft.column);
