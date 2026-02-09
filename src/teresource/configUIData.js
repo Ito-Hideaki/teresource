@@ -8,6 +8,9 @@ export const CONFIGUI_CONFIG_DATA = {
         { name: "boardWidth", type: "number", displayText: "ボードの幅" },
         { name: "boardHeight", type: "number", displayText: "ボードの高さ" }
     ],
+    autoDamage: [
+        { name: "damagePerMino", type: "number", displayText: "ミノ当たりお邪魔", prefix: "line/piece" }
+    ],
     objective: [
         { name: "type", type: "select", displayText: "目標の種類", choiceList: [
             { name: "なし", value: "None" },
@@ -50,6 +53,9 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
     game : {
         "boardWidth" : "boardWidth",
         "boardHeight" : "boardHeight"
+    },
+    autoDamage : {
+        "damagePerMino" : "damagePerMino"
     }
 }
 

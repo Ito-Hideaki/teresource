@@ -206,6 +206,9 @@ export function createConfigUIElement() {
             "boardWidth": 10,
             "boardHeight": 20,
         },
+        autoDamage: {
+            "damagePerMino": 0
+        },
         personalization: {
             "skin": "pika",
         },
@@ -222,7 +225,8 @@ export function createConfigUIElement() {
 
     /** @type {Object.<string, string>} */
     const configUIHeadingDisplayText = {
-        game: "ゲーム設定",
+        game: "ゲームシステム",
+        autoDamage: "自動お邪魔",
         personalization: "お好み",
         handling: "ハンドリング",
         objective: "ゲーム目標",
