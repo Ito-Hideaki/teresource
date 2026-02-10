@@ -1,5 +1,9 @@
 import { Cell, CellBoard } from "./mechanics";
 
+function randomHole(columnCount) {
+    return Math.floor(Math.random()*columnCount);
+}
+
 /** @param {number} holeColumn @param {number} columnCount */
 function generateGarbageRow(holeColumn, columnCount) {
     const emptyRow = new Array(columnCount).fill();
@@ -11,12 +15,21 @@ function generateGarbageRow(holeColumn, columnCount) {
 
 /** @param {number} holeColumn @param {number} columnCount  @param {number} length */
 function generateRandomizedGarbages(holeColumn, columnCount, length) {
-    let currentHole = holeColumn;
+    let currentHole = Math.random() >= 0.5 ? randomHole(columnCount) : holeColumn;
     const garbages = new Array(length).fill().map(_ => {
+        if(Math.random() >= 0.8) currentHole = randomHole(columnCount);
         return generateGarbageRow(currentHole, columnCount);
     });
 
     return { currentHole, garbages };
+}
+
+function generateStraightGarbages(holeColumn, columnCount, length) {
+    const garbages = new Array(length).fill().map(_ => {
+        return generateGarbageRow(holeColumn, columnCount);
+    });
+
+    return { currentHole: holeColumn, garbages };
 }
 
 export class GarbageGenerator {
@@ -27,7 +40,7 @@ export class GarbageGenerator {
     /** @param {CellBoard} cellBoard */
     constructor(cellBoard) {
         this.#cellBoard = cellBoard;
-        this.holeColumn = 0;
+        this.holeColumn = randomHole(cellBoard.columnCount);
     }
 
     /** @param {number} length */
