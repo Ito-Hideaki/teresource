@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
-import { GameController } from "./play/controller/gamecontroller";
+import { GameUpdator } from "./play/controller/gameupdator";
 import { GameViewController } from "./play/view/gameviewcontroller";
 import { cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, IMG_SKIN_DATA_INDEX } from "./play/view/viewdata";
 import { calcSkinCellViewParams, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/celltexturecore";
@@ -9,7 +9,7 @@ import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontr
 import { CellSheetParent } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 import { ConfigUIDataHandler } from "../configUI";
-import { GameSession } from "./play/controller/gamesession";
+import { LinearDamageProvider } from "./play/core/garbage";
 
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene) {
@@ -48,12 +48,14 @@ export class PlayScene extends Phaser.Scene {
 
     width;
     height;
-    /** @type {GameController} */
-    #gameController;
+    /** @type {GameUpdator} */
+    #gameUpdator;
     /** @type {GameViewController} */
     #gameViewController;
     /** @type {ControlOrderProvider} */
     #controlOrderProvider;
+    /** @type {LinearDamageProvider} */
+    #damageProviderPerMino;
 
     constructor() {
         super({
@@ -82,16 +84,17 @@ export class PlayScene extends Phaser.Scene {
             autoDamage: configUIDataHandlerMap.autoDamage.getConfig()
         }
         const gameElements = GameFactory.create(this, gameConfig);
-        this.#gameController = gameElements.gameController;
+        this.#gameUpdator = gameElements.gameUpdator;
         this.#gameViewController = gameElements.gameViewController;
         const container = this.#gameViewController.boardContainer;
         container.x = this.game.canvas.width / 2;
         container.y = this.game.canvas.height / 2;
         this.#controlOrderProvider = gameElements.controlOrderProvider;
+        this.#damageProviderPerMino = gameElements.damageProviderPerMino;
 
         const UIObjectiveConfig = this.game.configUIDataHandlerMap.objective.getConfig();
         /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = UIObjectiveConfig.session;
-        this.#gameController.setSessionFromConfig(sessionConfig);
+        this.#gameUpdator.setSessionFromConfig(sessionConfig);
 
         this.input.keyboard.on("keydown", e => {
             if(!this.game.inputEnabled) return;
@@ -141,7 +144,18 @@ export class PlayScene extends Phaser.Scene {
 
     update(time, delta) {
         const deltaTime = delta / 1000;
-        this.#gameController.update(deltaTime);
+
+        const gameUpdateResult = this.#gameUpdator.update(deltaTime);
+
+        //auto damage
+        if(gameUpdateResult.placed) {
+            this.#damageProviderPerMino.count();
+            const damageLength = this.#damageProviderPerMino.provide();
+            if(damageLength) {
+                this.#gameUpdator.scheduledDamageState.damageStack.push({ length: damageLength });
+            }
+        }
+
         this.#gameViewController.update(deltaTime);
     }
 }

@@ -3,7 +3,7 @@ import { BoardSize, CellBoard } from "../core/mechanics";
 import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "../controller/boardcontroller";
 import { GameContext, GameHighContext, GameViewContext } from "./context";
 import { GameViewController } from "../view/gameviewcontroller";
-import { GameController } from "../controller/gamecontroller";
+import { GameUpdator } from "../controller/gameupdator";
 import { PlayScene } from "../../play";
 import { RotationSystem_NoKick, RotationSystem_Standard } from "../core/rotationsystem";
 import { BoardDeco } from "../view/boarddeco";
@@ -16,7 +16,7 @@ import { LineClearManager } from "../core/lineclear";
 import { GameAttackState } from "../core/attack";
 import { GameStatsManager, GameStats } from "../controller/stats";
 import { GameStatsView } from "../view/gamestatsview";
-import { GameScheduledDamageState, GarbageGenerator } from "../core/garbage";
+import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from "../core/garbage";
 
 /** 
  * @typedef {{
@@ -30,7 +30,7 @@ import { GameScheduledDamageState, GarbageGenerator } from "../core/garbage";
  *      DAS: number,
  *      ARR: number,
  *  },
- *  autoDamage: import("../controller/gamecontroller").AutoDamageConfig
+ *  autoDamage: import("../controller/gameupdator").AutoDamageConfig
  * }} GameConfig
  *  */
 
@@ -81,16 +81,19 @@ export class GameFactory {
         const gameHighContext = new GameHighContext({
             gameStats, gameStatsManager, gameAttackState, controlOrderProvider, lineClearManager,  garbageGenerator, scheduledDamageState
         })
-        const gameController = new GameController(gameContext, gameHighContext, gameConfig.autoDamage);
+        const gameUpdator = new GameUpdator(gameContext, gameHighContext, gameConfig.autoDamage);
+
+        const damageProviderPerMino = new LinearDamageProvider(gameConfig.autoDamage.damagePerMino);
 
         //Create elements of the scene
         const { gameViewController } = GameFactory.#createView({ gameConfig, gameHighContext, gameContext, scene });
 
         return {
-            gameController,
+            gameUpdator,
             gameContext,
             gameViewController,
-            controlOrderProvider
+            controlOrderProvider,
+            damageProviderPerMino
         }
     }
 

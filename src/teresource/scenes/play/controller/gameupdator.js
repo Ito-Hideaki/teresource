@@ -14,11 +14,12 @@ import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from
  *  }}
  * AutoDamageConfig */
 
-/** Represents the logic of the game attached to each player */
-export class GameController {
+/** Update the game */
+export class GameUpdator {
 
     #gameHighContext;
 
+    //References
     #boardUpdater
     /** @type {ControlOrderProvider} */#controlOrderProvider
     #currentMinoManager
@@ -31,11 +32,11 @@ export class GameController {
     /** @type {GameAttackState} */ gameAttackState
     #doesCurrentMinoCollide
     /** @type {GarbageGenerator} */ #garbageGenerator
-    /** @type {GameScheduledDamageState} */ #scheduledDamageState
-    /** @type {LinearDamageProvider} */ #damageProviderPerMino
+
+    //States
     /** @type {boolean} set in every NormalUpdate. Garbage is allowed to be added only when it's true. */
     allowGarbageNext
-
+    /** @type {GameScheduledDamageState} */ scheduledDamageState
     /** @type {GameSession} */ session
 
     /**
@@ -49,10 +50,9 @@ export class GameController {
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.#gameStatsManager = gameHighContext.gameStatsManager;
-        this.#scheduledDamageState = gameHighContext.scheduledDamageState;
         this.#garbageGenerator = gameHighContext.garbageGenerator;
 
-        this.#damageProviderPerMino = new LinearDamageProvider(damagePerMino);
+        this.scheduledDamageState = gameHighContext.scheduledDamageState;
 
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
@@ -67,7 +67,11 @@ export class GameController {
     /** @param {number} deltaTime */
     update(deltaTime) {
 
-        this.#gameReportStack.renewAll();
+        const result = {
+            placed: false
+        };
+
+        this.#gameReportStack.renewAll(); //move
 
         this.lineClearManager.update(deltaTime);
 
@@ -75,7 +79,7 @@ export class GameController {
             (() => {
                 //add garbage
                 if (this.allowGarbageNext) {
-                    const damageStack = this.#scheduledDamageState.damageStack;
+                    const damageStack = this.scheduledDamageState.damageStack;
                     while(damageStack.length) { //currently use all damages as soon as possible
                         const scheduledDamage = damageStack[0];
                         this.#garbageGenerator.addGarbage(scheduledDamage.length);
@@ -113,7 +117,8 @@ export class GameController {
                 }
 
                 //Finally update board
-                this.#doNormalUpdate(deltaTime, controlOrder);
+                const { boardUpdateDiff} = this.#doNormalUpdate(deltaTime, controlOrder);
+                if(boardUpdateDiff.placed) result.placed = true;
             })();
         }
 
@@ -126,6 +131,8 @@ export class GameController {
                 window.log(`${lineCount} line(s) cleared`);
             });
         }
+
+        return result;
     }
 
     /** @param {ControlOrder} controlOrder */
@@ -139,7 +146,7 @@ export class GameController {
         this.lineClearManager.startClear(rowToClearList);
 
         //Update attack state
-        this.gameAttackState.update(boardUpdateDiff, rowToClearList.length);
+        this.gameAttackState.update(boardUpdateDiff, rowToClearList.length); //refactor
 
         //Start line clear effect
         if (rowToClearList.length) {
@@ -151,14 +158,7 @@ export class GameController {
         //Garbage
         this.allowGarbageNext = boardUpdateDiff.placed;
 
-        //Auto Damage
-        if(boardUpdateDiff.placed) {
-            this.#damageProviderPerMino.count();
-            const damageLength = this.#damageProviderPerMino.provide();
-            if(damageLength) {
-                this.#scheduledDamageState.damageStack.push({ length: damageLength });
-            }
-        }
+        return { boardUpdateDiff };
     }
 
     #putNewMino(mino) {
