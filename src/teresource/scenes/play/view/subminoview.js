@@ -137,7 +137,7 @@ export class MinoQueueView {
         this.#subMinoBoxList = [];
         let subMinoBoxYOffset = 0;
         for (let i = 0; i < 5; i++) {
-            const size = 90;
+            const size = 80;
             const subMinoBox = new SubMinoBox(scene, size, context);
             subMinoBox.x = context.getRelativeBoardX(context.gameContext.boardSize.columnCount) + 10;
             subMinoBox.y = -260 + subMinoBoxYOffset;
@@ -167,7 +167,7 @@ export class HeldMinoView {
 
     /** @param {Phaser.Scene} scene @param {GameViewContext} context */
     constructor(scene, context) {
-        const size = 90;
+        const size = 80;
         this.#subMinoBox = new SubMinoBox(scene, size, context);
         this.#subMinoBox.x = context.getRelativeBoardX(0) - 10 - size;
         this.#subMinoBox.y = -260;
