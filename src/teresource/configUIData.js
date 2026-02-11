@@ -14,8 +14,8 @@ export const CONFIGUI_CONFIG_DATA = {
         ]}
     ],
     autoDamage: [
-        { name: "attackPerMino", type: "number", displayText: "ミノ当たりお邪魔回数", prefix: "回/piece" },
-        { name: "attackDamage", type: "number", displayText: "一回あたりのお邪魔量", prefix: "line" }
+        { name: "attackPerMino", type: "number", displayText: "ミノ当たりお邪魔回数", prefix: "times/piece" },
+        { name: "attackDamage", type: "number", displayText: "一回あたりのお邪魔量", prefix: "lines" }
     ],
     objective: [
         { name: "type", type: "select", displayText: "目標の種類", choiceList: [
