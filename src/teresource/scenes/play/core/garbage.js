@@ -14,6 +14,19 @@ function generateGarbageRow(holeColumn, columnCount) {
 }
 
 /** @param {number} holeColumn @param {number} columnCount  @param {number} length */
+function generateMessyGarbages(holeColumn, columnCount, length) {
+    let nextHole;
+    const garbages = new Array(length).fill().map(_ => {
+        nextHole = randomHole(columnCount - 1);
+        if(nextHole === holeColumn) nextHole++; //very messy
+        holeColumn = nextHole;
+        return generateGarbageRow(holeColumn, columnCount);
+    });
+
+    return { currentHole : holeColumn, garbages };
+}
+
+/** @param {number} holeColumn @param {number} columnCount  @param {number} length */
 function generateRandomizedGarbages(holeColumn, columnCount, length) {
     let currentHole = Math.random() >= 0.5 ? randomHole(columnCount) : holeColumn;
     const garbages = new Array(length).fill().map(_ => {
@@ -24,6 +37,7 @@ function generateRandomizedGarbages(holeColumn, columnCount, length) {
     return { currentHole, garbages };
 }
 
+/** @param {number} holeColumn @param {number} columnCount  @param {number} length */
 function generateStraightGarbages(holeColumn, columnCount, length) {
     const garbages = new Array(length).fill().map(_ => {
         return generateGarbageRow(holeColumn, columnCount);
@@ -32,14 +46,22 @@ function generateStraightGarbages(holeColumn, columnCount, length) {
     return { currentHole: holeColumn, garbages };
 }
 
+/**
+ *  @typedef {{
+ *      type: string
+ * }} GarbageConfig
+ * */
+
 export class GarbageGenerator {
 
     holeColumn;
     #cellBoard;
+    #type;
 
-    /** @param {CellBoard} cellBoard */
-    constructor(cellBoard) {
+    /** @param {CellBoard} cellBoard @param {GarbageConfig} garbageConfig */
+    constructor(cellBoard, garbageConfig) {
         this.#cellBoard = cellBoard;
+        this.#type = garbageConfig.type;
         this.holeColumn = randomHole(cellBoard.columnCount);
     }
 
@@ -49,7 +71,13 @@ export class GarbageGenerator {
 
         const cellBoard = this.#cellBoard;
 
-        const { garbages, currentHole } = generateRandomizedGarbages(this.holeColumn, this.#cellBoard.columnCount, length);
+        const generateGarbages = {
+            "straight": generateStraightGarbages,
+            "nice" : generateRandomizedGarbages,
+            "messy" : generateMessyGarbages
+        }[this.#type];
+
+        const { garbages, currentHole } = generateGarbages(this.holeColumn, this.#cellBoard.columnCount, length);
         this.holeColumn = currentHole;
 
         //for each row

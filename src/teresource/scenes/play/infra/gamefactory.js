@@ -73,7 +73,7 @@ export class GameFactory {
 
         const lineClearManager = new LineClearManager(gameContext);
         const gameAttackState = new GameAttackState(gameContext);
-        const garbageGenerator = new GarbageGenerator(cellBoard);
+        const garbageGenerator = new GarbageGenerator(cellBoard, { type : "messy" });
         const scheduledDamageState = new GameScheduledDamageState();
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const gameStats = new GameStats();
