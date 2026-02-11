@@ -84,7 +84,7 @@ export class GameFactory {
         })
         const gameUpdator = new GameUpdator(gameContext, gameHighContext, gameConfig.autoDamage);
 
-        const damageProviderPerMino = new LinearDamageProvider(gameConfig.autoDamage.damagePerMino, 2);
+        const damageProviderPerMino = new LinearDamageProvider(gameConfig.autoDamage.attackPerMino, gameConfig.autoDamage.attackDamage);
 
         //Create elements of the scene
         const { gameViewController } = GameFactory.#createView({ gameConfig, gameHighContext, gameContext, scene });

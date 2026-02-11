@@ -208,7 +208,8 @@ export function createConfigUIElement() {
             "garbageType" : "nice",
         },
         autoDamage: {
-            "damagePerMino": 0
+            "attackPerMino": 0,
+            "attackDamage": 1
         },
         personalization: {
             "skin": "pika",
