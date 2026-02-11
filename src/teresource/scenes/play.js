@@ -79,9 +79,6 @@ export class PlayScene extends Phaser.Scene {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
             ...configUIDataHandlerMap.game.getConfig(),
-            garbage: {
-                type: "straight"
-            },
             personalization: configUIDataHandlerMap.personalization.getConfig(),
             handling: configUIDataHandlerMap.handling.getConfig(),
             autoDamage: configUIDataHandlerMap.autoDamage.getConfig()

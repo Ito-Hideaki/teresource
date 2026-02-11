@@ -6,7 +6,12 @@
 export const CONFIGUI_CONFIG_DATA = {
     game: [
         { name: "boardWidth", type: "number", displayText: "ボードの幅" },
-        { name: "boardHeight", type: "number", displayText: "ボードの高さ" }
+        { name: "boardHeight", type: "number", displayText: "ボードの高さ" },
+        { name: "garbageType", type: "select", displayText: "お邪魔の種類", choiceList: [
+            {name : "Straight", value: "straight"},
+            {name : "Nice", value: "nice"},
+            {name : "Messy", value: "messy" }
+        ]}
     ],
     autoDamage: [
         { name: "damagePerMino", type: "number", displayText: "ミノ当たりお邪魔", prefix: "line/piece" }
@@ -52,7 +57,10 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
     },
     game : {
         "boardWidth" : "boardWidth",
-        "boardHeight" : "boardHeight"
+        "boardHeight" : "boardHeight",
+        garbage: {
+            "type" : "garbageType"
+        }
     },
     autoDamage : {
         "damagePerMino" : "damagePerMino"

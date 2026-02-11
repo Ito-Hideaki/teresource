@@ -205,6 +205,7 @@ export function createConfigUIElement() {
         game: {
             "boardWidth": 10,
             "boardHeight": 20,
+            "garbageType" : "nice",
         },
         autoDamage: {
             "damagePerMino": 0
