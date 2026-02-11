@@ -26,6 +26,7 @@ import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from
  *  },
  *  boardWidth: number,
  *  boardHeight: number,
+ *  garbage: import("../core/garbage").GarbageConfig,
  *  handling: {
  *      DAS: number,
  *      ARR: number,
@@ -73,7 +74,7 @@ export class GameFactory {
 
         const lineClearManager = new LineClearManager(gameContext);
         const gameAttackState = new GameAttackState(gameContext);
-        const garbageGenerator = new GarbageGenerator(cellBoard, { type : "messy" });
+        const garbageGenerator = new GarbageGenerator(cellBoard, gameConfig.garbage);
         const scheduledDamageState = new GameScheduledDamageState();
         const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const gameStats = new GameStats();
