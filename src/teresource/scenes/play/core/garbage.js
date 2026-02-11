@@ -93,18 +93,25 @@ export class GarbageGenerator {
 
 export class LinearDamageProvider {
 
-/** @param {number} damagePerCount */
-    constructor(damagePerCount) {
-        this.chargedDamage = 0;
-        this.damagePerCount = damagePerCount;
+    #attackPerCount
+    #attackDamage
+
+/** @param {number} attackPerCount @param {number} attackDamage */
+    constructor(attackPerCount, attackDamage) {
+        this.chargedAttack = 0;
+        this.#attackDamage = attackDamage;
+        this.#attackPerCount = attackPerCount;
     }
     count() {
-        this.chargedDamage += this.damagePerCount;
+        this.chargedAttack += this.#attackPerCount;
     }
     provide() {
-        const damage = Math.floor(this.chargedDamage);
-        this.chargedDamage -= damage;
-        return damage;
+        const damages = [];
+        while(this.chargedAttack >= 1) {
+            damages.push(this.#attackDamage);
+            this.chargedAttack--;
+        }
+        return damages;
     }
 }
 
