@@ -20,9 +20,11 @@ export class GameStatsView {
 
         this.clearedLineText = scene.add.text(300, 500, "まだ消していない", styleConfig);
 
-        this.scoreText = scene.add.text(300, 530, "スコア　00000", styleConfig);
+        this.levelText = scene.add.text(300, 530, "レベル　1", styleConfig);
 
-        this.timeText = scene.add.text(200, 560, "経過　", styleConfig);
+        this.scoreText = scene.add.text(300, 560, "スコア　00000", styleConfig);
+
+        this.timeText = scene.add.text(200, 590, "経過　", styleConfig);
     }
 
     update() {
@@ -37,6 +39,7 @@ export class GameStatsView {
                 yoyo: true
             });
         }
+        this.levelText.setText(`レベル　${this.#gameStats.level}`);
         const durationText = dayjs.duration(Math.floor(1000 * this.#gameStats.timePassed)).format("HH:mm:ss\"SSS");
         this.timeText.setText(`経過　${durationText.slice(0, durationText.length - 1)}`);
     }
