@@ -122,7 +122,7 @@ export class GameUpdator {
             })();
         }
 
-        //update status
+        //update stats
         if (!this.session.isOver) {
             this.#gameStatsManager.update(deltaTime);
 
@@ -137,6 +137,10 @@ export class GameUpdator {
 
     /** @param {ControlOrder} controlOrder */
     #doNormalUpdate(deltaTime, controlOrder) {
+        //update gravity
+        this.#boardUpdateState.gravity = 0.5 * 1.3 ** this.#gameStatsManager.stats.level;
+        console.log(this.#boardUpdateState.gravity);
+
         /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);
         this.#controlOrderProvider.advanceTime(deltaTime);

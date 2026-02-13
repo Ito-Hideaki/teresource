@@ -213,7 +213,8 @@ export class BoardUpdateCalculator {
         if (params.cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
             state.fallingProgress = 0;
         } else {
-            state.fallingProgress += deltaTime * state.gravity * (state.softDrop ? 10 : 1);
+            state.fallingProgress += deltaTime * state.gravity * (state.softDrop ? 5 : 1);
+            state.fallingProgress += deltaTime * (state.softDrop ? 5 : 0);
         }
     }
 
