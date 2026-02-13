@@ -32,6 +32,7 @@ export class GameUpdator {
     /** @type {GameAttackState} */ gameAttackState
     #doesCurrentMinoCollide
     /** @type {GarbageGenerator} */ #garbageGenerator
+    #gravityPowerBase
 
     //States
     /** @type {boolean} set in every NormalUpdate. Garbage is allowed to be added only when it's true. */
@@ -42,15 +43,16 @@ export class GameUpdator {
     /**
      * @param {GameContext} gameContext
      * @param {GameHighContext} gameHighContext
-     * @param {AutoDamageConfig} autoDamageConfig
+     * @param {number} gravityPower
      */
-    constructor(gameContext, gameHighContext, { damagePerMino }) {
+    constructor(gameContext, gameHighContext, gravityPowerBase) {
         this.#controlOrderProvider = gameHighContext.controlOrderProvider;
         this.#boardUpdater = new BoardUpdater(gameContext);
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.#gameStatsManager = gameHighContext.gameStatsManager;
         this.#garbageGenerator = gameHighContext.garbageGenerator;
+        this.#gravityPowerBase = gravityPowerBase;
 
         this.scheduledDamageState = gameHighContext.scheduledDamageState;
 
@@ -138,7 +140,7 @@ export class GameUpdator {
     /** @param {ControlOrder} controlOrder */
     #doNormalUpdate(deltaTime, controlOrder) {
         //update gravity
-        this.#boardUpdateState.gravity = 0.5 * 1.3 ** this.#gameStatsManager.stats.level;
+        this.#boardUpdateState.gravity = 0.5 * this.#gravityPowerBase ** this.#gameStatsManager.stats.level;
         console.log(this.#boardUpdateState.gravity);
 
         /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);

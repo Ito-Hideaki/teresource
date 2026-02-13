@@ -7,14 +7,16 @@ export const CONFIGUI_CONFIG_DATA = {
     game: [
         { name: "boardWidth", type: "number", displayText: "ボードの幅" },
         { name: "boardHeight", type: "number", displayText: "ボードの高さ" },
+        { name: "startLevel", type: "number", displayText: "開始レベル" },
+        { name: "gravityPowerBase", type: "number", displayText: "レベル毎重力倍化値", prefix: "倍/level" },
         { name: "garbageType", type: "select", displayText: "お邪魔の種類", choiceList: [
             {name : "Straight", value: "straight"},
             {name : "Nice", value: "nice"},
             {name : "Messy", value: "messy" }
-        ]}
+        ]},
     ],
     autoDamage: [
-        { name: "attackPerMino", type: "number", displayText: "ミノ当たりお邪魔回数", prefix: "times/piece" },
+        { name: "attackPerMino", type: "number", displayText: "ミノ当たりお邪魔回数", prefix: "回/piece" },
         { name: "attackDamage", type: "number", displayText: "一回あたりのお邪魔量", prefix: "lines" }
     ],
     objective: [
@@ -61,7 +63,9 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
         "boardHeight" : "boardHeight",
         garbage: {
             "type" : "garbageType"
-        }
+        },
+        "startLevel" : "startLevel",
+        "gravityPowerBase" : "gravityPowerBase"
     },
     autoDamage : {
         "attackPerMino" : "attackPerMino",

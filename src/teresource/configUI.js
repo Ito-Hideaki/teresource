@@ -206,6 +206,8 @@ export function createConfigUIElement() {
             "boardWidth": 10,
             "boardHeight": 20,
             "garbageType" : "nice",
+            "gravityPowerBase" : 1.3,
+            "startLevel" : 1
         },
         autoDamage: {
             "attackPerMino": 0,

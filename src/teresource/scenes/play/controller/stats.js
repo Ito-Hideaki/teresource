@@ -32,9 +32,12 @@ export class GameStats {
 }
 
 export class GameStatsManager {
-    /** @param {GameStats} stats */
-    constructor(stats) {
+    #startLevel
+    /** @param {GameStats} stats @param {number} startLevel */
+    constructor(stats, startLevel) {
         this.stats = stats;
+        this.#startLevel = startLevel;
+        stats.level = startLevel;
     }
 
     /** Should be called before update() @param {LineClearAttackData} lineClearAttackData  */
@@ -47,8 +50,8 @@ export class GameStatsManager {
         this.stats.timePassed += deltaTime;
 
         //level up
-        if(this.stats.clearedLines >= (this.stats.level) * 10) {
-            this.stats.level = 1 + Math.floor(this.stats.clearedLines / 10);
+        if(this.stats.clearedLines >= (this.stats.level - this.#startLevel + 1) * 10) {
+            this.stats.level = this.#startLevel + Math.floor(this.stats.clearedLines / 10);
             window.log("level up");
         }
 
