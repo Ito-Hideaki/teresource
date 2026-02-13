@@ -56,6 +56,8 @@ export class BoardUpdateState {
     lockDownCount = 0;
     /** @type boolean */
     softDrop = false;
+    /** BoardUpdateCalculator should not edit this value !!! */
+    gravity = 10;
     constructor() {
     }
     startNewMino() {
@@ -211,7 +213,7 @@ export class BoardUpdateCalculator {
         if (params.cellBoard.doesMinoCollides(minoMng.mino, minoMng.row + 1, minoMng.column)) {
             state.fallingProgress = 0;
         } else {
-            state.fallingProgress += deltaTime * 60 * 0.02 * (state.softDrop ? 20 : 1);
+            state.fallingProgress += deltaTime * state.gravity * (state.softDrop ? 10 : 1);
         }
     }
 
