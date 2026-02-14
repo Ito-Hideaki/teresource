@@ -33,7 +33,8 @@ export const CONFIGUI_CONFIG_DATA = {
             { name: "pika", value: "pika" },
             { name: "nine", value: "nine" },
             { name: "nine-s", value: "nine-s" },
-            { name: "tikin", value: "tikin" }
+            { name: "tikin", value: "tikin" },
+            { name: "choco", value: "choco" }
         ] }
     ],
     handling: [
