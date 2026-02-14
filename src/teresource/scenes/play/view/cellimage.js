@@ -6,6 +6,7 @@ import { CellSheetParent } from "./customtexture";
 export class CellImage extends Phaser.GameObjects.Image {
 
     #displayWidth
+    #cellSheetParent
 
     /**
      * @param {Phaser.Scene} scene
@@ -18,6 +19,7 @@ export class CellImage extends Phaser.GameObjects.Image {
         super(scene, x, y, cellSheetParent.texture);
         this.setOrigin(0, 0);
         this.#displayWidth = displayWidth;
+        this.#cellSheetParent = cellSheetParent;
 
         this.setView({ color: "black", gobi: GOBI.invisible });
     }
@@ -28,7 +30,9 @@ export class CellImage extends Phaser.GameObjects.Image {
             this.setVisible(false);
         } else {
             this.setVisible(true);
-            const frame = generateCellSheetTextureFrameKey(cellViewParams);
+
+            const extend = this.#cellSheetParent.extend && this.#cellSheetParent.extend.includes(cellViewParams.color);
+            const frame = generateCellSheetTextureFrameKey(cellViewParams, extend);
             this.setFrame(frame);
             this.setDisplaySize(this.#displayWidth, this.#displayWidth);
         }

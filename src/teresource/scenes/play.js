@@ -2,11 +2,10 @@ import Phaser from "phaser";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
 import { GameUpdator } from "./play/controller/gameupdator";
 import { GameViewController } from "./play/view/gameviewcontroller";
-import { cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, IMG_SKIN_DATA_INDEX } from "./play/view/viewdata";
-import { calcSkinCellViewParams, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellTextureKey, generateCellTextureUrl } from "./play/view/celltexturecore";
+import { cellImgSkins } from "./play/view/viewdata";
 import { GameFactory } from "./play/infra/gamefactory";
 import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontroller";
-import { CellSheetParent } from "./play/view/customtexture";
+import { CellSheetParent, loadCellSkinTextures } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 import { ConfigUIDataHandler } from "../configUI";
 import { LinearDamageProvider } from "./play/core/garbage";
@@ -15,19 +14,7 @@ import { LinearDamageProvider } from "./play/core/garbage";
 export function loadFirstLevelTextures(scene) {
     // url style must be like: viteURLify("/image/path/to/file.png");
     /** First-level textures */
-    cellImgSkins_fromImgs.forEach(skin => {
-        const cellViewParamsList = calcSkinCellViewParams(skin);
-        cellViewParamsList.forEach(cellViewParams => {
-            const key = generateCellTextureKey(cellViewParams);
-            const url = generateCellTextureUrl(cellViewParams);
-            scene.load.image(key, viteURLify(url));
-        })
-    });
-    cellImgSkins_fromSheet.forEach(skin => {
-        const key = generateCellSheetTextureKey(skin);
-        const url = generateCellSheetTextureUrl(skin);
-        scene.load.image(key, viteURLify(url));
-    });
+    loadCellSkinTextures(scene);
 }
 
 /**create textures using loaded textures. Only executable once. @param {Phaser.Scene} scene */
@@ -35,7 +22,7 @@ export function createSecondLevelTextures(scene) {
     /** @type {Object.<string, CellSheetParent>} */
     const cellSheetParentIndex = {};
     cellImgSkins.forEach(skin => {
-        cellSheetParentIndex[skin] = new CellSheetParent(scene, skin, IMG_SKIN_DATA_INDEX[skin].cellWidth);
+        cellSheetParentIndex[skin] = new CellSheetParent(scene, skin);
     });
     return cellSheetParentIndex;
 }

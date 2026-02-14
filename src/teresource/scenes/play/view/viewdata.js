@@ -2,7 +2,8 @@
 
 /**
  * @typedef {{
- * cellWidth: number
+ * cellWidth: number,
+ * extend?: string[]
  * }} CellSkinData
  *  */
 
@@ -24,7 +25,8 @@ const IMG_SKIN_DATA_INDEX_fromSheet = {
         cellWidth: 3
     },
     "choco": {
-        cellWidth: 8
+        cellWidth: 8,
+        extend: ["yellow", "sky"]
     }
 }
 /** @type {Object<string, CellSkinData>} */

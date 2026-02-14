@@ -52,10 +52,24 @@ export function generateCellTextureUrl(p) {
     return `/image/cell/${p.skin}/${p.color}_${p.gobi}.png`;
 }
 
-/** @param {string} skin */
-export function generateCellSheetTextureUrl(skin) {
+/** @param {string} skin @param {boolean} extend @return {string}*/
+export function generateCellSheetTextureKey(skin, extend = false) {
+    if(extend) return `cellsheet_${skin}_extend`;
+    return `cellsheet_${skin}`;
+}
+
+/** @param {string} skin @param {boolean} extend */
+export function generateCellSheetTextureUrl(skin, extend = false) {
+    if(extend) return `/image/cellsheet/${skin}_extend.png`;
     return `/image/cellsheet/${skin}.png`;
 }
+
+/** @param {CellViewParams} cellViewParams @param {boolean} extend @return {string} */
+export function generateCellSheetTextureFrameKey(cellViewParams, extend = false) {
+    cellViewParams.skin = "skin";
+    return generateCellTextureKey(cellViewParams) + (extend ? "_extend" : "");
+}
+
 
 /** All possible CellViewParams of a skin.
  * @param {string} skin
@@ -71,16 +85,4 @@ export function calcSkinCellViewParams(skin) {
         });
     }
     return arr;
-}
-
-
-/** @param {CellViewParams} cellViewParams @return {string} */
-export function generateCellSheetTextureFrameKey(cellViewParams) {
-    cellViewParams.skin = "skin";
-    return generateCellTextureKey(cellViewParams);
-}
-
-/** @param {string} skin @return {string}*/
-export function generateCellSheetTextureKey(skin) {
-    return `cellsheet_${skin}`;
 }

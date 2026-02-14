@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 import { cellColorStr } from "../core/coredata";
-import {  cellImgSkins_fromImgs, cellImgSkins_fromSheet } from "./viewdata";
-import { calcSkinCellViewParams, generateCellTextureKey, visibleGobis, generateCellSheetTextureKey, generateCellSheetTextureFrameKey } from "./celltexturecore";
+import { cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, IMG_SKIN_DATA_INDEX } from "./viewdata";
+import { calcSkinCellViewParams, generateCellTextureKey, visibleGobis, generateCellTextureUrl, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellSheetTextureFrameKey } from "./celltexturecore";
+import { viteURLify } from "#util";
 
 /**  @param {import("./celltexturecore").CellViewParams} cellViewParams */
 function getFramePosition(cellViewParams) {
@@ -30,11 +31,19 @@ function getRequiredTextureHeight(cellWidth) {
  */
 export class CellSheetParent {
 
-    /** @param {Phaser.Scene} scene @param {string} skin @param {number} textureCellWidth */
-    constructor(scene, skin, textureCellWidth) {
+    extend;
+    textureCellWidth;
+
+    /** @param {Phaser.Scene} scene @param {string} skin */
+    constructor(scene, skin) {
         this.skin = skin;
         this.scene = scene;
-        this.textureCellWidth = textureCellWidth;
+        if (cellImgSkins.includes(skin)) {
+            this.textureCellWidth = IMG_SKIN_DATA_INDEX[skin].cellWidth;
+        }
+        if(cellImgSkins_fromSheet.includes(skin)) {
+            this.extend = IMG_SKIN_DATA_INDEX[skin].extend;
+        }
         this.#init();
     }
 
@@ -45,27 +54,45 @@ export class CellSheetParent {
         const key = generateCellSheetTextureKey(skin);
         const cellViewParamsList = calcSkinCellViewParams(this.skin);
 
+        // if it's skin of imgs
         if (cellImgSkins_fromImgs.includes(skin)) {
             this.texture = scene.textures.createCanvas(key, getRequiredTextureWidth(cellWidth), getRequiredTextureHeight(cellWidth));
             if (this.texture === null) throw "wtf";
             cellViewParamsList.forEach(cellViewParams => {
-                this.drawFrame(cellWidth, cellViewParams);
-                this.createFrame(cellWidth, cellViewParams);
+                this.drawFrame(cellViewParams);
+                this.createFrame(cellViewParams);
             });
             this.texture.refresh();
         }
+        // if it's skin of sheet
         else if (cellImgSkins_fromSheet.includes(skin)) {
-            this.texture = scene.textures.get(generateCellSheetTextureKey(skin));
+            const textureKey = generateCellSheetTextureKey(skin);
+            this.texture = scene.textures.get(textureKey);
             cellViewParamsList.forEach(cellViewParams => {
-                this.createFrame(cellWidth, cellViewParams);
+                this.createFrame(cellViewParams);
             });
+            //add frames for extended skin
+            if (IMG_SKIN_DATA_INDEX[skin].extend) {
+                const extendTexture = this.scene.textures.get(generateCellSheetTextureKey(skin, true));
+                this.texture.source.push(extendTexture.source[0]);
+                console.log(this.texture.source);
+                cellViewParamsList.forEach(cellViewParams => {
+                    switch (skin) {
+                        case "choco":
+                            this.createExtFrame_Choco(cellViewParams);
+                            break;
+                    }
+                });
+
+            }
         }
         else {
             throw "no such skin";
         }
     }
 
-    drawFrame(cellWidth, cellViewParams) {
+    drawFrame(cellViewParams) {
+        const cellWidth = this.textureCellWidth;
         const ctx = this.texture.canvas.getContext("2d");
         const framePos = getFrameXY(cellWidth, cellViewParams);
         const textureKey = generateCellTextureKey(cellViewParams);
@@ -73,9 +100,39 @@ export class CellSheetParent {
         ctx.drawImage(frameImg, framePos.x, framePos.y, cellWidth, cellWidth);
     }
 
-    createFrame(cellWidth, cellViewParams) {
+    createFrame(cellViewParams) {
+        const cellWidth = this.textureCellWidth;
         const framePos = getFrameXY(cellWidth, cellViewParams);
         const frameKey = generateCellSheetTextureFrameKey(cellViewParams);
         this.texture.add(frameKey, 0, framePos.x, framePos.y, cellWidth, cellWidth);
     }
+
+    createExtFrame_Choco(cellViewParams) {
+        const cellWidth = this.textureCellWidth;
+        const framePos = getFrameXY(cellWidth, cellViewParams);
+        const frameKey = generateCellSheetTextureFrameKey(cellViewParams, true);
+        this.texture.add(frameKey, 1, framePos.x, framePos.y, cellWidth, cellWidth);
+    }
+}
+
+/** @param {Phaser.Scene} scene */
+export function loadCellSkinTextures(scene) {
+    cellImgSkins_fromImgs.forEach(skin => {
+        const cellViewParamsList = calcSkinCellViewParams(skin);
+        cellViewParamsList.forEach(cellViewParams => {
+            const key = generateCellTextureKey(cellViewParams);
+            const url = generateCellTextureUrl(cellViewParams);
+            scene.load.image(key, viteURLify(url));
+        })
+    });
+    cellImgSkins_fromSheet.forEach(skin => {
+        const key = generateCellSheetTextureKey(skin);
+        const url = generateCellSheetTextureUrl(skin);
+        scene.load.image(key, viteURLify(url));
+        if (IMG_SKIN_DATA_INDEX[skin].extend) {
+            const key = generateCellSheetTextureKey(skin, true);
+            const url = generateCellSheetTextureUrl(skin, true);
+            scene.load.image(key, viteURLify(url));
+        }
+    });
 }
