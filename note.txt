@@ -42,3 +42,4 @@ BoardController ボード・ミノ・操作の状態を読み込み、時間を�
 リファクタリング
 cellSheetTextureにGhostなどのために複数のsourceImageを使う
 rowToDisplayFrom configに突っ込んでどうにかする
+GameFactoryじゃなくてGameにする
