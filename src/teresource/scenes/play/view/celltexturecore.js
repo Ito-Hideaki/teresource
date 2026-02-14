@@ -3,8 +3,8 @@ import { Cell } from "../core/mechanics";
 
 export const GOBI = {
     invisible: "u",
-    normal:    "n",
-    active:    "a",
+    normal: "n",
+    active: "a",
 }
 export const visibleGobis = [
     GOBI.normal,
@@ -54,13 +54,13 @@ export function generateCellTextureUrl(p) {
 
 /** @param {string} skin @param {boolean} extend @return {string}*/
 export function generateCellSheetTextureKey(skin, extend = false) {
-    if(extend) return `cellsheet_${skin}_extend`;
+    if (extend) return `cellsheet_${skin}_extend`;
     return `cellsheet_${skin}`;
 }
 
 /** @param {string} skin @param {boolean} extend */
 export function generateCellSheetTextureUrl(skin, extend = false) {
-    if(extend) return `/image/cellsheet/${skin}_extend.png`;
+    if (extend) return `/image/cellsheet/${skin}_extend.png`;
     return `/image/cellsheet/${skin}.png`;
 }
 
@@ -73,16 +73,20 @@ export function generateCellSheetTextureFrameKey(cellViewParams, extend = false)
 
 /** All possible CellViewParams of a skin.
  * @param {string} skin
+ * @param {boolean} forEachRotation
  * @return {CellViewParams[]} */
-export function calcSkinCellViewParams(skin) {
+export function calcSkinCellViewParams(skin, forEachRotation = false) {
     const arr = [];
-    for (let i = 0; i < cellColorStr.length; i++) {
-        const color = cellColorStr[i];
-        visibleGobis.forEach(gobi => {
-            /** @type {CellViewParams} */
-            const params = { skin, color, gobi };
-            arr.push(params);
-        });
+    const rotations = forEachRotation ? [0, 90, 180, 270] : [0];
+
+    for (const color of cellColorStr) {
+        for (const gobi of visibleGobis) {
+            for (const rotation of rotations) {
+                /** @type {CellViewParams} */
+                const params = { skin, color, gobi, rotation };
+                arr.push(params);
+            }
+        }
     }
     return arr;
 }

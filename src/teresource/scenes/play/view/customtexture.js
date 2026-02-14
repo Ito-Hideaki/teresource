@@ -41,7 +41,7 @@ export class CellSheetParent {
         if (cellImgSkins.includes(skin)) {
             this.textureCellWidth = IMG_SKIN_DATA_INDEX[skin].cellWidth;
         }
-        if(cellImgSkins_fromSheet.includes(skin)) {
+        if (cellImgSkins_fromSheet.includes(skin)) {
             this.extend = IMG_SKIN_DATA_INDEX[skin].extend;
         }
         this.#init();
@@ -75,8 +75,8 @@ export class CellSheetParent {
             if (IMG_SKIN_DATA_INDEX[skin].extend) {
                 const extendTexture = this.scene.textures.get(generateCellSheetTextureKey(skin, true));
                 this.texture.source.push(extendTexture.source[0]);
-                console.log(this.texture.source);
-                cellViewParamsList.forEach(cellViewParams => {
+                const extendCellViewParamsList = calcSkinCellViewParams(this.skin, true);
+                extendCellViewParamsList.forEach(cellViewParams => {
                     switch (skin) {
                         case "choco":
                             this.createExtFrame_Choco(cellViewParams);
@@ -109,9 +109,14 @@ export class CellSheetParent {
 
     createExtFrame_Choco(cellViewParams) {
         const cellWidth = this.textureCellWidth;
-        const framePos = getFrameXY(cellWidth, cellViewParams);
-        const frameKey = generateCellSheetTextureFrameKey(cellViewParams, true);
-        this.texture.add(frameKey, 1, framePos.x, framePos.y, cellWidth, cellWidth);
+        switch (cellViewParams.color) {
+            case "sky":
+            case "yellow":
+                const framePos = getFrameXY(cellWidth, cellViewParams);
+                const frameKey = generateCellSheetTextureFrameKey(cellViewParams, true);
+                this.texture.add(frameKey, 1, framePos.x, framePos.y, cellWidth, cellWidth);
+                break;
+        }
     }
 }
 
