@@ -17,25 +17,25 @@ export const visibleGobis = [
     skin: string,
     color: string,
     gobi: string,
+    rotation: number
 }} CellViewParams all of params which decide cell image
  * */
-
-
-
-/** @param {Cell} cell @param {string} skin @return {CellViewParams} */
-export function createCellViewParamsFromCell(cell, skin = "skin") {
-    const $ = {};
-    $.skin = skin;
-    $.color = cell.color;
-    $.gobi = createStatusGobi(cell);
-    return $;
-}
 
 /** Gobi is a string of the combined cell status, e.g. isActive. Does not include wholy invisible states. @param {Cell} cell @return {string} gobi  */
 function createStatusGobi(cell) {
     if (!cell.isBlock) return GOBI.invisible;
     if (cell.isActive) return GOBI.active;
     return GOBI.normal;
+}
+
+/** @param {Cell} cell @param {string} skin @return {CellViewParams} */
+export function createCellViewParamsFromCell(cell, skin = "skin") {
+    return {
+        skin,
+        color: cell.color,
+        rotation: cell.rotation,
+        gobi: createStatusGobi(cell)
+    }
 }
 
 /**

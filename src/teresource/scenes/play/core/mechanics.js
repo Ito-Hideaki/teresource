@@ -77,7 +77,14 @@ export class Mino {
         this.#shape.map.forEach(array => {
             const tableRow = [];
             array.forEach(value => {
-                const cell = new Cell(value, MINO_DATA_INDEX[this.#type].color, { isActive: $.isActive });
+                const cell = new Cell(
+                    value,
+                    MINO_DATA_INDEX[this.#type].color,
+                    {
+                        isActive: $.isActive,
+                        rotation: this.#rotation
+                    }
+                );
                 tableRow.push(cell);
             });
             table.push(tableRow);
@@ -94,25 +101,34 @@ export class Cell {
 
     #isBlock;
     #isActive;
-    /** @type {string} */
     #color;
+    /** 0, 90, 180 or 270 @type {number} */ #rotation;
 
     /**
      * @param {Boolean} isBlock
      * @param {string} color
      * @param {{
-     * isActive: boolean
+     * isActive?: boolean,
+     * rotation?: number
      * }} $
      */
     constructor(isBlock, color = "red", $ = {}) {
         this.#isBlock = isBlock;
         this.#isActive = $.isActive ?? false;
+        this.#rotation = $.rotation ?? 0;
         this.#color = color;
+
+        this.#validate();
+    }
+
+    #validate() {
+        if(![0, 90, 180, 270].includes(this.#rotation)) throw "Error rotation value is invalid";
     }
 
     get isBlock() { return this.#isBlock }
     get isActive() { return this.#isActive }
     get color() { return this.#color }
+    get rotation() { return this.#rotation }
 }
 
 
