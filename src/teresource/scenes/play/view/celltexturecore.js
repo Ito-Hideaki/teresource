@@ -1,4 +1,4 @@
-import { cellColorStr } from "../core/coredata";
+import { cellColorStr, MAX_MINO_SIZE } from "../core/coredata";
 import { Cell } from "../core/mechanics";
 
 export const GOBI = {
@@ -17,7 +17,9 @@ export const visibleGobis = [
     skin: string,
     color: string,
     gobi: string,
-    rotation: number
+    rotation: number,
+    partRow?: number,
+    partColumn?: number
 }} CellViewParams all of params which decide cell image
  * */
 
@@ -34,7 +36,9 @@ export function createCellViewParamsFromCell(cell, skin = "skin") {
         skin,
         color: cell.color,
         rotation: cell.rotation,
-        gobi: createStatusGobi(cell)
+        gobi: createStatusGobi(cell),
+        partRow: cell.partRow,
+        partColumn: cell.partColumn
     }
 }
 
@@ -70,26 +74,41 @@ export function generateCellSheetTextureFrameKey(cellViewParams, extend = false)
     let key = generateCellTextureKey(cellViewParams);
     if(extend) {
         key += "extend";
-        key += `_r${cellViewParams.rotation}`;
+        key += `_rot${cellViewParams.rotation}`;
+        if(typeof cellViewParams.partRow === "number") key += `_row${cellViewParams.partRow}`;
+        if(typeof cellViewParams.partColumn === "number") key += `_col${cellViewParams.partColumn}`;
     }
     return key;
 }
 
 
-/** All possible CellViewParams of a skin.
+/** CellViewParams of a skin for every combination of color and gobi.
  * @param {string} skin
- * @param {boolean} forEachRotation
+ * @param {Cell} extendCell cell that may contains extend data
  * @return {CellViewParams[]} */
-export function calcSkinCellViewParams(skin, forEachRotation = false) {
+export function calcSkinCellViewParams(skin, extendCell = new Cell(true)) {
     const arr = [];
-    const rotations = forEachRotation ? [0, 90, 180, 270] : [0];
+    const { rotation, partRow, partColumn } = extendCell;
 
     for (const color of cellColorStr) {
         for (const gobi of visibleGobis) {
-            for (const rotation of rotations) {
-                /** @type {CellViewParams} */
-                const params = { skin, color, gobi, rotation };
-                arr.push(params);
+            arr.push({ skin, color, gobi, rotation, partRow, partColumn });
+        }
+    }
+
+
+    return arr;
+}
+
+export function calcExtendSkinCellViewParams(skin) {
+    const arr = [];
+    const rotations = [0, 90, 180, 270];
+    for(const rotation of rotations) {
+        for(let partRow = 0; partRow < MAX_MINO_SIZE; partRow++) {
+            for(let partColumn = 0; partColumn < MAX_MINO_SIZE; partColumn++) {
+                const extendCell = new Cell(true, undefined, { rotation, partRow, partColumn });
+                const cellViewParamsList = calcSkinCellViewParams(skin, extendCell);
+                arr.push(...cellViewParamsList);
             }
         }
     }

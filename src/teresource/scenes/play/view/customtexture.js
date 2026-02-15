@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { cellColorStr } from "../core/coredata";
 import { cellImgSkins, cellImgSkins_fromImgs, cellImgSkins_fromSheet, IMG_SKIN_DATA_INDEX } from "./viewdata";
-import { calcSkinCellViewParams, generateCellTextureKey, visibleGobis, generateCellTextureUrl, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellSheetTextureFrameKey } from "./celltexturecore";
+import { calcSkinCellViewParams, generateCellTextureKey, visibleGobis, generateCellTextureUrl, generateCellSheetTextureKey, generateCellSheetTextureUrl, generateCellSheetTextureFrameKey, calcExtendSkinCellViewParams } from "./celltexturecore";
 import { viteURLify } from "#util";
 
 /**  @param {import("./celltexturecore").CellViewParams} cellViewParams */
@@ -75,7 +75,7 @@ export class CellSheetParent {
             if (IMG_SKIN_DATA_INDEX[skin].extend) {
                 const extendTexture = this.scene.textures.get(generateCellSheetTextureKey(skin, true));
                 this.texture.source.push(extendTexture.source[0]);
-                const extendCellViewParamsList = calcSkinCellViewParams(this.skin, true);
+                const extendCellViewParamsList = calcExtendSkinCellViewParams(skin);
                 extendCellViewParamsList.forEach(cellViewParams => {
                     switch (skin) {
                         case "choco":
@@ -107,6 +107,7 @@ export class CellSheetParent {
         this.texture.add(frameKey, 0, framePos.x, framePos.y, cellWidth, cellWidth);
     }
 
+    // Note: extend frame functions are not ought to add frames to the texture for every cellViewParams but for those expected to called (inclueded in IMG_SKIN_DATA_INDEX extend)
     createExtFrame_Choco(cellViewParams) {
         const cellWidth = this.textureCellWidth;
         switch (cellViewParams.color) {

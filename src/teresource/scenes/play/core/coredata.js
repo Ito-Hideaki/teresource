@@ -119,3 +119,11 @@ export const MINO_DATA_INDEX = {
         color: "purple",
     }
 }
+
+export const MAX_MINO_SIZE = (() => {
+    let max = 0;
+    for(const key in MINO_DATA_INDEX) {
+        max = Math.max(max, MINO_DATA_INDEX[key].shape.size);
+    }
+    return max;
+})();
