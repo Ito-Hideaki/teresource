@@ -26,7 +26,7 @@ const IMG_SKIN_DATA_INDEX_fromSheet = {
     },
     "choco": {
         cellWidth: 8,
-        extend: ["yellow", "sky"]
+        extend: ["yellow", "sky", "purple"]
     }
 }
 /** @type {Object<string, CellSkinData>} */

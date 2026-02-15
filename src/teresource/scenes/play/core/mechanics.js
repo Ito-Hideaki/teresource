@@ -9,15 +9,20 @@ import { MINO_DATA_INDEX } from "./coredata";
 /** Contains mino's color, shape and rotation. */
 export class Mino {
 
+    static #rotatePos = function(shape, row, column, rotation) {
+        const rot4way = ((rotation / 90) % 4 + 4) % 4;
+        const offset = (shape.size -  1)/ 2;
+        const rotatedCoordinate = cellPosRotate4Way(column - offset, row - offset, rot4way);
+        rotatedCoordinate.column += offset;
+        rotatedCoordinate.row += offset;
+        return rotatedCoordinate;
+    }
+
     /** @param {MinoShape} shape @param {number} rotation 実数、オイラー角 @return {MinoShape}*/
     static #rotateShape = function(shape, rotation) {
-        const rot4way = (rotation / 90) % 4;
         const copied = structuredClone(shape);
-        shape.map.forEach((arr, sRow) => arr.forEach((val, sColumn) => {
-            const offset = (shape.size -  1)/ 2;
-            const rotatedCoordinate = cellPosRotate4Way(sColumn - offset, sRow - offset, rot4way);
-            rotatedCoordinate.column += offset;
-            rotatedCoordinate.row += offset;
+        shape.map.forEach((arr, row) => arr.forEach((val, column) => {
+            const rotatedCoordinate = Mino.#rotatePos(shape, row, column, rotation);
             copied.map[rotatedCoordinate.row][rotatedCoordinate.column] = val;
         }));
         return copied;
@@ -77,14 +82,15 @@ export class Mino {
         this.#shape.map.forEach((array, row) => {
             const tableRow = [];
             array.forEach((value, column) => {
+                const rot0cellPos = Mino.#rotatePos(this.#shape, row, column, -this.#rotation);
                 const cell = new Cell(
                     value,
                     MINO_DATA_INDEX[this.#type].color,
                     {
                         isActive: $.isActive,
                         rotation: this.#rotation,
-                        partColumn: column,
-                        partRow: row
+                        partColumn: rot0cellPos.column,
+                        partRow: rot0cellPos.row
                     }
                 );
                 tableRow.push(cell);

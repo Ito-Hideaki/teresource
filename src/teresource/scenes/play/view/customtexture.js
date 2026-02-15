@@ -110,7 +110,7 @@ export class CellSheetParent {
     // Note: extend frame functions are not ought to add frames to the texture for every cellViewParams but for those expected to called (inclueded in IMG_SKIN_DATA_INDEX extend)
     /** @param {import("./celltexturecore").CellViewParams} cellViewParams */
     createExtFrame_Choco(cellViewParams) {
-        if(!(["sky", "yellow"].includes(cellViewParams.color))) return;
+        if (!(IMG_SKIN_DATA_INDEX["choco"].extend.includes(cellViewParams.color))) return;
 
         const cellWidth = this.textureCellWidth;
 
@@ -120,13 +120,27 @@ export class CellSheetParent {
         switch (cellViewParams.color) {
             case "sky":
                 frameY = getFrameXY(cellWidth, cellViewParams).y; //gobi
-                if(cellViewParams.rotation === 90 || cellViewParams.rotation === 270) frameY += cellWidth * 2; //rotation
+                if (cellViewParams.rotation === 90 || cellViewParams.rotation === 270) frameY += cellWidth * 2; //rotation
                 break;
             case "yellow":
                 frameX += cellViewParams.partColumn * cellWidth; //part x
                 frameY = getFrameXY(cellWidth, cellViewParams).y; //gobi
                 frameY += cellViewParams.partRow * 2 * cellWidth; //part y
-                frameY += cellViewParams.rotation/ 90 * 4 * cellWidth; //rotation
+                frameY += cellViewParams.rotation / 90 * 4 * cellWidth; //rotation
+                break;
+            case "purple":
+                frameY = getFrameXY(cellWidth, cellViewParams).y; //gobi
+                const rot = cellViewParams.rotation;
+                const row = cellViewParams.partRow;
+                const col = cellViewParams.partColumn;
+                if (
+                    (rot === 0 && (row === 0 && col === 1))
+                    || (rot === 90 && (row === 1 && col !== 2))
+                    || (rot === 180 && (row === 1 && col === 1))
+                    || (rot === 270 && (row === 1 && col !== 0))
+                ) {
+                    frameY += 2 * cellWidth;
+                }
                 break;
         }
         this.texture.add(frameKey, 1, frameX, frameY, cellWidth, cellWidth);
