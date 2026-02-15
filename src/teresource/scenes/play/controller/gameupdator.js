@@ -149,7 +149,7 @@ export class GameUpdator {
 
         //Clear filled line (row)
         const rowToClearList = this.lineClearManager.findRowToClearList();
-        this.lineClearManager.startClear(rowToClearList);
+        const clearedRowList = this.lineClearManager.startClear(rowToClearList);
 
         //Update attack state
         this.gameAttackState.update(boardUpdateDiff, rowToClearList.length); //refactor
@@ -157,7 +157,7 @@ export class GameUpdator {
         //Start line clear effect
         if (rowToClearList.length) {
             const reportData = this.gameAttackState.createLineClearAttackData(rowToClearList);
-            this.#gameReportStack.add(new LineClearReport(reportData));
+            this.#gameReportStack.add(new LineClearReport(reportData, clearedRowList));
             this.#gameStatsManager.setNewLineClearAttackData(reportData);
         }
 

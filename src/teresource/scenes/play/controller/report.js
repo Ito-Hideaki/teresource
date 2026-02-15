@@ -5,21 +5,19 @@ import { LineClearAttackData } from "../core/attack";
  *  The data inside must not be changed.  */
 export class Report {
     static type = "Default";
-    data;
     parentClass = Report;
-    getData() {
-        return this.data;
-    }
 }
 
 export class LineClearReport extends Report {
     static type = "LineClear";
     parentClass = LineClearReport;
     data;
-    /** @param {LineClearAttackData} data */
-    constructor(data) {
+    rowList;
+    /** @param {LineClearAttackData} data @param {Cell[][]} rowList */
+    constructor(data, rowList) {
         super();
         this.data = data;
+        this.rowList = rowList;
     }
 }
 

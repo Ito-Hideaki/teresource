@@ -1,5 +1,5 @@
 import { GameContext } from "../infra/context";
-import { CellBoard } from "./mechanics";
+import { Cell, CellBoard } from "./mechanics";
 
 /** @type {{ time_s: number }[]} */
 const LINE_CLEAR_SETTINGS_LIST = [
@@ -39,21 +39,24 @@ export class LineClearManager {
         return rowToClearList;
     }
 
-    /** clear filled row, then set currentRowToClearList with new one @param {number[]} rowToClearList */
+    /** clear filled row, then set currentRowToClearList with new one @param {number[]} rowToClearList @return {Cell[][]} rowList */
     startClear(rowToClearList) {
         if(rowToClearList.length <= 0) return;
 
         this.#currentRowToClearList = rowToClearList;
 
+        const rowList = [];
         const board = this.#cellBoard;
         //clear row
         for (let row = 0; row < board.rowCount; row++) {
             if (rowToClearList.includes(row)) {
+                rowList.push(board.table[row]);
                 board.table[row] = board.createRow();
             }
         }
 
         this.#lineClearLastTime_s = LINE_CLEAR_SETTINGS_LIST[rowToClearList.length].time_s;
+        return rowList;
     }
 
     /** drop cleared row, then set currentRowToClearList empty. @param {number[]} rowToClearList */
