@@ -1,6 +1,8 @@
 import { LineClearReport } from "../controller/report";
 import { GameViewContext } from "../infra/context";
 import Phaser from "phaser";
+import { createCellViewParamsFromCell, generateCellSheetTextureFrameKey } from "./celltexturecore";
+import { CellImage } from "./cellimage";
 
 class LineClearWipeEffectGraphics extends Phaser.GameObjects.Graphics {
     #rowToClearList;
@@ -89,11 +91,11 @@ class LineClearWipeEffectGraphics extends Phaser.GameObjects.Graphics {
 function createFlashEffects(scene, gvContext, report) {
     const gameobjects = [];
     const cellWidth = gvContext.getBoardCellWidth();
-    for(let i = 0; i < report.data.clearedRowList.length; i++) {
+    for (let i = 0; i < report.data.clearedRowList.length; i++) {
         const ri = report.data.clearedRowList[i];
         const topLeftY = gvContext.getRelativeBoardY(ri);
         const row = report.rowList[i];
-        for(let ci = 0; ci < row.length; ci++) {
+        for (let ci = 0; ci < row.length; ci++) {
             const topLeftX = gvContext.getRelativeBoardX(ci);
             const cell = row[ci];
             const graphics = new Phaser.GameObjects.Graphics(scene);
@@ -114,6 +116,48 @@ function createFlashEffects(scene, gvContext, report) {
                 onComplete: () => { graphics.destroy() }
             });
             gameobjects.push(graphics);
+        }
+    }
+    return gameobjects;
+}
+
+/** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+function createChocoShatteringEffects(scene, gvContext, report) {
+    const gameobjects = [];
+    const cellWidth = gvContext.getBoardCellWidth();
+
+    //for each row
+    for (let i = 0; i < report.data.clearedRowList.length; i++) {
+        const ri = report.data.clearedRowList[i];
+        const topLeftY = gvContext.getRelativeBoardY(ri);
+        const row = report.rowList[i];
+        //for each column
+        for (let ci = 0; ci < row.length; ci++) {
+            const topLeftX = gvContext.getRelativeBoardX(ci);
+            const cell = row[ci];
+            //create gameobject
+            const img = new CellImage(scene, topLeftX + cellWidth / 2, topLeftY + cellWidth / 2, gvContext.cellSheetParent, cellWidth);
+            img.setView(createCellViewParamsFromCell(cell));
+            const initialDirection = Math.random() * Math.PI * 2;
+            const initialSpeed = Math.random() * 300;
+            let vx = Math.cos(initialDirection) * initialSpeed;
+            let vy = Math.sin(initialDirection) * initialSpeed;
+            const vrotation = (Math.random() - 0.5) * 3;
+            function update(time, delta) {
+                const delta_s = delta / 1000;
+                vy += 500 * delta_s;
+                img.x += vx * delta_s;
+                img.y += vy * delta_s;
+                img.rotation += vrotation * delta_s;
+                img.alpha -= 0.3 * delta_s;
+                if (img.alpha <= 0) {
+                    scene.events.off("update", update);
+                    img.destroy();
+                }
+            }
+            scene.events.on("update", update);
+            //push gameobject
+            gameobjects.push(img);
         }
     }
     return gameobjects;
@@ -254,7 +298,7 @@ class AllClearText extends Phaser.GameObjects.Text {
             tweens: [
                 {
                     targets: this,
-                    scale: {from: 1.2, to: 1},
+                    scale: { from: 1.2, to: 1 },
                     duration: 50,
                 },
                 {
@@ -292,7 +336,7 @@ export class GameEffectManagerView {
         this.#gameReportStack.lineClear.forEach(report => {
             this.createLineClearEffect(report);
             this.#lineClearPopupView.create(report);
-            if(report.data.isAllClear) {
+            if (report.data.isAllClear) {
                 const allClearText = new AllClearText(this.#scene);
                 this.#scene.add.existing(allClearText);
                 this.#boardContainer.add(allClearText);
@@ -305,5 +349,11 @@ export class GameEffectManagerView {
         const effect = new LineClearWipeEffectGraphics(this.#scene, this.#gvContext, report);
         this.#scene.add.existing(effect);
         this.#boardContainer.add(effect);
+
+        const gameobjects = createChocoShatteringEffects(this.#scene, this.#gvContext, report);
+        for (const gameobject of gameobjects) {
+            this.#scene.add.existing(gameobject);
+            this.#boardContainer.add(gameobject);
+        }
     }
 }
