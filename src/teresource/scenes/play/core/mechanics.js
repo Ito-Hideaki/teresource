@@ -74,15 +74,17 @@ export class Mino {
      * @return {{table: Cell[][], topLeft: { column: number, row: number } }} topLeft: relative topleft cell position of the table*/
     convertToTable($ = {}) {
         const table = [];
-        this.#shape.map.forEach(array => {
+        this.#shape.map.forEach((array, row) => {
             const tableRow = [];
-            array.forEach(value => {
+            array.forEach((value, column) => {
                 const cell = new Cell(
                     value,
                     MINO_DATA_INDEX[this.#type].color,
                     {
                         isActive: $.isActive,
-                        rotation: this.#rotation
+                        rotation: this.#rotation,
+                        partColumn: column,
+                        partRow: row
                     }
                 );
                 tableRow.push(cell);
@@ -103,19 +105,25 @@ export class Cell {
     #isActive;
     #color;
     /** 0, 90, 180 or 270 @type {number} */ #rotation;
+    /** located row of this cell in the mino table (rotation = 0) */ #partRow;
+    /** located column of ths cell in the mino table (rotation = 0) */ #partColumn;
 
     /**
      * @param {Boolean} isBlock
      * @param {string} color
      * @param {{
      * isActive?: boolean,
-     * rotation?: number
+     * rotation?: number,
+     * partRow? : number,
+     * partColumn? : number
      * }} $
      */
     constructor(isBlock, color = "red", $ = {}) {
         this.#isBlock = isBlock;
         this.#isActive = $.isActive ?? false;
         this.#rotation = $.rotation ?? 0;
+        this.#partRow = $.partRow;
+        this.#partColumn = $.partColumn;
         this.#color = color;
 
         this.#validate();
@@ -129,6 +137,8 @@ export class Cell {
     get isActive() { return this.#isActive }
     get color() { return this.#color }
     get rotation() { return this.#rotation }
+    get partRow() { return this.#partRow }
+    get partColumn() { return this.#partColumn }
 }
 
 
