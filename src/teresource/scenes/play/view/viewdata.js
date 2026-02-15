@@ -25,7 +25,7 @@ const IMG_SKIN_DATA_INDEX_fromSheet = {
         cellWidth: 3
     },
     "choco": {
-        cellWidth: 8,
+        cellWidth: 32,
         extend: ["yellow", "sky", "purple"]
     }
 }
