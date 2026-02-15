@@ -138,6 +138,7 @@ function createChocoShatteringEffects(scene, gvContext, report) {
             //create gameobject
             const img = new CellImage(scene, topLeftX + cellWidth / 2, topLeftY + cellWidth / 2, gvContext.cellSheetParent, cellWidth);
             img.setView(createCellViewParamsFromCell(cell));
+            img.alpha = 0.7;
             const initialDirection = Math.random() * Math.PI * 2;
             const initialSpeed = Math.random() * 300;
             let vx = Math.cos(initialDirection) * initialSpeed;
@@ -346,14 +347,14 @@ export class GameEffectManagerView {
 
     /** @param {LineClearReport} report */
     createLineClearEffect(report) {
-        const effect = new LineClearWipeEffectGraphics(this.#scene, this.#gvContext, report);
-        this.#scene.add.existing(effect);
-        this.#boardContainer.add(effect);
-
         const gameobjects = createChocoShatteringEffects(this.#scene, this.#gvContext, report);
         for (const gameobject of gameobjects) {
             this.#scene.add.existing(gameobject);
             this.#boardContainer.add(gameobject);
         }
+
+        const effect = new LineClearWipeEffectGraphics(this.#scene, this.#gvContext, report);
+        this.#scene.add.existing(effect);
+        this.#boardContainer.add(effect);
     }
 }
