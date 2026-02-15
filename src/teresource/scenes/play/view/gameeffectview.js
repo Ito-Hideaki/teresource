@@ -2,7 +2,7 @@ import { LineClearReport } from "../controller/report";
 import { GameViewContext } from "../infra/context";
 import Phaser from "phaser";
 
-class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
+class LineClearWipeEffectGraphics extends Phaser.GameObjects.Graphics {
     #rowToClearList;
     #timePassed = 0;
     #effectDuration = 0.24;
@@ -19,9 +19,12 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
         this.#getRelativeY = gvContext.getRelativeBoardY;
         this.#cellWidth = gvContext.getBoardCellWidth();
         this.#boardSize = gvContext.gameContext.boardSize;
+
+        scene.events.on("update", this.update, this);
     }
 
-    update(delta_s) {
+    update(time, delta) {
+        const delta_s = delta / 1000;
         this.#timePassed += delta_s;
         if (this.#timePassed >= this.#effectDuration) {
             this.destroy();
@@ -75,6 +78,45 @@ class LineClearEffectGraphics extends Phaser.GameObjects.Graphics {
             });
         }
     }
+
+    destroy() {
+        this.scene.events.off("update", this.update);
+        super.destroy();
+    }
+}
+
+/** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+function createFlashEffects(scene, gvContext, report) {
+    const gameobjects = [];
+    const cellWidth = gvContext.getBoardCellWidth();
+    for(let i = 0; i < report.data.clearedRowList.length; i++) {
+        const ri = report.data.clearedRowList[i];
+        const topLeftY = gvContext.getRelativeBoardY(ri);
+        const row = report.rowList[i];
+        for(let ci = 0; ci < row.length; ci++) {
+            const topLeftX = gvContext.getRelativeBoardX(ci);
+            const cell = row[ci];
+            const graphics = new Phaser.GameObjects.Graphics(scene);
+            graphics.x = topLeftX + cellWidth / 2;
+            graphics.y = topLeftY + cellWidth / 2;
+            graphics.blendMode = Phaser.BlendModes.ADD;
+            graphics.alpha = 1;
+            graphics.scale = 0.5;
+            graphics.fillStyle(0xffffff);
+            graphics.fillRect(cellWidth * -0.5, cellWidth * -0.5, cellWidth, cellWidth);
+            scene.tweens.add({
+                duration: 150 + report.rowList.length * 50,
+                targets: graphics,
+                props: {
+                    scale: { value: "1.5", ease: "Cubic" },
+                    alpha: { value: "0", ease: "Cubic.easeIn" }
+                },
+                onComplete: () => { graphics.destroy() }
+            });
+            gameobjects.push(graphics);
+        }
+    }
+    return gameobjects;
 }
 
 /** @param {Phaser.GameObjects.GameObject} thisObj @return {Phaser.Types.Tweens.TweenChainBuilderConfig}*/
@@ -233,7 +275,6 @@ export class GameEffectManagerView {
     #gvContext;
     #boardContainer;
     #gameReportStack;
-    #updateEffectList = [];
     #scene;
     #lineClearPopupView;
 
@@ -257,18 +298,11 @@ export class GameEffectManagerView {
                 this.#boardContainer.add(allClearText);
             }
         });
-        this.#updateEffectList.forEach(obj => {
-            obj.update(delta_s);
-        })
     }
 
     /** @param {LineClearReport} report */
     createLineClearEffect(report) {
-        const effect = new LineClearEffectGraphics(this.#scene, this.#gvContext, report);
-        this.#updateEffectList.push(effect);
-        effect.on("destroy", () => { //remove from update list
-            this.#updateEffectList.splice(this.#updateEffectList.indexOf(effect), 1);
-        });
+        const effect = new LineClearWipeEffectGraphics(this.#scene, this.#gvContext, report);
         this.#scene.add.existing(effect);
         this.#boardContainer.add(effect);
     }

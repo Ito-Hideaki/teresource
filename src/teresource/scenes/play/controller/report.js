@@ -1,4 +1,5 @@
 import { LineClearAttackData } from "../core/attack";
+import { Cell } from "../core/mechanics";
 
 
 /** Object that is used to tell what has happened in the last frame.
