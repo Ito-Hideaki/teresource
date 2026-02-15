@@ -114,7 +114,7 @@ export class CellSheetParent {
 
         const cellWidth = this.textureCellWidth;
 
-        const frameX = getFrameXY(cellWidth, cellViewParams).x;
+        let frameX = getFrameXY(cellWidth, cellViewParams).x;
         const frameKey = generateCellSheetTextureFrameKey(cellViewParams, true);
         let frameY;
         switch (cellViewParams.color) {
@@ -123,7 +123,10 @@ export class CellSheetParent {
                 if(cellViewParams.rotation === 90 || cellViewParams.rotation === 270) frameY += cellWidth * 2; //rotation
                 break;
             case "yellow":
-                frameY = getFrameXY(cellWidth, cellViewParams).y;
+                frameX += cellViewParams.partColumn * cellWidth; //part x
+                frameY = getFrameXY(cellWidth, cellViewParams).y; //gobi
+                frameY += cellViewParams.partRow * 2 * cellWidth; //part y
+                frameY += cellViewParams.rotation/ 90 * 4 * cellWidth; //rotation
                 break;
         }
         this.texture.add(frameKey, 1, frameX, frameY, cellWidth, cellWidth);
