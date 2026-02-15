@@ -108,16 +108,25 @@ export class CellSheetParent {
     }
 
     // Note: extend frame functions are not ought to add frames to the texture for every cellViewParams but for those expected to called (inclueded in IMG_SKIN_DATA_INDEX extend)
+    /** @param {import("./celltexturecore").CellViewParams} cellViewParams */
     createExtFrame_Choco(cellViewParams) {
+        if(!(["sky", "yellow"].includes(cellViewParams.color))) return;
+
         const cellWidth = this.textureCellWidth;
+
+        const frameX = getFrameXY(cellWidth, cellViewParams).x;
+        const frameKey = generateCellSheetTextureFrameKey(cellViewParams, true);
+        let frameY;
         switch (cellViewParams.color) {
             case "sky":
+                frameY = getFrameXY(cellWidth, cellViewParams).y; //gobi
+                if(cellViewParams.rotation === 90 || cellViewParams.rotation === 270) frameY += cellWidth * 2; //rotation
+                break;
             case "yellow":
-                const framePos = getFrameXY(cellWidth, cellViewParams);
-                const frameKey = generateCellSheetTextureFrameKey(cellViewParams, true);
-                this.texture.add(frameKey, 1, framePos.x, framePos.y, cellWidth, cellWidth);
+                frameY = getFrameXY(cellWidth, cellViewParams).y;
                 break;
         }
+        this.texture.add(frameKey, 1, frameX, frameY, cellWidth, cellWidth);
     }
 }
 
