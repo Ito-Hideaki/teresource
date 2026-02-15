@@ -127,7 +127,7 @@ export class GameFactory {
         const boardView = new BoardView(scene, gameViewContext, { displayedBoardArea: { topRow: 0 } });
         const minoQueueView = new MinoQueueView(scene, gameViewContext);
         const heldMinoView = new HeldMinoView(scene, gameViewContext);
-        const gameEffectManagerView = new GameEffectManagerView(scene, gameViewContext);
+        const gameEffectManagerView = new GameEffectManagerView(scene, gameViewContext, skin);
         const gameStatsView = new GameStatsView(scene, gameViewContext);
         const gameViewController = new GameViewController(scene, gameViewContext, {
             boardDeco, boardView, minoQueueView, heldMinoView, gameEffectManagerView, gameStatsView

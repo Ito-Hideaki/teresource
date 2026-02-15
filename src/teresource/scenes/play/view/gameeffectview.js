@@ -322,13 +322,15 @@ export class GameEffectManagerView {
     #gameReportStack;
     #scene;
     #lineClearPopupView;
+    #skin;
 
-    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext */
-    constructor(scene, gvContext) {
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {string} skin*/
+    constructor(scene, gvContext, skin) {
         this.#scene = scene;
         this.#boardContainer = gvContext.boardContainer;
         this.#gvContext = gvContext;
         this.#gameReportStack = gvContext.gameContext.gameReportStack;
+        this.#skin = skin;
 
         this.#lineClearPopupView = new LineClearPopupView(scene, gvContext);
     }
@@ -347,14 +349,18 @@ export class GameEffectManagerView {
 
     /** @param {LineClearReport} report */
     createLineClearEffect(report) {
-        const gameobjects = createChocoShatteringEffects(this.#scene, this.#gvContext, report);
-        for (const gameobject of gameobjects) {
-            this.#scene.add.existing(gameobject);
-            this.#boardContainer.add(gameobject);
+        switch (this.#skin) {
+            case "choco":
+                const gameobjects = createChocoShatteringEffects(this.#scene, this.#gvContext, report);
+                for (const gameobject of gameobjects) {
+                    this.#scene.add.existing(gameobject);
+                    this.#boardContainer.add(gameobject);
+                }
+                break;
+            default:
+                const effect = new LineClearWipeEffectGraphics(this.#scene, this.#gvContext, report);
+                this.#scene.add.existing(effect);
+                this.#boardContainer.add(effect);
         }
-
-        const effect = new LineClearWipeEffectGraphics(this.#scene, this.#gvContext, report);
-        this.#scene.add.existing(effect);
-        this.#boardContainer.add(effect);
     }
 }
