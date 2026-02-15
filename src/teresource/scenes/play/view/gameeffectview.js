@@ -138,7 +138,7 @@ function createChocoShatteringEffects(scene, gvContext, report) {
             //create gameobject
             const img = new CellImage(scene, topLeftX + cellWidth / 2, topLeftY + cellWidth / 2, gvContext.cellSheetParent, cellWidth);
             img.setView(createCellViewParamsFromCell(cell));
-            img.alpha = 0.7;
+            img.alpha = 1;
             const initialDirection = Math.random() * Math.PI * 2;
             const initialSpeed = Math.random() * 300;
             let vx = Math.cos(initialDirection) * initialSpeed;
@@ -146,7 +146,7 @@ function createChocoShatteringEffects(scene, gvContext, report) {
             const vrotation = (Math.random() - 0.5) * 3;
             function update(time, delta) {
                 const delta_s = delta / 1000;
-                vy += 500 * delta_s;
+                vy += 600 * delta_s;
                 img.x += vx * delta_s;
                 img.y += vy * delta_s;
                 img.rotation += vrotation * delta_s;
