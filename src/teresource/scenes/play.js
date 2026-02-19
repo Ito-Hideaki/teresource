@@ -71,15 +71,7 @@ export class PlayScene extends Phaser.Scene {
         /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = UIObjectiveConfig.session;
         this.#singleGame.gameUpdator.setSessionFromConfig(sessionConfig);
 
-        const keyInputProcessor = new KeyInputProcessor({
-            moveLeft: [ "ArrowLeft" ],
-            moveRight: [ "ArrowRight" ],
-            softDrop: [ "ArrowDown" ],
-            rotateClockWise: [ "KeyX" ],
-            rotateCounterClock: [ "KeyZ" ],
-            hold: [ "C", "ShiftLeft" ],
-            hardDrop: [ "Space" ]
-        }, this.#singleGame.controlOrderProvider);
+        const keyInputProcessor = new KeyInputProcessor(this.game.configUIDataHandlerMap.keyBinding.getConfig(), this.#singleGame.controlOrderProvider);
 
         this.input.keyboard.on("keydown", e => {
             if (!this.game.inputEnabled) return;

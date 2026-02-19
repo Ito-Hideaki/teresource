@@ -274,7 +274,13 @@ export function createConfigUIElement() {
             "timeLimit": 180,
         },
         keyBinding: {
-            "hold" : ["KeyC","KeyB"]
+            moveLeft: [ "ArrowLeft" ],
+            moveRight: [ "ArrowRight" ],
+            softDrop: [ "ArrowDown" ],
+            rotateClockWise: [ "KeyX" ],
+            rotateCounterClock: [ "KeyZ" ],
+            hold: [ "KeyC", "ShiftLeft" ],
+            hardDrop: [ "Space" ]
         }
     }
 
@@ -285,7 +291,7 @@ export function createConfigUIElement() {
         personalization: "お好み",
         handling: "ハンドリング",
         objective: "ゲーム目標",
-        keyBinding: "キー設定"
+        keyBinding: "キーボード操作"
     }
 
     //create boxes
