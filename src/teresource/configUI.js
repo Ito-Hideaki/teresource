@@ -125,7 +125,8 @@ class ItemElementFactory {
 
         box.addEventListener("keydown", e => {
             e.preventDefault();
-            setter([...getter(), e.code]);
+            const value = getter();
+            if(!value.includes(e.code)) setter([...value, e.code]);
         });
 
         return { box, getter, setter };
