@@ -44,6 +44,7 @@
     font-family: 'Courier New', monospace;
     display: flex;
     align-items: center;
+    border-bottom: 0.1em solid #888;
 }
 
 .configui_item_name {
