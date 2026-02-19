@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
 import { cellImgSkins } from "./play/view/viewdata";
 import { SingleGame } from "./play/controller/game";
-import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontroller";
+import { ControlOrder, ControlOrderProvider } from "./play/controller/controlorder";
 import { CellSheetParent, loadCellSkinTextures } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 import { ConfigUIDataHandler } from "../configUI";

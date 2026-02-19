@@ -1,6 +1,7 @@
 import { CellBoard, BoardSize } from "../core/mechanics";
 import { CurrentMinoManager, HeldMinoManager, MinoQueueManager } from "../core/minomanager";
-import { BoardUpdateState, ControlOrderProvider } from "../controller/boardcontroller";
+import { BoardUpdateState } from "../controller/boardcontroller";
+import { ControlOrderProvider } from "../controller/controlorder";
 import { CellSheetParent } from "../view/customtexture";
 import { RotationSystem } from "../core/rotationsystem";
 import { GameReportStack } from "../controller/report";

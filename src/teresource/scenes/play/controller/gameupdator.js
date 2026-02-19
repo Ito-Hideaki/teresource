@@ -1,4 +1,5 @@
-import { ControlOrder, BoardUpdater, ControlOrderProvider, BoardUpdateDiff } from "./boardcontroller";
+import { BoardUpdater, BoardUpdateDiff } from "./boardcontroller";
+import { ControlOrder, ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
 import { LineClearReport, GameReportStack } from "./report";

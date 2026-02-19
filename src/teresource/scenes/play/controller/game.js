@@ -1,6 +1,7 @@
 import { CurrentMinoManager, Bag, MinoQueueManager, HeldMinoManager } from "../core/minomanager";
 import { BoardSize, CellBoard } from "../core/mechanics";
-import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "./boardcontroller";
+import { BoardUpdater, BoardUpdateState } from "./boardcontroller";
+import { ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext, GameViewContext } from "../infra/context";
 import { GameViewController } from "../view/gameviewcontroller";
 import { GameUpdator } from "./gameupdator";
@@ -42,7 +43,7 @@ function getBagConfig(gameConfig) {
     return gameConfig.bag;
 }
 
-/** @param {GameConfig} gameConfig @return {import("./boardcontroller").ControlOrderProviderConfig} */
+/** @param {GameConfig} gameConfig @return {import("./controlorder").ControlOrderProviderConfig} */
 function getControlOrderProviderConfig(gameConfig) {
     return {
         DAS: gameConfig.handling.DAS,
