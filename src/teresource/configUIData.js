@@ -54,7 +54,8 @@ export const CONFIGUI_CONFIG_DATA = {
         { name: "rotateClockWise", type: "keylist", displayText: "ミノを右回転" },
         { name: "softDrop", type: "keylist", displayText: "ミノを高速落下" },
         { name: "hardDrop", type: "keylist", displayText: "ミノを設置" },
-        { name: "hold", type: "keylist", displayText: "ミノをホールド" }
+        { name: "hold", type: "keylist", displayText: "ミノをホールド" },
+        { name: "reload", type: "keylist", displayText: "シーンをリロード" }
     ]
 }
 
@@ -88,13 +89,16 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
         "attackDamage": "attackDamage"
     },
     keyBinding: {
-        "moveLeft": "moveLeft",
-        "moveRight": "moveRight",
-        "rotateCounterClock": "rotateCounterClock",
-        "rotateClockWise": "rotateClockWise",
-        "softDrop": "softDrop",
-        "hardDrop": "hardDrop",
-        "hold": "hold"
+        game: {
+            "moveLeft": "moveLeft",
+            "moveRight": "moveRight",
+            "rotateCounterClock": "rotateCounterClock",
+            "rotateClockWise": "rotateClockWise",
+            "softDrop": "softDrop",
+            "hardDrop": "hardDrop",
+            "hold": "hold",
+        },
+        "reload": "reload"
     }
 }
 

@@ -71,14 +71,18 @@ export class PlayScene extends Phaser.Scene {
         /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = UIObjectiveConfig.session;
         this.#singleGame.gameUpdator.setSessionFromConfig(sessionConfig);
 
-        const keyInputProcessor = new KeyInputProcessor(this.game.configUIDataHandlerMap.keyBinding.getConfig(), this.#singleGame.controlOrderProvider);
+        const keyBindingConfig = this.game.configUIDataHandlerMap.keyBinding.getConfig();
+
+        console.log(keyBindingConfig);
+
+        const keyInputProcessor = new KeyInputProcessor(keyBindingConfig.game, this.#singleGame.controlOrderProvider);
 
         this.input.keyboard.on("keydown", e => {
             if (!this.game.inputEnabled) return;
             e.preventDefault();
             if (e.repeat) return;
 
-            if (e.code === "KeyR") {
+            if (keyBindingConfig.reload.includes(e.code)) {
                 this.scene.start("play");
             }
 

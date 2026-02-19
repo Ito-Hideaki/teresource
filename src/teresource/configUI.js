@@ -280,7 +280,8 @@ export function createConfigUIElement() {
             rotateClockWise: [ "KeyX" ],
             rotateCounterClock: [ "KeyZ" ],
             hold: [ "KeyC", "ShiftLeft" ],
-            hardDrop: [ "Space" ]
+            hardDrop: [ "Space" ],
+            reload: [ "KeyR" ]
         }
     }
 
