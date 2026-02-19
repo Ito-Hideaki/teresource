@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
 import { cellImgSkins } from "./play/view/viewdata";
 import { SingleGame } from "./play/controller/game";
-import { ControlOrder, ControlOrderProvider } from "./play/controller/controlorder";
+import { ControlOrder, ControlOrderProvider, KeyInputProcessor } from "./play/controller/controlorder";
 import { CellSheetParent, loadCellSkinTextures } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 import { ConfigUIDataHandler } from "../configUI";
@@ -34,7 +34,7 @@ export class PlayScene extends Phaser.Scene {
     width;
     height;
 
-    #singleGame;
+    /** @type {SingleGame} */ #singleGame;
 
     constructor() {
         super({
@@ -71,43 +71,32 @@ export class PlayScene extends Phaser.Scene {
         /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = UIObjectiveConfig.session;
         this.#singleGame.gameUpdator.setSessionFromConfig(sessionConfig);
 
+        const keyInputProcessor = new KeyInputProcessor({
+            moveLeft: [ "ArrowLeft" ],
+            moveRight: [ "ArrowRight" ],
+            softDrop: [ "ArrowDown" ],
+            rotateClockWise: [ "KeyX" ],
+            rotateCounterClock: [ "KeyZ" ],
+            hold: [ "C", "ShiftLeft" ],
+            hardDrop: [ "Space" ]
+        }, this.#singleGame.controlOrderProvider);
+
         this.input.keyboard.on("keydown", e => {
-            if(!this.game.inputEnabled) return;
+            if (!this.game.inputEnabled) return;
             e.preventDefault();
             if (e.repeat) return;
 
-            if(e.code === "KeyR") {
+            if (e.code === "KeyR") {
                 this.scene.start("play");
             }
 
-            //list of controlOrders assigned to a perticulay key
-            const controlOrderList = {
-                "ArrowLeft" : ControlOrder.START_MOVE_LEFT,
-                "ArrowRight": ControlOrder.START_MOVE_RIGHT,
-                "ArrowDown" : ControlOrder.START_SOFT_DROP,
-                "KeyX"      : ControlOrder.ROTATE_CLOCK_WISE,
-                "KeyZ"      : ControlOrder.ROTATE_COUNTER_CLOCK,
-                "Space"     : ControlOrder.HARD_DROP,
-                "KeyC"      : ControlOrder.HOLD,
-                "ShiftLeft" : ControlOrder.HOLD
-            }
-            if (Object.keys(controlOrderList).includes(e.code)) {
-                this.#singleGame.controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
-            }
+            keyInputProcessor.keyDown(e.code);
         });
 
         this.input.keyboard.on("keyup", e => {
-            if(!this.game.inputEnabled) return;
-            //list of controlOrders assigned to a perticulay key
-            const controlOrderList = {
-                "ArrowLeft": ControlOrder.STOP_MOVE_LEFT,
-                "ArrowRight": ControlOrder.STOP_MOVE_RIGHT,
-                "ArrowDown": ControlOrder.STOP_SOFT_DROP,
-            }
-            if (Object.keys(controlOrderList).includes(e.code)) {
-                e.preventDefault();
-                this.#singleGame.controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
-            }
+            if (!this.game.inputEnabled) return;
+
+            keyInputProcessor.keyUp(e.code);
         })
 
         const rebootButton = this.add.dom(300, 100, "div", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0; user-select: none;", "Reboot Scene");
@@ -123,10 +112,10 @@ export class PlayScene extends Phaser.Scene {
         const gameUpdateResult = this.#singleGame.gameUpdator.update(deltaTime);
 
         //auto damage
-        if(gameUpdateResult.placed) {
+        if (gameUpdateResult.placed) {
             this.#singleGame.damageProviderPerMino.count();
             const damages = this.#singleGame.damageProviderPerMino.provide();
-            for(const damage of damages) this.#singleGame.gameUpdator.scheduledDamageState.damageStack.push({ length: damage });
+            for (const damage of damages) this.#singleGame.gameUpdator.scheduledDamageState.damageStack.push({ length: damage });
         }
 
         this.#singleGame.gameViewController.update(deltaTime);

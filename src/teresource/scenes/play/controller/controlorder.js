@@ -1,19 +1,19 @@
 export class ControlOrder {
 
-    static MOVE_LEFT            = 0x0001;
-    static MOVE_RIGHT           = 0x0002;
-    static START_SOFT_DROP      = 0x0004;
-    static STOP_SOFT_DROP       = 0x0008;
-    static HARD_DROP            = 0x0010;
-    static ROTATE_CLOCK_WISE    = 0x0020;
+    static MOVE_LEFT = 0x0001;
+    static MOVE_RIGHT = 0x0002;
+    static START_SOFT_DROP = 0x0004;
+    static STOP_SOFT_DROP = 0x0008;
+    static HARD_DROP = 0x0010;
+    static ROTATE_CLOCK_WISE = 0x0020;
     static ROTATE_COUNTER_CLOCK = 0x0040;
-    static ROTATE_180           = 0x0080;
-    static HOLD                 = 0x0100;
+    static ROTATE_180 = 0x0080;
+    static HOLD = 0x0100;
 
-    static START_MOVE_LEFT  = 0x1_0000;
-    static STOP_MOVE_LEFT   = 0x2_0000;
+    static START_MOVE_LEFT = 0x1_0000;
+    static STOP_MOVE_LEFT = 0x2_0000;
     static START_MOVE_RIGHT = 0x4_0000;
-    static STOP_MOVE_RIGHT  = 0x8_0000;
+    static STOP_MOVE_RIGHT = 0x8_0000;
 
     constructor(value = 0) {
         this.value = value;
@@ -174,5 +174,78 @@ export class ControlOrderProvider {
 
     resetARR() {
         this.ARRTimerF = 0;
+    }
+}
+
+/**
+ *  @typedef {{
+ *      moveLeft: string[],
+ *      moveRight: string[],
+ *      softDrop: string[],
+ *      rotateClockWise: string[],
+ *      rotateCounterClock: string[],
+ *      hold: string[],
+ *      hardDrop: string[]
+ *  }} KeyBindingConfig
+ * */
+
+export class KeyInputProcessor {
+
+    #controlOrderProvider
+
+    #keyDownFlagIndex;
+    #keyUpFlagIndex;
+
+    /** @param {KeyBindingConfig} keyBindingConfig */
+    constructor(keyBindingConfig, controlOrderProvider) {
+        this.#controlOrderProvider = controlOrderProvider;
+
+        this.#keyDownFlagIndex = this.#createControlOrderIndex(keyBindingConfig, {
+            moveLeft: CO.START_MOVE_LEFT,
+            moveRight: CO.START_MOVE_RIGHT,
+            softDrop: CO.START_SOFT_DROP,
+            rotateClockWise: CO.ROTATE_CLOCK_WISE,
+            rotateCounterClock: CO.ROTATE_COUNTER_CLOCK,
+            hold: CO.HOLD,
+            hardDrop: CO.HARD_DROP
+        });
+
+        this.#keyUpFlagIndex = this.#createControlOrderIndex(keyBindingConfig, {
+            moveLeft: CO.STOP_MOVE_LEFT,
+            moveRight: CO.STOP_MOVE_RIGHT,
+            softDrop: CO.STOP_SOFT_DROP
+        });
+    }
+
+    /** @param {KeyBindingConfig} keyBindingConfig */
+    #createControlOrderIndex(keyBindingConfig, flagMap) {
+        /** @type {Object.<string, number>} */
+        const index = {};
+        //create an item of the index for each flag
+        for (const controlName in flagMap) {
+            const keyNameList = keyBindingConfig[controlName];
+            const flag = flagMap[controlName];
+            for (const keyName of keyNameList) {
+                //add flags to the specified key
+                if (index[keyName]) {
+                    index[keyName] |= flag;
+                } else {
+                    index[keyName] = flag;
+                }
+            }
+        }
+        return index;
+    }
+
+    keyDown(code) {
+        if(this.#keyDownFlagIndex.hasOwnProperty(code)) {
+            this.#controlOrderProvider.setNewPlayerInput(this.#keyDownFlagIndex[code]);
+        }
+    }
+
+    keyUp(code) {
+        if(this.#keyUpFlagIndex.hasOwnProperty(code)) {
+            this.#controlOrderProvider.setNewPlayerInput(this.#keyUpFlagIndex[code]);
+        }
     }
 }
