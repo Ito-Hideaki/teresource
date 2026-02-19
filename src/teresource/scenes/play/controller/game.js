@@ -1,9 +1,9 @@
 import { CurrentMinoManager, Bag, MinoQueueManager, HeldMinoManager } from "../core/minomanager";
 import { BoardSize, CellBoard } from "../core/mechanics";
-import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "../controller/boardcontroller";
-import { GameContext, GameHighContext, GameViewContext } from "./context";
+import { ControlOrderProvider, BoardUpdater, BoardUpdateState } from "./boardcontroller";
+import { GameContext, GameHighContext, GameViewContext } from "../infra/context";
 import { GameViewController } from "../view/gameviewcontroller";
-import { GameUpdator } from "../controller/gameupdator";
+import { GameUpdator } from "./gameupdator";
 import { PlayScene } from "../../play";
 import { RotationSystem_NoKick, RotationSystem_Standard } from "../core/rotationsystem";
 import { BoardDeco } from "../view/boarddeco";
@@ -11,10 +11,10 @@ import { BoardView } from "../view/boardview";
 import { MinoQueueView, HeldMinoView } from "../view/subminoview";
 import { createRelativePositionGetter } from "#util";
 import { GameEffectManagerView } from "../view/gameeffectview";
-import { GameReportStack } from "../controller/report";
+import { GameReportStack } from "./report";
 import { LineClearManager } from "../core/lineclear";
 import { GameAttackState } from "../core/attack";
-import { GameStatsManager, GameStats } from "../controller/stats";
+import { GameStatsManager, GameStats } from "./stats";
 import { GameStatsView } from "../view/gamestatsview";
 import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from "../core/garbage";
 
@@ -33,7 +33,7 @@ import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from
  *      DAS: number,
  *      ARR: number,
  *  },
- *  autoDamage: import("../controller/gameupdator").AutoDamageConfig
+ *  autoDamage: import("./gameupdator").AutoDamageConfig
  * }} GameConfig
  *  */
 
@@ -42,7 +42,7 @@ function getBagConfig(gameConfig) {
     return gameConfig.bag;
 }
 
-/** @param {GameConfig} gameConfig @return {import("../controller/boardcontroller").ControlOrderProviderConfig} */
+/** @param {GameConfig} gameConfig @return {import("./boardcontroller").ControlOrderProviderConfig} */
 function getControlOrderProviderConfig(gameConfig) {
     return {
         DAS: gameConfig.handling.DAS,
@@ -56,10 +56,10 @@ function getControlOrderProviderConfig(gameConfig) {
  * }} GameViewConfig
  *  */
 
-export class GameFactory {
+export class SingleGame {
 
     /** @param {PlayScene} scene @param {GameConfig} gameConfig */
-    static create(scene, gameConfig) {
+    constructor(scene, gameConfig) {
         const boardSize = new BoardSize(gameConfig.boardHeight * 2, gameConfig.boardWidth);
         const currentMinoManager = new CurrentMinoManager(
             boardSize.rowCount - gameConfig.boardHeight,
@@ -89,19 +89,17 @@ export class GameFactory {
         const damageProviderPerMino = new LinearDamageProvider(gameConfig.autoDamage.attackPerMino, gameConfig.autoDamage.attackDamage);
 
         //Create elements of the scene
-        const { gameViewController } = GameFactory.#createView({ gameConfig, gameHighContext, gameContext, scene });
+        const { gameViewController } = this.#createView({ gameConfig, gameHighContext, gameContext, scene });
 
-        return {
-            gameUpdator,
-            gameContext,
-            gameViewController,
-            controlOrderProvider,
-            damageProviderPerMino
-        }
+        this.gameUpdator = gameUpdator;
+        this.gameContext = gameContext;
+        this.gameViewController = gameViewController;
+        this.controlOrderProvider = controlOrderProvider;
+        this.damageProviderPerMino = damageProviderPerMino;
     }
 
     /** @param {{ gameConfig: GameConfig, gameHighContext: GameHighContext, gameContext: GameContext, scene: Phaser.Scene }} */
-    static #createView({ gameConfig, gameContext, gameHighContext, scene }) {
+    #createView({ gameConfig, gameContext, gameHighContext, scene }) {
         const boardCellWidth = 26 / Math.max(gameConfig.boardHeight / 20, gameConfig.boardWidth / 20);
         const skin = gameConfig.personalization.skin;
         const boardContainer = scene.add.container();

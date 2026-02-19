@@ -1,9 +1,7 @@
 import Phaser from "phaser";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
-import { GameUpdator } from "./play/controller/gameupdator";
-import { GameViewController } from "./play/view/gameviewcontroller";
 import { cellImgSkins } from "./play/view/viewdata";
-import { GameFactory } from "./play/infra/gamefactory";
+import { SingleGame } from "./play/controller/game";
 import { ControlOrder, ControlOrderProvider } from "./play/controller/boardcontroller";
 import { CellSheetParent, loadCellSkinTextures } from "./play/view/customtexture";
 import { viteURLify } from "#util";
@@ -35,14 +33,8 @@ export class PlayScene extends Phaser.Scene {
 
     width;
     height;
-    /** @type {GameUpdator} */
-    #gameUpdator;
-    /** @type {GameViewController} */
-    #gameViewController;
-    /** @type {ControlOrderProvider} */
-    #controlOrderProvider;
-    /** @type {LinearDamageProvider} */
-    #damageProviderPerMino;
+
+    #singleGame;
 
     constructor() {
         super({
@@ -61,7 +53,7 @@ export class PlayScene extends Phaser.Scene {
 
         /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = this.game.configUIDataHandlerMap;
 
-        /** @type {import("./play/infra/gamefactory").GameConfig} */ const gameConfig = {
+        /** @type {import("./play/controller/game").GameConfig} */ const gameConfig = {
             bag: {
                 minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
             },
@@ -70,18 +62,14 @@ export class PlayScene extends Phaser.Scene {
             handling: configUIDataHandlerMap.handling.getConfig(),
             autoDamage: configUIDataHandlerMap.autoDamage.getConfig()
         }
-        const gameElements = GameFactory.create(this, gameConfig);
-        this.#gameUpdator = gameElements.gameUpdator;
-        this.#gameViewController = gameElements.gameViewController;
-        const container = this.#gameViewController.boardContainer;
+        this.#singleGame = new SingleGame(this, gameConfig);
+        const container = this.#singleGame.gameViewController.boardContainer;
         container.x = this.game.canvas.width / 2;
         container.y = this.game.canvas.height / 2;
-        this.#controlOrderProvider = gameElements.controlOrderProvider;
-        this.#damageProviderPerMino = gameElements.damageProviderPerMino;
 
         const UIObjectiveConfig = this.game.configUIDataHandlerMap.objective.getConfig();
         /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = UIObjectiveConfig.session;
-        this.#gameUpdator.setSessionFromConfig(sessionConfig);
+        this.#singleGame.gameUpdator.setSessionFromConfig(sessionConfig);
 
         this.input.keyboard.on("keydown", e => {
             if(!this.game.inputEnabled) return;
@@ -104,7 +92,7 @@ export class PlayScene extends Phaser.Scene {
                 "ShiftLeft" : ControlOrder.HOLD
             }
             if (Object.keys(controlOrderList).includes(e.code)) {
-                this.#controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
+                this.#singleGame.controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
             }
         });
 
@@ -118,7 +106,7 @@ export class PlayScene extends Phaser.Scene {
             }
             if (Object.keys(controlOrderList).includes(e.code)) {
                 e.preventDefault();
-                this.#controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
+                this.#singleGame.controlOrderProvider.setNewPlayerInput(controlOrderList[e.code]);
             }
         })
 
@@ -132,15 +120,15 @@ export class PlayScene extends Phaser.Scene {
     update(time, delta) {
         const deltaTime = delta / 1000;
 
-        const gameUpdateResult = this.#gameUpdator.update(deltaTime);
+        const gameUpdateResult = this.#singleGame.gameUpdator.update(deltaTime);
 
         //auto damage
         if(gameUpdateResult.placed) {
-            this.#damageProviderPerMino.count();
-            const damages = this.#damageProviderPerMino.provide();
-            for(const damage of damages) this.#gameUpdator.scheduledDamageState.damageStack.push({ length: damage });
+            this.#singleGame.damageProviderPerMino.count();
+            const damages = this.#singleGame.damageProviderPerMino.provide();
+            for(const damage of damages) this.#singleGame.gameUpdator.scheduledDamageState.damageStack.push({ length: damage });
         }
 
-        this.#gameViewController.update(deltaTime);
+        this.#singleGame.gameViewController.update(deltaTime);
     }
 }
