@@ -224,6 +224,9 @@ export function createConfigUIElement() {
             "type":"None",
             "targetLines":40,
             "timeLimit": 180,
+        },
+        keyBinding: {
+            "hold" : "KeyC"
         }
     }
 
@@ -234,6 +237,7 @@ export function createConfigUIElement() {
         personalization: "お好み",
         handling: "ハンドリング",
         objective: "ゲーム目標",
+        keyBinding: "キー設定"
     }
 
     //create boxes

@@ -40,6 +40,9 @@ export const CONFIGUI_CONFIG_DATA = {
     handling: [
         { name: "DAS", type: "number", displayText: "DAS, 連射が発動するまでの時間", prefix: "f" },
         { name: "ARR", type: "number", displayText: "ARR, 連射間隔", prefix: "f"  },
+    ],
+    keyBinding: [
+        { name: "hold", type: "string", displayText: "ホールド" },
     ]
 }
 
@@ -71,6 +74,9 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
     autoDamage : {
         "attackPerMino" : "attackPerMino",
         "attackDamage" : "attackDamage"
+    },
+    keyBinding : {
+        "hold" : "hold"
     }
 }
 
