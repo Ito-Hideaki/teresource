@@ -87,6 +87,50 @@ class ItemElementFactory {
         return { box, getter, setter };
     }
 
+    static createKeyListBox() {
+        const box = document.createElement("div");
+
+        const clearButton = document.createElement("button");
+        clearButton.classList.add("configui_item_keyclear");
+        clearButton.textContent = "Clear";
+        box.appendChild(clearButton);
+
+        const keyDisplay = document.createElement("div");
+        keyDisplay.classList.add("configui_item_keydisplay");
+        keyDisplay.tabIndex = 0; //make able to be focused
+        box.appendChild(keyDisplay);
+
+        const splitter = ",";
+
+        clearButton.addEventListener("click", () => {
+            setter([]);
+            keyDisplay.focus();
+        });
+
+        const getter = () => {
+            if(keyDisplay.textContent === "") return [];
+            return keyDisplay.textContent.split(splitter);
+        }
+
+        const setter = /** @param {string[]} value */ value => {
+            if(value.length) {
+                keyDisplay.textContent = value.join(splitter);
+                keyDisplay.classList.remove("configui_novalue");
+            } else {
+                keyDisplay.textContent = "";
+                keyDisplay.classList.add("configui_novalue");
+
+            }
+        }
+
+        box.addEventListener("keydown", e => {
+            e.preventDefault();
+            setter([...getter(), e.code]);
+        });
+
+        return { box, getter, setter };
+    }
+
     static createPrefixBox(str) {
         const box = document.createElement("div");
         box.innerHTML = str;
@@ -114,6 +158,9 @@ class ItemElementFactory {
                 break;
             case CONFIG_DATA_TYPE.SELECT:
                 result = Factory.createSelectBox(config.choiceList);
+                break;
+            case CONFIG_DATA_TYPE.KEYLIST:
+                result = Factory.createKeyListBox();
                 break;
         }
         elm.appendChild(result.box);
@@ -226,7 +273,7 @@ export function createConfigUIElement() {
             "timeLimit": 180,
         },
         keyBinding: {
-            "hold" : "KeyC"
+            "hold" : ["KeyC","KeyB"]
         }
     }
 

@@ -43,6 +43,7 @@
 .configui_item {
     font-family: 'Courier New', monospace;
     display: flex;
+    align-items: center;
 }
 
 .configui_item_name {
@@ -74,4 +75,33 @@
     color: white;
     font-weight: bold;
     background-color: green;
+}
+
+.configui_item_keyclear {
+    font-size:0.7em;
+    border: 0.2em solid #00000022;
+    user-select: none;
+    text-align: center;
+}
+
+.configui_item_keyclear:active, .configui_item_keyclear:hover {
+    background-color: #ddd;
+}
+
+.configui_item_keydisplay {
+    display: inline-block;
+    font-size: 80%;
+    width: 15em;
+    margin-left: 1em;
+    height: 1em;
+    border: 2px solid black;
+    overflow: hidden;
+}
+
+.configui_item_keydisplay.configui_novalue {
+    background-color: #faa;
+}
+
+.configui_item_keydisplay:focus {
+    background-color: #cce;
 }

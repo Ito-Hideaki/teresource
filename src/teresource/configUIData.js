@@ -42,7 +42,7 @@ export const CONFIGUI_CONFIG_DATA = {
         { name: "ARR", type: "number", displayText: "ARR, 連射間隔", prefix: "f"  },
     ],
     keyBinding: [
-        { name: "hold", type: "string", displayText: "ホールド" },
+        { name: "hold", type: "keylist", displayText: "ホールド" },
     ]
 }
 
@@ -83,5 +83,6 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
 export const CONFIG_DATA_TYPE = {
     STRING: "string",
     NUMBER: "number",
-    SELECT: "select"
+    SELECT: "select",
+    KEYLIST: "keylist"
 }
