@@ -3,6 +3,7 @@ import { PlayScene } from "./teresource/scenes/play";
 import { BootloaderScene } from "./teresource/scenes/bootloader";
 import { createConfigUIElement } from "./teresource/configUI";
 import { createLogBox } from "./teresource/logUI";
+import { MenuScene } from "./teresource/scenes/menu";
 
 addEventListener("DOMContentLoaded", () => {
 
@@ -25,7 +26,7 @@ addEventListener("DOMContentLoaded", () => {
         },
         backgroundColor: "#ddd",
         parent: "game-container",
-        scene: [BootloaderScene, PlayScene],
+        scene: [BootloaderScene, MenuScene, PlayScene],
     };
 
     const game = new Phaser.Game(config);

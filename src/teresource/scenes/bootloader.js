@@ -36,7 +36,7 @@ export class BootloaderScene extends Phaser.Scene {
         }).then(() => {
             this.game.cellSheetParentIndex = createSecondLevelTextures(this);
             document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
-            this.scene.start("play");
+            this.scene.start("menu");
         });
     }
 
