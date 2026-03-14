@@ -4,6 +4,7 @@ type Item = {
     name: string;
     /** If the item has child items */ children?: Item[];
     /** If the item has an actual gameobject in the scene */ view?: Phaser.GameObjects.Text;
+    onEnter?: Function;
 }
 
 class ItemText extends Phaser.GameObjects.Text {
@@ -22,17 +23,24 @@ class ItemMenu {
         this.selectedItems = [ tree[0] ];
     }
 
-    moveToIndex(index: number) {
+    getCurrent() {
+        const current = this.selectedItems.at(-1);
+        if(!current) throw "no current selected";
+        return current;
+    }
+
+    getParentArray() {
         const parentItem = this.selectedItems.at(-2);
-        const parentArray =  parentItem?.children ? parentItem.children : this.tree;
-        this.selectedItems[this.selectedItems.length - 1] = parentArray[index];
+        return parentItem?.children ? parentItem.children : this.tree;
+    }
+
+    moveToIndex(index: number) {
+        this.selectedItems[this.selectedItems.length - 1] = this.getParentArray()[index];
     }
 
     moveByAmount(amount: number) {
-        const current = this.selectedItems.at(-1);
-        if(!current) throw "no current selected";
-        const parentItem = this.selectedItems.at(-2);
-        const parentArray =  parentItem?.children ? parentItem.children : this.tree;
+        const current = this.getCurrent();
+        const parentArray =  this.getParentArray();
         const index = parentArray.indexOf(current);
         if(index === -1) throw "wtf";
         const movedIndex = (index + amount + parentArray.length ) % parentArray.length;
@@ -76,7 +84,7 @@ export class MenuScene extends Phaser.Scene {
         scene.add.text(TEXT_LEFT, 80, "Teresource", { color: "black", fontSize: 80, fontFamily: "sans-serif" });
 
         this.menu = new ItemMenu([
-            { name: "Play Demo" },
+            { name: "Play Demo", onEnter: () => { scene.scene.start("play"); } },
             { name: "Settings" },
         ]);
 
@@ -96,7 +104,8 @@ export class MenuScene extends Phaser.Scene {
             e.preventDefault();
 
             if (e.code === "KeyZ") {
-                scene.scene.start("play");
+                const current = scene.menu.getCurrent();
+                if(current.onEnter) current.onEnter();
             }
 
             if(e.code === "ArrowDown") {
