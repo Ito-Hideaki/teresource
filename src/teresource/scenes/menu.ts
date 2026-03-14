@@ -3,7 +3,6 @@ import Phaser from "phaser";
 type Item = {
     name: string;
     /** If the item has child items */ children?: Item[];
-    /** If the item belongs to another item as one of its children */ parent?: Item;
     /** If the item has an actual gameobject in the scene */ view?: Phaser.GameObjects.Text;
 }
 
@@ -11,6 +10,33 @@ class ItemText extends Phaser.GameObjects.Text {
     constructor(scene: Phaser.Scene, x: number, y: number, item: Item) {
         super(scene, x, y, item.name, { color: "black", fontSize: 50, fontFamily: "sans-serif" });
         this.setOrigin(0, 0.5);
+    }
+}
+
+class ItemMenu {
+    tree: Item[];
+    selectedItems: Item[];
+
+    constructor(tree: Item[]) {
+        this.tree = tree;
+        this.selectedItems = [ tree[0] ];
+    }
+
+    moveToIndex(index: number) {
+        const parentItem = this.selectedItems.at(-2);
+        const parentArray =  parentItem?.children ? parentItem.children : this.tree;
+        this.selectedItems[this.selectedItems.length - 1] = parentArray[index];
+    }
+
+    moveByAmount(amount: number) {
+        const current = this.selectedItems.at(-1);
+        if(!current) throw "no current selected";
+        const parentItem = this.selectedItems.at(-2);
+        const parentArray =  parentItem?.children ? parentItem.children : this.tree;
+        const index = parentArray.indexOf(current);
+        if(index === -1) throw "wtf";
+        const movedIndex = (index + amount + parentArray.length ) % parentArray.length;
+        this.moveToIndex(movedIndex);
     }
 }
 
@@ -22,19 +48,18 @@ export function createMenuTexture(scene: Phaser.Scene) {
         graphics.fillTriangle(
             0, 0,
             0, h,
-            w, h/2
+            w, h / 2
         );
         graphics.generateTexture("menu_cursor", w, h);
     }
 }
 
-const TEXT_LEFT = 300;
+const TEXT_LEFT = 200;
 
 export class MenuScene extends Phaser.Scene {
 
-    ITEM_TREE: Item[] = [];
-    // @ts-ignore
-    selectedItem: Item;
+    //@ts-ignore
+    menu: ItemMenu;
     // @ts-ignore
     cursor: Phaser.GameObjects.Image;
 
@@ -50,34 +75,46 @@ export class MenuScene extends Phaser.Scene {
 
         scene.add.text(TEXT_LEFT, 80, "Teresource", { color: "black", fontSize: 80, fontFamily: "sans-serif" });
 
-        const item: Item = { name: "Play Demo" };
-        const text = new ItemText(scene, TEXT_LEFT, 300, item);
-        item.view = text;
-        scene.add.existing(text);
-        scene.ITEM_TREE.push(item);
+        this.menu = new ItemMenu([
+            { name: "Play Demo" },
+            { name: "Settings" },
+        ]);
+
+        scene.menu.tree.forEach((item, i) => {
+            const y = 300 + 80 * i;
+            const text = new ItemText(scene, TEXT_LEFT, y, item);
+            item.view = text;
+            scene.add.existing(text);
+        });
 
         this.cursor = scene.add.image(0, 0, "menu_cursor");
-
-        this.selectedItem = item;
 
         //@ts-ignore
         scene.input.keyboard.on("keydown", (e: KeyboardEvent) => {
             // @ts-ignore
             if (!this.game.inputEnabled) return;
             e.preventDefault();
-            if (e.repeat) return;
 
-            if(e.code === "KeyZ") {
+            if (e.code === "KeyZ") {
                 scene.scene.start("play");
+            }
+
+            if(e.code === "ArrowDown") {
+                scene.menu.moveByAmount(1);
+            }
+
+            if(e.code === "ArrowUp") {
+                scene.menu.moveByAmount(-1);
             }
         })
     }
 
     update() {
         //cursor view
-        if(this.selectedItem.view) {
+        const selectedItem = this.menu.selectedItems.at(-1);
+        if (selectedItem && selectedItem.view) {
             this.cursor.setVisible(true);
-            this.cursor.setPosition(this.selectedItem.view.x - 50, this.selectedItem.view.y);
+            this.cursor.setPosition(selectedItem.view.x - 50, selectedItem.view.y);
         } else {
             this.cursor.setVisible(false);
         }
