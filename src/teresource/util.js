@@ -1,22 +1,3 @@
-/** Generate unique keys for Phaser.Texture.
- */
-export class UniqueTextureKeyGenerator {
-
-    #counter = 0;
-    #key;
-
-    /**  @param {string} key string included to the generated keys. */
-    constructor(key) {
-        this.#key = key;
-    }
-
-    /** @return {string} an unique key for Phaser.Texture */
-    get() {
-        this.#counter++;
-        return "utkg" + this.#key + this.#counter;
-    }
-}
-
 /** Register functions and call them as needed.
  *  The order of calls is same as the order of registration.
 */

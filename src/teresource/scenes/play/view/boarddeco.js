@@ -1,11 +1,8 @@
 import Phaser from "phaser";
-import { UniqueTextureKeyGenerator } from "#util";
 import { GameViewContext } from "../infra/context";
 import { BoardSize } from "../core/mechanics";
 
-const utkg = new UniqueTextureKeyGenerator("boarddeco");
-
-/** 
+/**
  * @typedef {{
  * }} BoardDecoConfig
  *  */
@@ -54,9 +51,10 @@ export class BoardDeco {
 
     #init() {
         //Create image
-        const canvasTextureKey = utkg.get();
-        this.#scene.textures.createCanvas(canvasTextureKey, this.#boardSize.columnCount * this.#boardCellWidth * 1.25, this.#boardSize.rowCount * this.#boardCellWidth * 1.25);
-        this.#image = this.#scene.add.image(0, 0, canvasTextureKey);
+        const textureKey = "boarddeco_" + Phaser.Utils.String.UUID();
+        this.#scene.textures.createCanvas(textureKey, this.#boardSize.columnCount * this.#boardCellWidth * 1.25, this.#boardSize.rowCount * this.#boardCellWidth * 1.25);
+        this.#image = this.#scene.add.image(0, 0, textureKey);
+        this.#image.once("destroy", () => { this.#scene.textures.remove(this.#image.texture); });
         this.#boardContainer.add(this.#image);
 
         /** @type HTMLCanvasElement */

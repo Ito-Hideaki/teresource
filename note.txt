@@ -12,6 +12,8 @@ PlaySceneに固有のメンバ変数や関数を下位から参照しない
 game.configUIDataHandlerはsceneでのみアクセスすること
 game.cellSheetParentIndexはsceneでのみアクセスすること
 game.inputEnabledがfalseのとき全てのキーボード入力は無効化されること
+bootloader以外で作成したtextureはシーン終了時(shutdown)・オブジェクト破壊時に削除すること
+
 window.log()をログに使用すること
 
 回転の0~360への補正などは最下層でのみ行う
