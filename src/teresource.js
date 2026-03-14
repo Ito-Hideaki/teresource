@@ -11,7 +11,14 @@ addEventListener("DOMContentLoaded", () => {
     document.getElementById("log-container").appendChild(box);
     window.log = log;
 
-    const { element, configUIDataHandlerMap } = createConfigUIElement();
+    const { element, configUIDataHandlerMap } = createConfigUIElement([
+        "game",
+        "autoDamage",
+        "personalization",
+        "handling",
+        "objective",
+        "keyBinding"
+    ]);
     document.getElementById("config-container").appendChild(element);
 
     const config = {

@@ -246,7 +246,8 @@ function createConfigUIBoard(configList, initialConfigValueList, exportMap) {
     return { board: boardElement, configUIDataHandler };
 }
 
-export function createConfigUIElement() {
+/** @param { string[] } categoryKeyList */
+export function createConfigUIElement(categoryKeyList) {
 
     /** @type {Object.<string, Object.<string, any>>} */
     const initialConfigStateMap = {
@@ -310,7 +311,7 @@ export function createConfigUIElement() {
     /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = {};
 
     //create config elements
-    for (let key in CONFIGUI_CONFIG_DATA) {
+    for (let key of categoryKeyList) {
         //add heading
         {
             const headingDisplayText = configUIHeadingDisplayText[key];
