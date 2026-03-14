@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { viteURLify } from "#util";
 import { createSecondLevelTextures, loadFirstLevelTextures as loadFirstLevelTexturesOfPlayScene } from "./play";
 import { generateCellSheetTextureKey } from "./play/view/celltexturecore";
+import { createMenuTexture } from "./menu";
 
 export class BootloaderScene extends Phaser.Scene {
     constructor() {
@@ -35,8 +36,9 @@ export class BootloaderScene extends Phaser.Scene {
             this.load.start();
         }).then(() => {
             this.game.cellSheetParentIndex = createSecondLevelTextures(this);
+            createMenuTexture(this);
             document.body.appendChild(this.textures.get(generateCellSheetTextureKey("nine")).getSourceImage());
-            this.scene.start("play");
+            this.scene.start("menu");
         });
     }
 
