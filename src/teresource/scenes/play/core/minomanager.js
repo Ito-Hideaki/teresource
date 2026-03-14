@@ -1,7 +1,6 @@
 // @ts-check
 import { MINO_DATA_INDEX } from "./coredata";
 import { Mino } from './mechanics';
-import { shuffle } from "#util";
 
 /** States of the mino currently handled by the player */
 export class CurrentMinoManager {
@@ -119,8 +118,8 @@ export class Bag {
 
     /** @return {Mino[]} */
     create_allMinoTypeShuffled() {
-        const minoTypeArr = this.config.minoTypeToUseList;
-        return shuffle(minoTypeArr.map((minoType) => new Mino(minoType)));
+        const minoArr = this.config.minoTypeToUseList.map((minoType) => new Mino(minoType));
+        return Phaser.Utils.Array.Shuffle(minoArr);
     }
 
     /**

@@ -72,15 +72,6 @@ export function getRelativeX(column, cellWidth, columnCount) {
     return cellWidth * (column - columnCount / 2)
 }
 
-/** Shuffle contents order @param {any[]} array @return {any[]} */
-export function shuffle(array) {
-    const returnArray = new Array(array.length).fill();
-    return returnArray.map(_ => {
-        const targetI = Math.floor(Math.random() * array.length);
-        return array.splice(targetI, 1)[0];
-    });
-}
-
 /**rotate row and column.
  * @param {number} rotation 0, 1, 2 or 3 clockwise
  * @return {{column: number, row: number}}*/
