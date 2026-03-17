@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { createAndAddSettingsPanel } from "./menu/settingspanel";
 
 const TEXT_LEFT = 100;
 
@@ -196,6 +197,9 @@ export class MenuScene extends Phaser.Scene {
 
         this.menuObj = new MenuObject(scene);
 
+        const { setVisible: setSettingsVisible } = createAndAddSettingsPanel();
+        setSettingsVisible(false);
+
         //@ts-ignore
         scene.input.keyboard.on("keydown", (e: KeyboardEvent) => {
             // @ts-ignore
@@ -214,6 +218,14 @@ export class MenuScene extends Phaser.Scene {
         scene.menuObj.ee.on("playdemo", () => {
             scene.scene.start("play");
         });
+
+        scene.menuObj.ee.on("opensettings", () => {
+            setSettingsVisible(true);
+        });
+
+        scene.menuObj.ee.on("closesettings", () => {
+            setSettingsVisible(false);
+        })
     }
 
     update() {
