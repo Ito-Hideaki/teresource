@@ -16,8 +16,7 @@ addEventListener("DOMContentLoaded", () => {
         "autoDamage",
         "personalization",
         "handling",
-        "objective",
-        "keyBinding"
+        "objective"
     ]);
     document.getElementById("config-container").appendChild(element);
 

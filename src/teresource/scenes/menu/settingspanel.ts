@@ -1,7 +1,7 @@
 import { createConfigUIElement } from "../../configUI";
 
 export function createAndAddSettingsPanel() {
-    const { element: panel } = createConfigUIElement(["keyBinding"]);
+    const { element: panel, configUIDataHandlerMap } = createConfigUIElement(["keyBinding"]);
     panel.style.position = "absolute";
     panel.style.top = `0`;
     panel.style.right = `0`;
@@ -12,6 +12,7 @@ export function createAndAddSettingsPanel() {
     return {
         setVisible: function(visibility: boolean) {
             panel.style.display = visibility ? normalDisplayStyle : "none";
-        }
+        },
+        configUIDataHandlerMap
     };
 }

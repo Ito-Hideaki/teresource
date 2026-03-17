@@ -1,5 +1,7 @@
 import Phaser from "phaser";
 import { createAndAddSettingsPanel } from "./menu/settingspanel";
+import { GameConfig } from "./play/controller/game";
+import { KeyBindingConfig } from "./play/controller/controlorder";
 
 const TEXT_LEFT = 100;
 
@@ -81,12 +83,14 @@ class MenuObject {
     constructor(scene: Phaser.Scene) {
         this.ee = new Phaser.Events.EventEmitter();
 
+        scene.add.text(TEXT_LEFT, 160, "Z ... 決定 | X ... 戻る", { color: "#666", fontSize: 30, fontFamily: "sans-serif" });
+
         this.menu = new ItemMenu([
             { name: "Play Demo", onEnter: "playdemo" },
             { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
         ]);
         this.menu.tree.forEach((item, i) => {
-            const y = 200 + 60 * i;
+            const y = 220 + 60 * i;
             const text = new ItemText(scene, TEXT_LEFT, y, item);
             item.view = text;
             scene.add.existing(text);
@@ -197,7 +201,7 @@ export class MenuScene extends Phaser.Scene {
 
         this.menuObj = new MenuObject(scene);
 
-        const { setVisible: setSettingsVisible } = createAndAddSettingsPanel();
+        const { setVisible: setSettingsVisible, configUIDataHandlerMap } = createAndAddSettingsPanel();
         setSettingsVisible(false);
 
         //@ts-ignore
@@ -216,7 +220,8 @@ export class MenuScene extends Phaser.Scene {
         })
 
         scene.menuObj.ee.on("playdemo", () => {
-            scene.scene.start("play");
+            const keyBindingConfig: KeyBindingConfig = configUIDataHandlerMap.keyBinding.getConfig() as KeyBindingConfig;
+            scene.scene.start("play", { keyBindingConfig });
         });
 
         scene.menuObj.ee.on("opensettings", () => {

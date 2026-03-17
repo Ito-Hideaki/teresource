@@ -48,7 +48,8 @@ export class PlayScene extends Phaser.Scene {
         this.load.image("subminoview_back", viteURLify("/image/subminoview_back.jpg"));
     }
 
-    create() {
+    create(data) {
+
         this.cellSheetParentIndex = this.game.cellSheetParentIndex;
 
         /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = this.game.configUIDataHandlerMap;
@@ -71,9 +72,7 @@ export class PlayScene extends Phaser.Scene {
         /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = UIObjectiveConfig.session;
         this.#singleGame.gameUpdator.setSessionFromConfig(sessionConfig);
 
-        const keyBindingConfig = this.game.configUIDataHandlerMap.keyBinding.getConfig();
-
-        console.log(keyBindingConfig);
+        const keyBindingConfig = data.keyBindingConfig; //use config from the data given by a previous scene
 
         const keyInputProcessor = new KeyInputProcessor(keyBindingConfig.game, this.#singleGame.controlOrderProvider);
 
