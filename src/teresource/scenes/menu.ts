@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-const TEXT_LEFT = 200;
+const TEXT_LEFT = 100;
 
 type Item = {
     name: string;
@@ -12,7 +12,7 @@ type Item = {
 
 class ItemText extends Phaser.GameObjects.Text {
     constructor(scene: Phaser.Scene, x: number, y: number, item: Item) {
-        super(scene, x, y, item.name, { color: "black", fontSize: 50, fontFamily: "sans-serif" });
+        super(scene, x, y, item.name, { color: "black", fontSize: 40, fontFamily: "sans-serif" });
         this.setOrigin(0, 0.5);
     }
 }
@@ -85,7 +85,7 @@ class MenuObject {
             { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
         ]);
         this.menu.tree.forEach((item, i) => {
-            const y = 300 + 80 * i;
+            const y = 200 + 60 * i;
             const text = new ItemText(scene, TEXT_LEFT, y, item);
             item.view = text;
             scene.add.existing(text);
@@ -116,7 +116,7 @@ class MenuObject {
                     }
                 }
 
-                if(item.children) {
+                if (item.children) {
                     updateViewUnderItemList(item.children);
                 }
             });
@@ -157,13 +157,23 @@ export function createMenuTexture(scene: Phaser.Scene) {
     { //cursor
         const h = 30, w = 30;
         const graphics = scene.add.graphics();
-        graphics.fillStyle(0x000000);
-        graphics.fillTriangle(
+        const triShape = new Phaser.Geom.Triangle(
             0, 0,
             0, h,
             w, h / 2
         );
-        graphics.generateTexture("menu_cursor", w, h);
+        //black color frame
+        graphics.fillStyle(0x000000);
+        graphics.fillTriangleShape(triShape);
+        //red color frame
+        graphics.translateCanvas(w, 0);
+        graphics.fillStyle(0xff0000);
+        graphics.fillTriangleShape(triShape);
+
+        graphics.generateTexture("menu_cursor", w*2, h);
+        const texture = scene.textures.get("menu_cursor");
+        texture.add("black", 0, 0, 0, w, h);
+        texture.add("red",   0, w, 0, w, h);
     }
 }
 
@@ -182,7 +192,7 @@ export class MenuScene extends Phaser.Scene {
     create() {
         const scene = this;
 
-        scene.add.text(TEXT_LEFT, 80, "Teresource", { color: "black", fontSize: 80, fontFamily: "sans-serif" });
+        scene.add.text(TEXT_LEFT, 50, "Teresource", { color: "black", fontSize: 70, fontFamily: "sans-serif" });
 
         this.menuObj = new MenuObject(scene);
 
