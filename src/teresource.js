@@ -33,24 +33,29 @@ addEventListener("DOMContentLoaded", () => {
             createContainer: true
         },
         backgroundColor: "#ddd",
-        parent: "game-container",
+        parent: "game-box",
         scene: [BootloaderScene, MenuScene, PlayScene],
     };
     const game = new Phaser.Game(config);
     game.configUIDataHandlerMap = configUIDataHandlerMap;
-    const gameContainer = document.getElementById("game-container");
-    gameContainer.setAttribute("tabindex", "0");
-
-    gameContainer.addEventListener("click", e => {
-        gameContainer.focus();
+    const gameBox = document.getElementById("game-box");
+    gameBox.setAttribute("tabindex", "0");
+    gameBox.addEventListener("click", e => {
+        gameBox.focus();
     });
 
-    gameContainer.addEventListener("focus", e => {
+    gameBox.addEventListener("focus", e => {
         game.inputEnabled = true;
     });
-    gameContainer.addEventListener("blur", e => {
+    gameBox.addEventListener("blur", e => {
         game.inputEnabled = false;
     });
+    gameBox.focus();
 
-    gameContainer.focus();
+    const outerGameBox = document.getElementById("outer-game-box");
+    requestAnimationFrame(() => {
+        if (game.canvas) {
+            outerGameBox.style.width = `${game.canvas.clientWidth}px`;
+        }
+    });
 });

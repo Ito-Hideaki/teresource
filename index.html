@@ -18,7 +18,7 @@
         padding: 5px;
       }
 
-      #outer-game-container {
+      #game-container {
         background: linear-gradient(0.25turn, #222, #999, #222);
         margin: 10px 0px;
         overflow-x: hidden;
@@ -27,15 +27,15 @@
         justify-content: center;
       }
 
-      #game-container {
-        background-color: #fff;
+      #outer-game-box {
+        position: relative; /* for doms used in game */
       }
 
-      #game-container>canvas {
+      #game-box {
         opacity: 0.6;
       }
 
-      #game-container:focus>canvas {
+      #game-box:focus {
         opacity: 1;
       }
 
@@ -127,8 +127,10 @@
       </div>
     </div>
     <div id="log-container"></div>
-    <div id="outer-game-container">
-      <div id="game-container"></div>
+    <div id="game-container">
+      <div id="outer-game-box">
+        <div id="game-box"></div>
+      </div>
     </div>
     <script type="module" src="src/teresource.js"></script>
   </body>

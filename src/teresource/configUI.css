@@ -2,6 +2,7 @@
     height: 100%;
     font-size: 1.3em;
     display: flex;
+    background-color: white;
 
     >* {
         border: 0.2em solid #bbb;
