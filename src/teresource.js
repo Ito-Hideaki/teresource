@@ -21,6 +21,7 @@ addEventListener("DOMContentLoaded", () => {
     ]);
     document.getElementById("config-container").appendChild(element);
 
+
     const config = {
         width: 1280,
         height: 720,
@@ -35,7 +36,6 @@ addEventListener("DOMContentLoaded", () => {
         parent: "game-container",
         scene: [BootloaderScene, MenuScene, PlayScene],
     };
-
     const game = new Phaser.Game(config);
     game.configUIDataHandlerMap = configUIDataHandlerMap;
     const gameContainer = document.getElementById("game-container");
