@@ -103,6 +103,25 @@ class MenuObject {
         } else {
             this.cursor.setVisible(false);
         }
+
+        //item view
+        const parentArray = this.menu.getParentArray();
+        function updateViewUnderItemList(items: Item[]) {
+            items.forEach(item => {
+                if (item.view) {
+                    if (parentArray === items) { //show item views
+                        item.view.setVisible(true);
+                    } else { //hide item views
+                        item.view.setVisible(false);
+                    }
+                }
+
+                if(item.children) {
+                    updateViewUnderItemList(item.children);
+                }
+            });
+        }
+        updateViewUnderItemList(this.menu.tree);
     }
 
     userEnter() {
@@ -119,7 +138,7 @@ class MenuObject {
         const didEscape = this.menu.escape();
         const current = this.menu.current;
         if (current && didEscape) {
-            if(current.onEscape) {
+            if (current.onEscape) {
                 this.ee.emit(current.onEscape);
             }
         }
@@ -174,6 +193,8 @@ export class MenuScene extends Phaser.Scene {
             e.preventDefault();
 
             if (e.code === "KeyZ") scene.menuObj.userEnter();
+
+            if (e.code === "KeyX") scene.menuObj.userEscape();
 
             if (e.code === "ArrowDown") scene.menuObj.userDown();
 
