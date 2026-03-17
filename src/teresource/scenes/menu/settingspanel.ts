@@ -6,7 +6,7 @@ export function createAndAddSettingsPanel() {
     panel.style.top = `0`;
     panel.style.right = `0`;
     panel.style.height = `100%`;
-    panel.style.width = `60%`;
+    panel.style.width = `70%`;
     const normalDisplayStyle = panel.style.display;
     document.getElementById("outer-game-box")?.appendChild(panel);
     return {
