@@ -2,6 +2,9 @@ import Phaser from "phaser";
 import { createAndAddSettingsPanel } from "./menu/settingspanel";
 import { GameConfig } from "./play/controller/game";
 import { KeyBindingConfig } from "./play/controller/controlorder";
+import { MINO_DATA_INDEX } from "./play/core/coredata";
+import { MatchConfig } from "./play";
+import { GameSessionConfig } from "./play/controller/gamesession";
 
 const TEXT_LEFT = 100;
 
@@ -88,7 +91,7 @@ class MenuObject {
         this.menu = new ItemMenu([
             { name: "Play Demo", onEnter: "playdemo" },
             { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
-            { name: "Credits", onEnter: "opencredits", onEscape: "closecredits"}
+            { name: "Credits", onEnter: "opencredits", onEscape: "closecredits" }
         ]);
         this.menu.tree.forEach((item, i) => {
             const y = 220 + 60 * i;
@@ -176,10 +179,10 @@ export function createMenuTexture(scene: Phaser.Scene) {
         graphics.fillStyle(0xff0000);
         graphics.fillTriangleShape(triShape);
 
-        graphics.generateTexture("menu_cursor", w*2, h);
+        graphics.generateTexture("menu_cursor", w * 2, h);
         const texture = scene.textures.get("menu_cursor");
         texture.add("black", 0, 0, 0, w, h);
-        texture.add("red",   0, w, 0, w, h);
+        texture.add("red", 0, w, 0, w, h);
     }
 }
 
@@ -223,6 +226,7 @@ export class MenuScene extends Phaser.Scene {
         this.creditsDOM.setVisible(false);
 
         const { setVisible: setSettingsVisible, configUIDataHandlerMap } = createAndAddSettingsPanel();
+        const keyBindingConfigUIDataHandler = configUIDataHandlerMap.keyBinding;
         setSettingsVisible(false);
 
         //@ts-ignore
@@ -241,8 +245,33 @@ export class MenuScene extends Phaser.Scene {
         });
 
         scene.menuObj.ee.on("playdemo", () => {
-            const keyBindingConfig: KeyBindingConfig = configUIDataHandlerMap.keyBinding.getConfig() as KeyBindingConfig;
-            scene.scene.start("play", { keyBindingConfig });
+            const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
+
+            //@ts-ignore
+            const { configUIDataHandlerMap } = this.game;
+
+            const gameConfig = {
+                bag: {
+                    minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
+                },
+                ...configUIDataHandlerMap.game.getConfig(),
+                personalization: configUIDataHandlerMap.personalization.getConfig(),
+                handling: configUIDataHandlerMap.handling.getConfig(),
+                autoDamage: configUIDataHandlerMap.autoDamage.getConfig()
+            } as GameConfig;
+
+        const UIObjectiveConfig = configUIDataHandlerMap.objective.getConfig();
+        //@ts-ignore
+        const sessionConfig = UIObjectiveConfig.session as GameSessionConfig;
+            const matchConfig: MatchConfig = {
+                players: [{
+// @ts-ignore
+                    keyBinding: keyBindingConfig,
+                    game: gameConfig
+                }],
+                session: sessionConfig
+            }
+            scene.scene.start("play", { matchConfig });
         });
 
         scene.menuObj.ee.on("opensettings", () => {

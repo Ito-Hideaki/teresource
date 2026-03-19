@@ -25,6 +25,20 @@ export function createSecondLevelTextures(scene) {
     return cellSheetParentIndex;
 }
 
+/**
+ * @typedef {{
+ *      players: {
+ *          keyBinding: {
+ *              game: import("./play/controller/controlorder").KeyBindingConfig;
+ *              reload: string[];
+ *          };
+ *          game: import("./play/controller/game").GameConfig;
+ *          reloadKey: string;
+ *      }[];
+ *      session: import("./play/controller/gamesession").GameSessionConfig;
+ *  }} MatchConfig
+ * */
+
 
 /**
  * @extends Phaser.Scene
@@ -33,6 +47,8 @@ export class PlayScene extends Phaser.Scene {
 
     width;
     height;
+
+    games;
 
     /** @type {SingleGame} */ #singleGame;
 
@@ -54,44 +70,39 @@ export class PlayScene extends Phaser.Scene {
 
         /** @type {Object.<string, ConfigUIDataHandler>} */ const configUIDataHandlerMap = this.game.configUIDataHandlerMap;
 
-        /** @type {import("./play/controller/game").GameConfig} */ const gameConfig = {
-            bag: {
-                minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
-            },
-            ...configUIDataHandlerMap.game.getConfig(),
-            personalization: configUIDataHandlerMap.personalization.getConfig(),
-            handling: configUIDataHandlerMap.handling.getConfig(),
-            autoDamage: configUIDataHandlerMap.autoDamage.getConfig()
-        }
-        this.#singleGame = new SingleGame(this, gameConfig);
-        const container = this.#singleGame.gameViewController.boardContainer;
-        container.x = this.game.canvas.width / 2;
-        container.y = this.game.canvas.height / 2;
+        /** @type {MatchConfig} */
+        const matchConfig = data.matchConfig;
 
-        const UIObjectiveConfig = this.game.configUIDataHandlerMap.objective.getConfig();
-        /** @type {import("./play/controller/gamesession").GameSessionConfig} */ const sessionConfig = UIObjectiveConfig.session;
-        this.#singleGame.gameUpdator.setSessionFromConfig(sessionConfig);
-
-        const keyBindingConfig = data.keyBindingConfig; //use config from the data given by a previous scene
-
-        const keyInputProcessor = new KeyInputProcessor(keyBindingConfig.game, this.#singleGame.controlOrderProvider);
+        this.players = matchConfig.players.map(playerConfig => {
+            const game = new SingleGame(this, playerConfig.game);
+            const container = game.gameViewController.boardContainer;
+            container.x = this.game.canvas.width / 2;
+            container.y = this.game.canvas.height / 2;
+            game.gameUpdator.setSessionFromConfig(matchConfig.session);
+            const keyInputProcessor = new KeyInputProcessor(playerConfig.keyBinding.game, game.controlOrderProvider);
+            return { game, keyInputProcessor, keyBinding: playerConfig.keyBinding };
+        });
 
         this.input.keyboard.on("keydown", e => {
             if (!this.game.inputEnabled) return;
             e.preventDefault();
             if (e.repeat) return;
 
-            if (keyBindingConfig.reload.includes(e.code)) {
-                this.scene.start("play");
-            }
+            for (const player of this.players) {
+                if (player.keyBinding.reload.includes(e.code)) {
+                    this.scene.start("play");
+                }
 
-            keyInputProcessor.keyDown(e.code);
+                player.keyInputProcessor.keyDown(e.code);
+            }
         });
 
         this.input.keyboard.on("keyup", e => {
             if (!this.game.inputEnabled) return;
 
-            keyInputProcessor.keyUp(e.code);
+            for (const player of this.players) {
+                player.keyInputProcessor.keyUp(e.code);
+            }
         })
 
         const rebootButton = this.add.dom(300, 100, "div", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0; user-select: none;", "Reboot Scene");
@@ -101,11 +112,13 @@ export class PlayScene extends Phaser.Scene {
         });
     }
 
+
     update(time, delta) {
         const deltaTime = delta / 1000;
 
-        const gameUpdateResult = this.#singleGame.gameUpdator.update(deltaTime);
-
-        this.#singleGame.gameViewController.update(deltaTime);
+        this.players.forEach(player => {
+            const gameUpdateResult = player.game.gameUpdator.update(deltaTime);
+            player.game.gameViewController.update(deltaTime);
+        });
     }
 }
