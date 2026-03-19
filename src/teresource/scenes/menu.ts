@@ -88,6 +88,7 @@ class MenuObject {
         this.menu = new ItemMenu([
             { name: "Play Demo", onEnter: "playdemo" },
             { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
+            { name: "Credits", onEnter: "opencredits", onEscape: "closecredits"}
         ]);
         this.menu.tree.forEach((item, i) => {
             const y = 220 + 60 * i;
@@ -186,6 +187,8 @@ export class MenuScene extends Phaser.Scene {
 
     //@ts-ignore
     menuObj: MenuObject
+    //@ts-ignore
+    creditsDOM: Phaser.GameObjects.DOMElement
 
     constructor() {
         super('menu');
@@ -200,6 +203,24 @@ export class MenuScene extends Phaser.Scene {
         scene.add.text(TEXT_LEFT, 50, "Teresource", { color: "black", fontSize: 70, fontFamily: "sans-serif" });
 
         this.menuObj = new MenuObject(scene);
+
+        const creditsElm = document.createElement('div');
+        creditsElm.innerHTML = `
+<p>使用しているライブラリ：Phaser3, day.js, vite</p>
+
+<table style="border: none;">
+<tr><th style="width:200px;">画像</th><th style="width:200px;">hide</th></tr>
+<tr><th>プログラム</th><th>hide</th></tr>
+</table>
+`;
+        creditsElm.style.fontSize = "30px";
+        creditsElm.style.padding = "10px";
+        creditsElm.style.width = `${1280 - 100 * 2}px`;
+        creditsElm.style.backgroundColor = "#fff";
+        this.creditsDOM = scene.add.dom(100, 200, creditsElm);
+        this.creditsDOM.setOrigin(0, 0);
+
+        this.creditsDOM.setVisible(false);
 
         const { setVisible: setSettingsVisible, configUIDataHandlerMap } = createAndAddSettingsPanel();
         setSettingsVisible(false);
@@ -217,7 +238,7 @@ export class MenuScene extends Phaser.Scene {
             if (e.code === "ArrowDown") scene.menuObj.userDown();
 
             if (e.code === "ArrowUp") scene.menuObj.userUp();
-        })
+        });
 
         scene.menuObj.ee.on("playdemo", () => {
             const keyBindingConfig: KeyBindingConfig = configUIDataHandlerMap.keyBinding.getConfig() as KeyBindingConfig;
@@ -230,6 +251,14 @@ export class MenuScene extends Phaser.Scene {
 
         scene.menuObj.ee.on("closesettings", () => {
             setSettingsVisible(false);
+        });
+
+        scene.menuObj.ee.on("opencredits", () => {
+            this.creditsDOM.setVisible(true);
+        });
+
+        scene.menuObj.ee.on("closecredits", () => {
+            this.creditsDOM.setVisible(false);
         })
     }
 
