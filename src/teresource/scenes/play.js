@@ -72,11 +72,13 @@ export class PlayScene extends Phaser.Scene {
 
         /** @type {MatchConfig} */
         const matchConfig = data.matchConfig;
+        const playerNumber = matchConfig.players.length;
 
-        this.players = matchConfig.players.map(playerConfig => {
+        this.players = matchConfig.players.map((playerConfig, i) => {
             const game = new SingleGame(this, playerConfig.game);
             const container = game.gameViewController.boardContainer;
-            container.x = this.game.canvas.width / 2;
+            container.scale = 4 / (playerNumber + 3);
+            container.x = this.game.canvas.width * ((i + 0.5) / playerNumber);
             container.y = this.game.canvas.height / 2;
             game.gameUpdator.setSessionFromConfig(matchConfig.session);
             const keyInputProcessor = new KeyInputProcessor(playerConfig.keyBinding.game, game.controlOrderProvider);

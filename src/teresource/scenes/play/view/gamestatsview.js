@@ -17,14 +17,21 @@ export class GameStatsView {
         this.#gameStats = gvContext.gameHighContext.gameStats;
 
         const styleConfig = {fontSize: 20, color: "black", fontFamily: "monospace"};
+        const container = gvContext.boardContainer;
 
-        this.clearedLineText = scene.add.text(300, 500, "まだ消していない", styleConfig);
+        const TEXT_X = -320;
 
-        this.levelText = scene.add.text(300, 530, "レベル　1", styleConfig);
+        this.clearedLineText = scene.add.text(TEXT_X, 0, "まだ消していない", styleConfig);
+        container.add(this.clearedLineText);
 
-        this.scoreText = scene.add.text(300, 560, "スコア　00000", styleConfig);
+        this.levelText = scene.add.text(TEXT_X, 30, "レベル　1", styleConfig);
+        container.add(this.levelText);
 
-        this.timeText = scene.add.text(200, 590, "経過　", styleConfig);
+        this.scoreText = scene.add.text(TEXT_X, 60, "スコア　00000", styleConfig);
+        container.add(this.scoreText);
+
+        this.timeText = scene.add.text(TEXT_X - 50, 90, "経過　", styleConfig);
+        container.add(this.timeText);
     }
 
     update() {
