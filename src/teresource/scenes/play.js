@@ -106,13 +106,6 @@ export class PlayScene extends Phaser.Scene {
 
         const gameUpdateResult = this.#singleGame.gameUpdator.update(deltaTime);
 
-        //auto damage
-        if (gameUpdateResult.placed) {
-            this.#singleGame.damageProviderPerMino.count();
-            const damages = this.#singleGame.damageProviderPerMino.provide();
-            for (const damage of damages) this.#singleGame.gameUpdator.scheduledDamageState.damageStack.push({ length: damage });
-        }
-
         this.#singleGame.gameViewController.update(deltaTime);
     }
 }

@@ -85,9 +85,10 @@ export class SingleGame {
         const gameHighContext = new GameHighContext({
             gameStats, gameStatsManager, gameAttackState, controlOrderProvider, lineClearManager,  garbageGenerator, scheduledDamageState
         })
-        const gameUpdator = new GameUpdator(gameContext, gameHighContext, gameConfig.gravityPowerBase);
 
         const damageProviderPerMino = new LinearDamageProvider(gameConfig.autoDamage.attackPerMino, gameConfig.autoDamage.attackDamage);
+
+        const gameUpdator = new GameUpdator(gameContext, gameHighContext, gameConfig.gravityPowerBase, { damageProviderPerMino });
 
         //Create elements of the scene
         const { gameViewController } = this.#createView({ gameConfig, gameHighContext, gameContext, scene });
@@ -96,7 +97,6 @@ export class SingleGame {
         this.gameContext = gameContext;
         this.gameViewController = gameViewController;
         this.controlOrderProvider = controlOrderProvider;
-        this.damageProviderPerMino = damageProviderPerMino;
     }
 
     /** @param {{ gameConfig: GameConfig, gameHighContext: GameHighContext, gameContext: GameContext, scene: Phaser.Scene }} */

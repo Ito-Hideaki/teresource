@@ -208,8 +208,8 @@ export class MenuScene extends Phaser.Scene {
         creditsElm.innerHTML = `
 <p>使用しているライブラリ：Phaser3, day.js, vite</p>
 
-<table style="border: none;">
-<tr><th style="width:200px;">画像</th><th style="width:200px;">hide</th></tr>
+<table style="border: none; width:100%;">
+<tr><th style="width:50%;">画像</th><th>hide</th style="width:50%;"></tr>
 <tr><th>プログラム</th><th>hide</th></tr>
 </table>
 `;

@@ -27,6 +27,8 @@ export class GameUpdator {
     #minoQueueManager
     #heldMinoManager
     #boardUpdateState
+    /** @type {LinearDamageProvider} */
+    #damageProviderPerMino
     /** @type {GameReportStack} */#gameReportStack
     /** @type {GameStatsManager} */ #gameStatsManager
     /** @type {LineClearManager} */ lineClearManager
@@ -46,7 +48,7 @@ export class GameUpdator {
      * @param {GameHighContext} gameHighContext
      * @param {number} gravityPower
      */
-    constructor(gameContext, gameHighContext, gravityPowerBase) {
+    constructor(gameContext, gameHighContext, gravityPowerBase, { damageProviderPerMino }) {
         this.#controlOrderProvider = gameHighContext.controlOrderProvider;
         this.#boardUpdater = new BoardUpdater(gameContext);
         this.lineClearManager = gameHighContext.lineClearManager;
@@ -56,6 +58,8 @@ export class GameUpdator {
         this.#gravityPowerBase = gravityPowerBase;
 
         this.scheduledDamageState = gameHighContext.scheduledDamageState;
+
+        this.#damageProviderPerMino = damageProviderPerMino;
 
         this.#minoQueueManager = gameContext.minoQueueManager;
         this.#currentMinoManager = gameContext.currentMinoManager;
@@ -133,6 +137,13 @@ export class GameUpdator {
                 const lineCount = lineClearReport.data.clearedRowList.length;
                 window.log(`${lineCount} line(s) cleared`);
             });
+        }
+
+        //auto damage
+        if (result.placed) {
+            this.#damageProviderPerMino.count();
+            const damages = this.#damageProviderPerMino.provide();
+            for (const damage of damages) this.scheduledDamageState.damageStack.push({ length: damage });
         }
 
         return result;
