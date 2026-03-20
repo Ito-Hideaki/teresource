@@ -4,7 +4,8 @@ import { GameStats } from "./stats";
 /**
  *  @typedef {{
  *      type: string,
- *      targetLines: number
+ *      targetLines: number,
+ *      timeLimit: number
  *  }}
  * GameSessionConfig */
 

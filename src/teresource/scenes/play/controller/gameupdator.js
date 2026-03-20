@@ -87,10 +87,13 @@ export class GameUpdator {
                 //add garbage
                 if (this.allowGarbageNext) {
                     const damageStack = this.scheduledDamageState.damageStack;
-                    while(damageStack.length) { //currently use all damages as soon as possible
-                        const scheduledDamage = damageStack[0];
-                        this.#garbageGenerator.addGarbage(scheduledDamage.length);
+                    console.log(damageStack);
+                    let scheduledDamage = damageStack[0];
+                    while(scheduledDamage && scheduledDamage.arriveBy <= this.#gameStatsManager.stats.timePassed) {
                         damageStack.splice(0, 1);
+                        this.#garbageGenerator.addGarbage(scheduledDamage.length);
+
+                        scheduledDamage = damageStack[0];
                     }
                 }
 
@@ -143,7 +146,10 @@ export class GameUpdator {
         if (result.placed) {
             this.#damageProviderPerMino.count();
             const damages = this.#damageProviderPerMino.provide();
-            for (const damage of damages) this.scheduledDamageState.damageStack.push({ length: damage });
+            for (const damage of damages) this.scheduledDamageState.damageStack.push({
+                length: damage,
+                arriveBy: this.#gameStatsManager.stats.timePassed + 3
+            });
         }
 
         return result;
