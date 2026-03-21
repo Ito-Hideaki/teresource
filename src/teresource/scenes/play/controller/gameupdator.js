@@ -87,7 +87,6 @@ export class GameUpdator {
                 //add garbage
                 if (this.allowGarbageNext) {
                     const damageStack = this.scheduledDamageState.damageStack;
-                    console.log(damageStack);
                     let scheduledDamage = damageStack[0];
                     while(scheduledDamage && scheduledDamage.arriveBy <= this.#gameStatsManager.stats.timePassed) {
                         damageStack.splice(0, 1);
@@ -159,7 +158,6 @@ export class GameUpdator {
     #doNormalUpdate(deltaTime, controlOrder) {
         //update gravity
         this.#boardUpdateState.gravity = 0.5 * this.#gravityPowerBase ** this.#gameStatsManager.stats.level;
-        console.log(this.#boardUpdateState.gravity);
 
         /** @type {BoardUpdateDiff} */ const boardUpdateDiff = this.#boardUpdater.update(controlOrder.value, deltaTime);
         this.#controlOrderProvider.receiveControlResult(boardUpdateDiff);

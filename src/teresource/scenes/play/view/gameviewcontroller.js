@@ -5,8 +5,9 @@ import { PlayScene } from "../../play";
 import { HeldMinoView, MinoQueueView } from "./subminoview";
 import { GameEffectManagerView } from "./gameeffectview";
 import { GameStatsView } from "./gamestatsview";
+import { ScheduledDamageView } from "./scheduleddamageview";
 
-/** @typedef {{ boardDeco: BoardDeco, boardView: BoardView, minoQueueView: MinoQueueView, heldMinoView: HeldMinoView, gameEffectManagerView: GameEffectManagerView, gameStatsView: GameStatsView }} GameViewElements */
+/** @typedef {{ boardDeco: BoardDeco, boardView: BoardView, minoQueueView: MinoQueueView, heldMinoView: HeldMinoView, gameEffectManagerView: GameEffectManagerView, gameStatsView: GameStatsView, scheduledDamageView: ScheduledDamageView }} GameViewElements */
 
 /** Represents the game view for each player */
 export class GameViewController {
@@ -31,5 +32,6 @@ export class GameViewController {
         this.#elements.heldMinoView.update();
         this.#elements.gameEffectManagerView.update(deltaTime);
         this.#elements.gameStatsView.update();
+        this.#elements.scheduledDamageView.update();
     }
 }

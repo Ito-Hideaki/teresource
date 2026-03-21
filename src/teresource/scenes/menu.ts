@@ -268,11 +268,7 @@ export class MenuScene extends Phaser.Scene {
 // @ts-ignore
                     keyBinding: keyBindingConfig,
                     game: gameConfig
-                }, {
-// @ts-ignore
-                    keyBinding: keyBindingConfig,
-                    game: gameConfig
-                }],
+                }, ],
                 session: sessionConfig
             };
             scene.scene.start("play", { matchConfig });

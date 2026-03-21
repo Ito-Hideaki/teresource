@@ -18,6 +18,7 @@ import { GameAttackState } from "../core/attack";
 import { GameStatsManager, GameStats } from "./stats";
 import { GameStatsView } from "../view/gamestatsview";
 import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from "../core/garbage";
+import { ScheduledDamageView } from "../view/scheduleddamageview";
 
 /** 
  * @typedef {{
@@ -128,8 +129,9 @@ export class SingleGame {
         const heldMinoView = new HeldMinoView(scene, gameViewContext);
         const gameEffectManagerView = new GameEffectManagerView(scene, gameViewContext, skin);
         const gameStatsView = new GameStatsView(scene, gameViewContext);
+        const scheduledDamageView = new ScheduledDamageView(scene, gameViewContext);
         const gameViewController = new GameViewController(scene, gameViewContext, {
-            boardDeco, boardView, minoQueueView, heldMinoView, gameEffectManagerView, gameStatsView
+            boardDeco, boardView, minoQueueView, heldMinoView, gameEffectManagerView, gameStatsView, scheduledDamageView
         });
 
         return { gameViewController };
