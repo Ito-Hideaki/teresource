@@ -1,5 +1,6 @@
 {
     "datas" : [
+        { "date": "Mar 21 2026", "content" : "お邪魔ゲージを追加。"},
         { "date": "Mar 19 2026", "content" : "メニューにCreditsを追加。クライアントを2つ操作できるように実装。"},
         { "date": "Mar 17 2026", "content" : "Settingsにキーボード操作設定を移動。"},
         { "date": "Mar 14 2026", "content" : "特に何の役にも立たないメニューを追加。"},
