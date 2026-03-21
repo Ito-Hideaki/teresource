@@ -18,7 +18,7 @@ addEventListener("DOMContentLoaded", () => {
         "handling",
         "objective"
     ]);
-    document.getElementById("config-container").appendChild(element);
+    //document.getElementById("config-container").appendChild(element);
 
 
     const config = {
