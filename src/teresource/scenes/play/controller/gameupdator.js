@@ -88,7 +88,7 @@ export class GameUpdator {
                 if (this.allowGarbageNext) {
                     const damageStack = this.scheduledDamageState.damageStack;
                     let scheduledDamage = damageStack[0];
-                    while (scheduledDamage && scheduledDamage.arriveBy <= this.#gameStatsManager.stats.timePassed) {
+                    while (scheduledDamage && scheduledDamage.arrived) {
                         damageStack.splice(0, 1);
                         this.#garbageGenerator.addGarbage(scheduledDamage.length);
 
@@ -145,8 +145,15 @@ export class GameUpdator {
         if (result.placed) {
             this.#damageProviderPerMino.count();
             const damages = this.#damageProviderPerMino.provide();
-            for (const damage of damages) this.addScheduledDamage(damage, 3);
+            for (const damage of damages) this.addScheduledDamage(damage, 2);
         }
+
+        //update scheduled damages state
+        this.scheduledDamageState.damageStack.forEach(scheduledDamage => {
+            if(!scheduledDamage.arrived && scheduledDamage.arriveBy <= this.#gameStatsManager.stats.timePassed) {
+                scheduledDamage.arrived = true;
+            }
+        });
 
         return result;
     }
@@ -204,7 +211,8 @@ export class GameUpdator {
     addScheduledDamage(length, delay_s) {
         const scheduledDamage = {
             length,
-            arriveBy: this.#gameStatsManager.stats.timePassed + delay_s
+            arriveBy: this.#gameStatsManager.stats.timePassed + delay_s,
+            arrived: false
         };
         this.scheduledDamageState.damageStack.push(scheduledDamage);
         this.#gameReportStack.add(new RecieveScheduledDamageReport(scheduledDamage));

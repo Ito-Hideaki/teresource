@@ -120,6 +120,7 @@ export class LinearDamageProvider {
  * @typedef {{
  *      length: number;
  *      arriveBy: number;
+ *      arrived: boolean;
  * }} ScheduledDamage
  * */
 
