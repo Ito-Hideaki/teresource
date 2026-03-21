@@ -22,6 +22,17 @@ export class LineClearReport extends Report {
     }
 }
 
+export class RecieveScheduledDamageReport extends Report {
+    static type = "RecieveScheduledDamage";
+    parentClass = RecieveScheduledDamageReport;
+    scheduledDamage;
+    /** @param {import("../core/garbage").ScheduledDamage} scheduledDamage */
+    constructor(scheduledDamage) {
+        super();
+        this.scheduledDamage = scheduledDamage;
+    }
+}
+
 /** contain report stacks that become empty every frame */
 export class ReportStack {
     constructor() {
@@ -38,7 +49,7 @@ export class ReportStack {
 
 export class GameReportStack {
     /** @type {LineClearReport[]} */ lineClear;
-    /** @type {MinoSpawnReport[]} */ minoSpawn;
+    /** @type {RecieveScheduledDamageReport[]} */ recieveScheduledDamage;
 
     /** @param {Report} report */
     add(report) {
@@ -46,14 +57,14 @@ export class GameReportStack {
             case LineClearReport.type:
                 this.lineClear.push(report);
                 break;
-            case MinoSpawnReport.type:
-                this.minoSpawn.push(report);
+            case RecieveScheduledDamageReport.type:
+                this.recieveScheduledDamage.push(report);
                 break;
         }
     }
 
     renewAll() {
         this.lineClear = [];
-        this.minoSpawn = [];
+        this.recieveScheduledDamage = [];
     }
 }

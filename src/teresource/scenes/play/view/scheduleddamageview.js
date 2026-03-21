@@ -15,25 +15,35 @@ export class ScheduledDamageView {
     #cellWidth
     #objectX
     #objectY
+    #reportStack
+    #scene
+    #boardContainer
+
     /** @type {ScheduledDamageObject[]} */ #objects
 
     /** @param { Phaser.Scene } scene @param { GameViewContext } gvContext */
     constructor(scene, gvContext) {
+        this.#scene = scene;
+        this.#boardContainer = gvContext.boardContainer;
         this.#state = gvContext.gameHighContext.scheduledDamageState;
+        this.#reportStack = gvContext.gameContext.gameReportStack;
         this.#cellWidth = gvContext.getBoardCellWidth();
         this.#objects = [];
         this.#objectX = gvContext.getRelativeBoardX(0) - 20;
         this.#objectY = gvContext.getRelativeBoardY(gvContext.gameContext.boardSize.rowCount);
-
-{        const object = scene.add.existing(new ScheduledDamageObject(scene, { length: 10 }));
-        gvContext.boardContainer.add(object);
-        this.#objects.push(object);}
-{        const object = scene.add.existing(new ScheduledDamageObject(scene, { length: 4 }));
-        gvContext.boardContainer.add(object);
-        this.#objects.push(object);}
     }
 
     update() {
+        //add new objects
+        this.#reportStack.recieveScheduledDamage.forEach(report => {
+            const object = new ScheduledDamageObject(this.#scene, report.scheduledDamage);
+            this.#scene.add.existing(object);
+            this.#boardContainer.add(object);
+            this.#objects.push(object);
+            console.log(this.#objects);
+        });
+
+        //render
         const cellHeight = this.#cellWidth;
         let y = this.#objectY;
         for(const object of this.#objects) {
