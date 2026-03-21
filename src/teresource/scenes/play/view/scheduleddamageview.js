@@ -42,7 +42,6 @@ export class ScheduledDamageView {
             this.#scene.add.existing(object);
             this.#boardContainer.add(object);
             this.#objects.push(object);
-            console.log(this.#objects);
         });
 
         //remove objects with deleted scheduled damage
