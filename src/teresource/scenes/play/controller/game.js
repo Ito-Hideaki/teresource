@@ -19,6 +19,7 @@ import { GameStatsManager, GameStats } from "./stats";
 import { GameStatsView } from "../view/gamestatsview";
 import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from "../core/garbage";
 import { ScheduledDamageView } from "../view/scheduleddamageview";
+import { MINO_DATA_INDEX } from "../core/coredata";
 
 /** 
  * @typedef {{
@@ -137,3 +138,28 @@ export class SingleGame {
         return { gameViewController };
     }
 }
+
+/** @type {GameConfig} */
+export const TYPICAL_GAME_CONFIG = {
+    "bag" : {
+        "minoTypeToUseList" : Object.keys(MINO_DATA_INDEX)
+    },
+    "boardWidth" : 10,
+    "boardHeight" : 20,
+    "garbage" : {
+        "type" : "nice"
+    },
+    "startLevel" : 5,
+    "gravityPowerBase" : 1.3,
+    "personalization" : {
+        "skin" : "pika"
+    },
+    "handling" : {
+        "DAS" : 10,
+        "ARR" : 2
+    },
+    "autoDamage":{
+        "attackPerMino" : 0,
+        "attackDamage" : 1
+    }
+};
