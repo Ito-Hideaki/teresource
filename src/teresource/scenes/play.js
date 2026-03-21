@@ -15,12 +15,12 @@ export function loadFirstLevelTextures(scene) {
     loadCellSkinTextures(scene);
 
     //ordinary textures
-    this.load.image("subminoview_back", viteURLify("/image/subminoview_back.jpg"));
-    this.load.image("scheduled_damage_cell", viteURLify("image/scheduled_damage_cell.png"));
-    this.load.on(
+    scene.load.image("subminoview_back", viteURLify("/image/subminoview_back.jpg"));
+    scene.load.image("scheduled_damage_cell", viteURLify("image/scheduled_damage_cell.png"));
+    scene.load.on(
         "filecomplete-image-scheduled_damage_cell",
         (key) => {
-            const texture = this.textures.get(key);
+            const texture = scene.textures.get(key);
             texture.add("arriving", 0, 0, 0, 12, 12);
             texture.add("arrived", 0, 12, 0, 12, 12);
         }
