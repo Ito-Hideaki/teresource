@@ -7,6 +7,7 @@ import { CellSheetParent, loadCellSkinTextures } from "./play/view/customtexture
 import { viteURLify } from "#util";
 import { ConfigUIDataHandler } from "../configUI";
 import { LinearDamageProvider } from "./play/core/garbage";
+import { GameUpdator } from "./play/controller/gameupdator";
 
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene) {
@@ -60,7 +61,7 @@ export class PlayScene extends Phaser.Scene {
     width;
     height;
 
-    games;
+    players;
 
     /** @type {SingleGame} */ #singleGame;
 
@@ -130,7 +131,16 @@ export class PlayScene extends Phaser.Scene {
         const deltaTime = delta / 1000;
 
         this.players.forEach(player => {
-            const gameUpdateResult = player.game.gameUpdator.update(deltaTime);
+            /** @type {GameUpdator} */
+            const gameUpdator = player.game.gameUpdator;
+            const { lineClearAttackData } = gameUpdator.update(deltaTime);
+            if(lineClearAttackData && lineClearAttackData.damage) {
+                gameUpdator.addScheduledDamage(lineClearAttackData.damage, 2);
+                // const otherPlayers = this.players.filter(another => another !== player);
+                // otherPlayers.forEach(other => {
+                //     other.game.gameUpdator.addScheduledDamage(lineClearAttackData.damage, 2);
+                // })
+            }
             player.game.gameViewController.update(deltaTime);
         });
     }

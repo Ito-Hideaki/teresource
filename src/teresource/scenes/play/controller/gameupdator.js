@@ -3,7 +3,7 @@ import { ControlOrder, ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
 import { LineClearReport, GameReportStack, RecieveScheduledDamageReport } from "./report";
-import { GameAttackState } from "../core/attack";
+import { GameAttackState, LineClearAttackData } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
 import { GameSession } from "./gamesession";
@@ -75,7 +75,8 @@ export class GameUpdator {
     update(deltaTime) {
 
         const result = {
-            placed: false
+            placed: false,
+            /** @type {LineClearAttackData | undefined} */ lineClearAttackData: undefined
         };
 
         this.#gameReportStack.renewAll(); //move
@@ -126,8 +127,9 @@ export class GameUpdator {
                 }
 
                 //Finally update board
-                const { boardUpdateDiff } = this.#doNormalUpdate(deltaTime, controlOrder);
+                const { boardUpdateDiff, lineClearAttackData } = this.#doNormalUpdate(deltaTime, controlOrder);
                 if (boardUpdateDiff.placed) result.placed = true;
+                result.lineClearAttackData = lineClearAttackData;
             })();
         }
 
@@ -174,17 +176,18 @@ export class GameUpdator {
         //Update attack state
         this.gameAttackState.update(boardUpdateDiff, rowToClearList.length); //refactor
 
+        const lineClearAttackData = boardUpdateDiff.placed ? this.gameAttackState.createLineClearAttackData(rowToClearList) : undefined;
+
         //Start line clear effect
-        if (rowToClearList.length) {
-            const reportData = this.gameAttackState.createLineClearAttackData(rowToClearList);
-            this.#gameReportStack.add(new LineClearReport(reportData, clearedRowList));
-            this.#gameStatsManager.setNewLineClearAttackData(reportData);
+        if (boardUpdateDiff.placed && rowToClearList.length) {
+            this.#gameReportStack.add(new LineClearReport(lineClearAttackData, clearedRowList));
+            this.#gameStatsManager.setNewLineClearAttackData(lineClearAttackData);
         }
 
         //Garbage
         this.allowGarbageNext = boardUpdateDiff.placed;
 
-        return { boardUpdateDiff };
+        return { boardUpdateDiff, lineClearAttackData };
     }
 
     #putNewMino(mino) {
