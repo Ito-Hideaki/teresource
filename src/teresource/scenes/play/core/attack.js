@@ -51,6 +51,7 @@ export class LineClearAttackData {
     /** @type {boolean} */ isMini;
     /** @type {boolean} */ isAllClear;
     /** @type {boolean} */ B2B;
+    /** @type {number} */ damage;
 
     /** @param {LineClearAttackData} data */
     constructor(data = {}) {
@@ -111,16 +112,31 @@ export class GameAttackState {
         }
     }
 
-    /** @param {number} clearedRowList */
+    /** @param {number[]} clearedRowList */
     createLineClearAttackData(clearedRowList) {
-        if(detectAllClear(this.cellBoard)) window.log("All Clear!");
+        const isAllClear = detectAllClear(this.cellBoard);
+        if(isAllClear) window.log("All Clear!");
+
+        const basicDamage = ([0, 0, 1, 2, 4])[clearedRowList.length];
+        const isMini = this.isLastMoveMini && clearedRowList.length === 1;
+        const specialDamage = this.isLastMoveSpecial && !isMini ? ([0, 2, 3, 4])[clearedRowList.length] : 0;
+        const COMBO_DAMAGE_TABLE = [0, 1, 1, 1, 2, 2, 2, 3, 3, 3];
+        const B2BDamage = this.B2B ? 1 : 0;
+        const MAX_COMBO_DAMAGE = 4;
+        const comboDamage = this.combo < COMBO_DAMAGE_TABLE.length ? COMBO_DAMAGE_TABLE[this.combo] : MAX_COMBO_DAMAGE;
+        const allClearDamage = isAllClear ? 10 : 0;
+
+        const MAX_DAMAGE = 10;
+        const damage = Math.min(MAX_DAMAGE, basicDamage + specialDamage + B2BDamage + comboDamage + allClearDamage);
+
         return new LineClearAttackData({
             clearedRowList,
             combo: this.combo,
             isSpecial: this.isLastMoveSpecial,
             isMini: this.isLastMoveMini,
-            isAllClear: detectAllClear(this.cellBoard),
-            B2B: this.B2B
+            isAllClear,
+            B2B: this.B2B,
+            damage
         });
     }
 }
