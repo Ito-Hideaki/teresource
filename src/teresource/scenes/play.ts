@@ -53,6 +53,8 @@ type PlayerConfig = {
 type MatchConfig = {
     players: PlayerConfig[];
     session: GameSessionConfig;
+    sendAttackToOthers: boolean;
+    sendAttackToMyself: boolean;
 }
 
 type Player = {
@@ -70,6 +72,11 @@ export class PlayScene extends Phaser.Scene {
     players: Player[];
     //@ts-ignore
     cellSheetParentIndex: { [key: string]: CellSheetParent };
+
+    //@ts-ignore
+    sendAttackToOthers: boolean;
+    //@ts-ignore
+    sendAttackToMyself: boolean;
 
     //@ts-ignore
     private singleGame;
@@ -106,6 +113,9 @@ export class PlayScene extends Phaser.Scene {
             return { game, keyInputProcessor, keyBinding: playerConfig.keyBinding };
         });
 
+        this.sendAttackToMyself = matchConfig.sendAttackToMyself;
+        this.sendAttackToOthers = matchConfig.sendAttackToOthers;
+
         this.input.keyboard?.on("keydown", (e: KeyboardEvent) => {
             if (!this.game.inputEnabled) return;
             e.preventDefault();
@@ -140,16 +150,19 @@ export class PlayScene extends Phaser.Scene {
         const deltaTime = delta / 1000;
 
         this.players.forEach(player => {
-            /** @type {GameUpdator} */
             const gameUpdator = player.game.gameUpdator;
             const { outgoingAttack } = gameUpdator.update(deltaTime);
-            if (outgoingAttack) {
-                gameUpdator.addScheduledDamage(outgoingAttack.amount, outgoingAttack.delay_s);
-                // const otherPlayers = this.players.filter(another => another !== player);
-                // otherPlayers.forEach(other => {
-                //     other.game.gameUpdator.addScheduledDamage(lineClearAttackData.damage, 2);
-                // })
-            }
+            if (!outgoingAttack) return;
+
+            const playersToSend = this.players.filter(target => {
+                return this.sendAttackToMyself && target === player || this.sendAttackToOthers && target !== player
+            });
+            playersToSend.forEach(target => {
+                target.game.gameUpdator.addScheduledDamage(outgoingAttack.amount, outgoingAttack.delay_s);
+            });
+        });
+
+        this.players.forEach(player => {
             player.game.gameViewController.update(deltaTime);
         });
     }
