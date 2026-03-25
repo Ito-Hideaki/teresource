@@ -55,7 +55,8 @@ export const CONFIGUI_CONFIG_DATA = {
         { name: "softDrop", type: "keylist", displayText: "ミノを高速落下" },
         { name: "hardDrop", type: "keylist", displayText: "ミノを設置" },
         { name: "hold", type: "keylist", displayText: "ミノをホールド" },
-        { name: "reload", type: "keylist", displayText: "シーンをリロード" }
+        { name: "reload", type: "keylist", displayText: "ゲームをリロード" },
+        { name: "quit", type: "keylist", displayText: "メニューに戻る" }
     ]
 }
 
@@ -98,7 +99,8 @@ export const CONFIGUI_EXPORT_MAP_INDEX = {
             "hardDrop": "hardDrop",
             "hold": "hold",
         },
-        "reload": "reload"
+        "reload": "reload",
+        "quit": "quit"
     }
 }
 

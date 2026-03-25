@@ -282,7 +282,8 @@ export function createConfigUIElement(categoryKeyList) {
             rotateCounterClock: [ "KeyZ" ],
             hold: [ "KeyC", "ShiftLeft" ],
             hardDrop: [ "Space" ],
-            reload: [ "KeyR" ]
+            reload: [ "KeyR" ],
+            quit: [ "KeyQ" ]
         }
     }
 

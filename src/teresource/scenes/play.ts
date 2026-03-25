@@ -45,9 +45,9 @@ type PlayerConfig = {
     keyBinding: {
         game: KeyBindingConfig;
         reload: string[];
+        quit: string[];
     };
     game: GameConfig;
-    reloadKey: string;
 }
 
 type MatchConfig = {
@@ -122,9 +122,8 @@ export class PlayScene extends Phaser.Scene {
             if (e.repeat) return;
 
             for (const player of this.players) {
-                if (player.keyBinding.reload.includes(e.code)) {
-                    this.reload();
-                }
+                if (player.keyBinding.reload.includes(e.code)) this.reload();
+                else if (player.keyBinding.quit.includes(e.code)) this.quit();
 
                 player.keyInputProcessor.keyDown(e.code);
             }
