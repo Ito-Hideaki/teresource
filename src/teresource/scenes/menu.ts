@@ -3,7 +3,7 @@ import { createAndAddSettingsPanel } from "./menu/settingspanel";
 import { GameConfig, TYPICAL_GAME_CONFIG } from "./play/controller/game";
 import { KeyBindingConfig } from "./play/controller/controlorder";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
-import { MatchConfig } from "./play";
+import { PlaySceneData } from "./play";
 import { GameSession, GameSessionConfig } from "./play/controller/gamesession";
 
 const TEXT_LEFT = 100;
@@ -104,7 +104,7 @@ class MenuObject {
             item.view = text;
             scene.add.existing(text);
 
-            if(item.children) item.children.forEach(createViewUnderItem);
+            if (item.children) item.children.forEach(createViewUnderItem);
         }
         this.menu.tree.forEach(createViewUnderItem);
 
@@ -256,15 +256,17 @@ export class MenuScene extends Phaser.Scene {
             const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
 
             const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
-            const matchConfig: MatchConfig = {
-                players: [{
-                    // @ts-ignore
-                    keyBinding: keyBindingConfig,
-                    game: gameConfig
-                }],
-                session: { type: GameSession.SessionType.Line, targetLines: 40, timeLimit: 0 }
+            const playSceneData: PlaySceneData = {
+                matchConfig: {
+                    players: [{
+                        // @ts-ignore
+                        keyBinding: keyBindingConfig,
+                        game: gameConfig
+                    }],
+                    session: { type: GameSession.SessionType.Line, targetLines: 40, timeLimit: 0 }
+                }
             };
-            scene.scene.start("play", { matchConfig });
+            scene.scene.start("play", playSceneData);
         });
 
         // scene.menuObj.ee.on("playcustomgame", () => {
