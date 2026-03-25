@@ -154,7 +154,6 @@ export class PlayScene extends Phaser.Scene {
             const gameUpdator = player.game.gameUpdator;
             const { outgoingAttack } = gameUpdator.update(deltaTime);
             if (!outgoingAttack) return;
-
             const playersToSend = this.players.filter(target => {
                 return this.sendAttackToMyself && target === player || this.sendAttackToOthers && target !== player
             });

@@ -2,7 +2,7 @@ import { BoardUpdater, BoardUpdateDiff } from "./boardcontroller";
 import { ControlOrder, ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
-import { LineClearReport, GameReportStack, RecieveScheduledDamageReport, Report } from "./report";
+import { LineClearReport, GameReportStack, RecieveScheduledDamageReport } from "./report";
 import { GameAttackState, LineClearAttackData } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
@@ -57,10 +57,6 @@ export class GameUpdator {
     allowGarbageNext: boolean;
     scheduledDamageState: GameScheduledDamageState;
     session!: GameSession;
-
-    private static asReport(report: unknown): Report {
-        return report as unknown as Report;
-    }
 
     constructor(
         gameContext: GameContext,
@@ -215,7 +211,7 @@ export class GameUpdator {
 
         //Start line clear effect
         if (boardUpdateDiff.placed && rowToClearList.length && lineClearAttackData) {
-            this.gameReportStack.add(GameUpdator.asReport(new LineClearReport(lineClearAttackData, clearedRowList)));
+            this.gameReportStack.add(new LineClearReport(lineClearAttackData, clearedRowList));
             this.gameStatsManager.setNewLineClearAttackData(lineClearAttackData);
         }
 
@@ -250,6 +246,6 @@ export class GameUpdator {
             arrived: false
         };
         this.scheduledDamageState.damageStack.push(scheduledDamage);
-        this.gameReportStack.add(GameUpdator.asReport(new RecieveScheduledDamageReport(scheduledDamage)));
+        this.gameReportStack.add(new RecieveScheduledDamageReport(scheduledDamage));
     }
 }
