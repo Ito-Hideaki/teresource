@@ -93,8 +93,6 @@ export class GameUpdator {
             placed: false
         };
 
-        this.gameReportStack.renewAll(); //move
-
         this.lineClearManager.update(deltaTime);
 
         if (!this.lineClearManager.isDuringLineClear() && !this.session.isOver) {

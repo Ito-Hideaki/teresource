@@ -13,6 +13,7 @@ import { ScheduledDamageView } from "./scheduleddamageview";
 export class GameViewController {
     #elements;
     boardContainer;
+    #reportStack;
 
     /**
      *  @param {PlayScene} scene
@@ -22,6 +23,7 @@ export class GameViewController {
     constructor(scene, gvContext, elements) {
         this.#elements = elements;
         this.boardContainer = gvContext.boardContainer;
+        this.#reportStack = gvContext.gameContext.gameReportStack;
     }
 
     /** @param {number} deltaTime */
@@ -33,5 +35,7 @@ export class GameViewController {
         this.#elements.gameEffectManagerView.update(deltaTime);
         this.#elements.gameStatsView.update();
         this.#elements.scheduledDamageView.update();
+
+        this.#reportStack.renewAll();
     }
 }
