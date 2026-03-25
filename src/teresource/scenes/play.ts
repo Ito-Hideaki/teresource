@@ -123,7 +123,7 @@ export class PlayScene extends Phaser.Scene {
 
             for (const player of this.players) {
                 if (player.keyBinding.reload.includes(e.code)) {
-                    this.scene.start("play");
+                    this.reload();
                 }
 
                 player.keyInputProcessor.keyDown(e.code);
@@ -138,11 +138,13 @@ export class PlayScene extends Phaser.Scene {
             }
         })
 
-        const rebootButton = this.add.dom(300, 100, "div", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0; user-select: none;", "Reboot Scene");
+        const rebootButton = this.add.dom(200, 100, "div", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0; user-select: none;", "New Game");
         rebootButton.addListener("click");
-        rebootButton.on("click", () => {
-            this.scene.start("play");
-        });
+        rebootButton.on("click", this.reload, this);
+
+        const quitButton = this.add.dom(350, 100, "div", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0; user-select: none;", "Quit");
+        quitButton.addListener("click");
+        quitButton.on("click", this.quit, this);
     }
 
 
@@ -165,5 +167,13 @@ export class PlayScene extends Phaser.Scene {
         this.players.forEach(player => {
             player.game.gameViewController.update(deltaTime);
         });
+    }
+
+    reload() {
+        this.scene.start("play");
+    }
+
+    quit() {
+        this.scene.start("menu");
     }
 }
