@@ -91,7 +91,9 @@ class MenuObject {
         this.menu = new ItemMenu([
             {
                 name: "Play Demo", children: [
-                    { name: "40LINE", onEnter: "play40linedemo" }
+                    { name: "40LINE", onEnter: "play40linedemo" },
+                    { name: "BACKFIRE", onEnter: "playbackfiredemo"},
+                    { name: "2P", onEnter: "play2pdemo" },
                 ]
             },
             { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
@@ -263,7 +265,51 @@ export class MenuScene extends Phaser.Scene {
                         keyBinding: keyBindingConfig,
                         game: gameConfig
                     }],
-                    session: { type: GameSession.SessionType.Line, targetLines: 40, timeLimit: 0 }
+                    session: { type: GameSession.SessionType.Line, targetLines: 40, timeLimit: 0 },
+                    sendAttackToMyself: false,
+                    sendAttackToOthers: false
+                }
+            };
+            scene.scene.start("play", playSceneData);
+        });
+
+        scene.menuObj.ee.on("playbackfiredemo", () => {
+            const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
+
+            const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
+            const playSceneData: PlaySceneData = {
+                matchConfig: {
+                    players: [{
+                        // @ts-ignore
+                        keyBinding: keyBindingConfig,
+                        game: gameConfig
+                    }],
+                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
+                    sendAttackToMyself: true,
+                    sendAttackToOthers: false
+                }
+            };
+            scene.scene.start("play", playSceneData);
+        });
+
+        scene.menuObj.ee.on("play2pdemo", () => {
+            const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
+
+            const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
+            const playSceneData: PlaySceneData = {
+                matchConfig: {
+                    players: [{
+                        // @ts-ignore
+                        keyBinding: keyBindingConfig,
+                        game: gameConfig
+                    }, {
+                        // @ts-ignore
+                        keyBinding: keyBindingConfig,
+                        game: gameConfig
+                    }],
+                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
+                    sendAttackToMyself: false,
+                    sendAttackToOthers: true
                 }
             };
             scene.scene.start("play", playSceneData);
