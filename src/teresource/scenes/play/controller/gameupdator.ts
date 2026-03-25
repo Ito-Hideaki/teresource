@@ -19,11 +19,12 @@ export type AutoDamageConfig = {
     damagePerMino: number;
 };
 
-export type OutgoingAttack = { amount: number };
+export type OutgoingAttack = { amount: number, delay_s: number };
 
 type UpdateResult = {
     placed: boolean;
-    lineClearAttackData: LineClearAttackData | undefined;
+    lineClearAttackData?: LineClearAttackData;
+    outgoingAttack?: OutgoingAttack;
 };
 
 type NormalUpdateResult = {
@@ -93,8 +94,7 @@ export class GameUpdator {
     update(deltaTime: number): UpdateResult {
 
         const result: UpdateResult = {
-            placed: false,
-            lineClearAttackData: undefined
+            placed: false
         };
 
         this.gameReportStack.renewAll(); //move
@@ -147,6 +147,24 @@ export class GameUpdator {
             const { boardUpdateDiff, lineClearAttackData } = this.doNormalUpdate(deltaTime, controlOrder);
             if (boardUpdateDiff.placed) result.placed = true;
             result.lineClearAttackData = lineClearAttackData;
+        }
+
+        //create outgoing attack
+        if(result.lineClearAttackData) {
+            let amountRemain = result.lineClearAttackData.damage;
+
+            //offset
+            while(amountRemain > 0 && this.scheduledDamageState.damageStack.length) {
+                const scheduledDamage = this.scheduledDamageState.damageStack[0];
+                const offset = Math.min(amountRemain, scheduledDamage.length);
+                amountRemain -= offset;
+                scheduledDamage.length -= offset;
+                if(scheduledDamage.length === 0) this.scheduledDamageState.damageStack.splice(0, 1);
+            }
+
+            if(amountRemain) {
+                result.outgoingAttack = { amount: amountRemain, delay_s: 2 };
+            }
         }
 
         //update stats

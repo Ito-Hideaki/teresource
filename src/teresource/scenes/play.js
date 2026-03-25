@@ -133,9 +133,9 @@ export class PlayScene extends Phaser.Scene {
         this.players.forEach(player => {
             /** @type {GameUpdator} */
             const gameUpdator = player.game.gameUpdator;
-            const { lineClearAttackData } = gameUpdator.update(deltaTime);
-            if(lineClearAttackData && lineClearAttackData.damage) {
-                gameUpdator.addScheduledDamage(lineClearAttackData.damage, 2);
+            const { outgoingAttack } = gameUpdator.update(deltaTime);
+            if(outgoingAttack) {
+                gameUpdator.addScheduledDamage(outgoingAttack.amount, outgoingAttack.delay_s);
                 // const otherPlayers = this.players.filter(another => another !== player);
                 // otherPlayers.forEach(other => {
                 //     other.game.gameUpdator.addScheduledDamage(lineClearAttackData.damage, 2);
