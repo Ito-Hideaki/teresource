@@ -21,16 +21,16 @@ export class GameStatsView {
 
         const TEXT_X = -320;
 
-        this.clearedLineText = scene.add.text(TEXT_X, 0, "まだ消していない", styleConfig);
+        this.clearedLineText = scene.add.text(TEXT_X, 100, "まだ消していない", styleConfig);
         container.add(this.clearedLineText);
 
-        this.levelText = scene.add.text(TEXT_X, 30, "レベル　1", styleConfig);
+        this.levelText = scene.add.text(TEXT_X, 130, "レベル　1", styleConfig);
         container.add(this.levelText);
 
-        this.scoreText = scene.add.text(TEXT_X, 60, "スコア　00000", styleConfig);
+        this.scoreText = scene.add.text(TEXT_X, 160, "スコア　00000", styleConfig);
         container.add(this.scoreText);
 
-        this.timeText = scene.add.text(TEXT_X - 50, 90, "経過　", styleConfig);
+        this.timeText = scene.add.text(TEXT_X - 50, 190, "経過　", styleConfig);
         container.add(this.timeText);
     }
 
