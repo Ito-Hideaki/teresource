@@ -6,9 +6,9 @@ import { CurrentMinoManager } from "./minomanager";
 
 /** @param { CellBoard } cellBoard */
 function detectAllClear(cellBoard) {
-    for(let row = 0; row < cellBoard.rowCount; row++) {
-        for(let column = 0; column < cellBoard.columnCount; column++) {
-            if(cellBoard.getCell(row, column).isBlock) return false;
+    for (let row = 0; row < cellBoard.rowCount; row++) {
+        for (let column = 0; column < cellBoard.columnCount; column++) {
+            if (cellBoard.getCell(row, column).isBlock) return false;
         }
     }
     return true;
@@ -21,26 +21,26 @@ function detectTSpecial(cellBoard, currentMinoManager) {
         return cellBoard.isCellPosOutOfTable(row, column) || cellBoard.getCell(row, column).isBlock;
     }
 
-    if(currentMinoManager.mino.type !== "t") return false;
+    if (currentMinoManager.mino.type !== "t") return false;
 
     //cellPos of the center of the T mino
     const minoRow = currentMinoManager.row, minoColumn = currentMinoManager.column;
     let cornerBlockCount = 0;
-    if(isCellBlock(minoRow - 1, minoColumn - 1)) cornerBlockCount++;
-    if(isCellBlock(minoRow - 1, minoColumn + 1)) cornerBlockCount++;
-    if(isCellBlock(minoRow + 1, minoColumn - 1)) cornerBlockCount++;
-    if(isCellBlock(minoRow + 1, minoColumn + 1)) cornerBlockCount++;
+    if (isCellBlock(minoRow - 1, minoColumn - 1)) cornerBlockCount++;
+    if (isCellBlock(minoRow - 1, minoColumn + 1)) cornerBlockCount++;
+    if (isCellBlock(minoRow + 1, minoColumn - 1)) cornerBlockCount++;
+    if (isCellBlock(minoRow + 1, minoColumn + 1)) cornerBlockCount++;
 
     return cornerBlockCount >= 3;
 }
 
 /** @param {CellBoard} cellBoard @param {CurrentMinoManager} currentMinoManager */
 function detectTMini(cellBoard, currentMinoManager) {
-    if(currentMinoManager.mino.type !== "t") return false;
+    if (currentMinoManager.mino.type !== "t") return false;
     //cellPos of the center of the T mino
     const minoRow = currentMinoManager.row, minoColumn = currentMinoManager.column;
-    if(cellBoard.isCellPosOutOfTable(minoRow - 1, minoColumn + 1)) return true;
-    if(cellBoard.isCellPosOutOfTable(minoRow + 1, minoColumn + 1)) return true;
+    if (cellBoard.isCellPosOutOfTable(minoRow - 1, minoColumn + 1)) return true;
+    if (cellBoard.isCellPosOutOfTable(minoRow + 1, minoColumn + 1)) return true;
     return false;
 }
 
@@ -79,26 +79,26 @@ export class GameAttackState {
         //update isLastMoveSpecial
         const rotateOccured = Boolean(boardUpdateDiff.appliedRotationAngle);
         const moveOccured = Boolean(boardUpdateDiff.horizontalMinoMove);
-        if(rotateOccured) {
+        if (rotateOccured) {
             this.isLastMoveSpecial = detectTSpecial(this.cellBoard, this.currentMinoManager);
             this.isLastMoveMini = detectTMini(this.cellBoard, this.currentMinoManager);
-            if(this.isLastMoveSpecial) window.log("Special!");
-        } else if(moveOccured) {
+            if (this.isLastMoveSpecial) window.log("Special!");
+        } else if (moveOccured) {
             this.isLastMoveSpecial = false;
             this.isLastMoveMini = false;
         }
 
-        if(boardUpdateDiff.placedByHardDrop || boardUpdateDiff.placedByLockDown) {
-            if(clearedRowLength) {
+        if (boardUpdateDiff.placedByHardDrop || boardUpdateDiff.placedByLockDown) {
+            if (clearedRowLength) {
                 //update combo
-                if(this.preCombo) {
+                if (this.preCombo) {
                     this.combo++;
                 } else {
                     this.preCombo = true;
                 }
                 //update back to back
-                if((clearedRowLength === 4) || this.isLastMoveSpecial) {
-                    if(this.preB2B) { this.B2B = true; window.log("B2B");}
+                if ((clearedRowLength === 4) || this.isLastMoveSpecial) {
+                    if (this.preB2B) { this.B2B = true; window.log("B2B"); }
                     else this.preB2B = true;
                 } else {
                     this.preB2B = false;
@@ -115,19 +115,9 @@ export class GameAttackState {
     /** @param {number[]} clearedRowList */
     createLineClearAttackData(clearedRowList) {
         const isAllClear = detectAllClear(this.cellBoard);
-        if(isAllClear) window.log("All Clear!");
+        if (isAllClear) window.log("All Clear!");
 
-        const basicDamage = ([0, 0, 1, 2, 4])[clearedRowList.length];
-        const isMini = this.isLastMoveMini && clearedRowList.length === 1;
-        const specialDamage = this.isLastMoveSpecial && !isMini ? ([0, 2, 3, 4])[clearedRowList.length] : 0;
-        const COMBO_DAMAGE_TABLE = [0, 1, 1, 1, 2, 2, 2, 3, 3, 3];
-        const B2BDamage = this.B2B ? 1 : 0;
-        const MAX_COMBO_DAMAGE = 4;
-        const comboDamage = this.combo < COMBO_DAMAGE_TABLE.length ? COMBO_DAMAGE_TABLE[this.combo] : MAX_COMBO_DAMAGE;
-        const allClearDamage = isAllClear ? 10 : 0;
-
-        const MAX_DAMAGE = 10;
-        const damage = Math.min(MAX_DAMAGE, basicDamage + specialDamage + B2BDamage + comboDamage + allClearDamage);
+        const damage = !clearedRowList.length ? 0 : this.#calcDamage(clearedRowList);
 
         return new LineClearAttackData({
             clearedRowList,
@@ -138,5 +128,20 @@ export class GameAttackState {
             B2B: this.B2B,
             damage
         });
+    }
+
+    #calcDamage(clearedRowList) {
+        const isAllClear = detectAllClear(this.cellBoard);
+        const basicDamage = ([0, 0, 1, 2, 4])[clearedRowList.length];
+        const isMini = this.isLastMoveMini && clearedRowList.length === 1;
+        const specialDamage = this.isLastMoveSpecial && !isMini ? ([0, 2, 3, 4])[clearedRowList.length] : 0;
+        const COMBO_DAMAGE_TABLE = [0, 1, 1, 1, 2, 2, 2, 3, 3, 3];
+        const B2BDamage = this.B2B ? 1 : 0;
+        const MAX_COMBO_DAMAGE = 4;
+        const comboDamage = this.combo < COMBO_DAMAGE_TABLE.length ? COMBO_DAMAGE_TABLE[this.combo] : MAX_COMBO_DAMAGE;
+        const allClearDamage = isAllClear ? 10 : 0;
+
+        const MAX_DAMAGE = 10;
+        return Math.min(MAX_DAMAGE, basicDamage + specialDamage + B2BDamage + comboDamage + allClearDamage);
     }
 }
