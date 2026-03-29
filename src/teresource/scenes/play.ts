@@ -7,7 +7,7 @@ import { viteURLify } from "#util";
 import { GameSessionConfig } from "./play/controller/gamesession";
 import { ConfigUIDataHandler } from "../configUI";
 import { ConfigCategory } from "../configUIData";
-import { TBPHandler } from "./play/controller/tbp";
+import { BotConfig, TBPHandler } from "./play/controller/tbp";
 
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene: Phaser.Scene) {
@@ -50,6 +50,7 @@ type PlayerKeyboardControlConfig = {
 
 type PlayerBotControlConfig = {
     type: "bot";
+    botConfig: BotConfig;
 }
 
 type PlayerConfig = {
@@ -130,7 +131,7 @@ export class PlayScene extends Phaser.Scene {
                         const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, game.controlOrderProvider);
                         return { keyInputProcessor, ...playerConfig.control };
                     case "bot":
-                        const handler = new TBPHandler(game.gameContext);
+                        const handler = new TBPHandler(playerConfig.control.botConfig, game.gameContext);
                         return { handler, ...playerConfig.control };
                 }
             })();

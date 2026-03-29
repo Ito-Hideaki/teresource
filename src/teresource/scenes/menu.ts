@@ -95,6 +95,7 @@ class MenuObject {
                     { name: "BACKFIRE", onEnter: "playbackfiredemo"},
                     { name: "2P", onEnter: "play2pdemo" },
                     { name: "BOT", onEnter: "playbotdemo" },
+                    { name: "BOT (INVINCIBLE)", onEnter: "playbotdemo2" },
                 ]
             },
             { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
@@ -327,7 +328,29 @@ export class MenuScene extends Phaser.Scene {
                         control: { type: "keyboard", ...keyBindingConfig },
                         game: gameConfig
                     }, {
-                        control: { type: "bot" },
+                        control: { type: "bot", botConfig: { type: "test1" } },
+                        game: gameConfig
+                    }],
+                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
+                    sendAttackToMyself: false,
+                    sendAttackToOthers: true
+                }
+            };
+            scene.scene.start("play", playSceneData);
+        });
+
+        scene.menuObj.ee.on("playbotdemo2", () => {
+            const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
+
+            const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
+            const playSceneData: PlaySceneData = {
+                matchConfig: {
+                    players: [{
+                        // @ts-ignore
+                        control: { type: "keyboard", ...keyBindingConfig },
+                        game: gameConfig
+                    }, {
+                        control: { type: "bot", botConfig: { type: "test2" } },
                         game: gameConfig
                     }],
                     session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
