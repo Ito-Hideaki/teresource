@@ -5,8 +5,8 @@ import { KeyBindingConfig, KeyInputProcessor } from "./play/controller/controlor
 import { CellSheetParent, loadCellSkinTextures } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 import { GameSessionConfig } from "./play/controller/gamesession";
-import { Cell } from "./play/core/mechanics";
 import { ConfigUIDataHandler } from "../configUI";
+import { ConfigCategory } from "../configUIData";
 
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene: Phaser.Scene) {
@@ -29,7 +29,6 @@ export function loadFirstLevelTextures(scene: Phaser.Scene) {
 
 /**create textures using loaded textures. Only executable once. @param {Phaser.Scene} scene */
 export function createSecondLevelTextures(scene: Phaser.Scene) {
-    /** @type {Object.<string, CellSheetParent>} */
     const cellSheetParentIndex: { [key: string]: CellSheetParent } = {};
     cellImgSkins.forEach(skin => {
         cellSheetParentIndex[skin] = new CellSheetParent(scene, skin);
@@ -41,12 +40,19 @@ export type PlaySceneData = {
     matchConfig: MatchConfig
 }
 
+type PlayerKeyboardControlConfig = {
+    type: "keyboard";
+    game: KeyBindingConfig;
+    reload: string[];
+    quit: string[];
+};
+
+type PlayerBotControlConfig = {
+    type: "bot";
+}
+
 type PlayerConfig = {
-    keyBinding: {
-        game: KeyBindingConfig;
-        reload: string[];
-        quit: string[];
-    };
+    control: PlayerKeyboardControlConfig | PlayerBotControlConfig;
     game: GameConfig;
 }
 
@@ -57,11 +63,18 @@ type MatchConfig = {
     sendAttackToMyself: boolean;
 }
 
+type PlayerKeyboardControl = {
+    keyInputProcessor: KeyInputProcessor;
+} & PlayerKeyboardControlConfig;
+
+type PlayerBotControl = {
+
+} & PlayerBotControlConfig;
+
 type Player = {
     game: SingleGame;
-    keyInputProcessor: KeyInputProcessor;
-    keyBinding: PlayerConfig["keyBinding"];
-}
+    control: PlayerKeyboardControl | PlayerBotControl;
+};
 
 export class PlayScene extends Phaser.Scene {
 
@@ -97,7 +110,7 @@ export class PlayScene extends Phaser.Scene {
         //@ts-ignore
         this.cellSheetParentIndex = this.game.cellSheetParentIndex as { [key: string]: CellSheetParent };
         //@ts-ignore
-        const configUIDataHandlerMap = this.game.configUIDataHandlerMap as { [key: string]: ConfigUIDataHandler };
+        const configUIDataHandlerMap = this.game.configUIDataHandlerMap as { [key in ConfigCategory]: ConfigUIDataHandler };
 
         const matchConfig = data.matchConfig;
         const playerNumber = matchConfig.players.length;
@@ -109,8 +122,17 @@ export class PlayScene extends Phaser.Scene {
             container.x = this.game.canvas.width * ((i + 0.5) / playerNumber);
             container.y = this.game.canvas.height / 2;
             game.gameUpdator.setSessionFromConfig(matchConfig.session);
-            const keyInputProcessor = new KeyInputProcessor(playerConfig.keyBinding.game, game.controlOrderProvider);
-            return { game, keyInputProcessor, keyBinding: playerConfig.keyBinding };
+
+            const control: Player["control"] = (() => {
+                switch (playerConfig.control.type) {
+                    case "keyboard":
+                        const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, game.controlOrderProvider);
+                        return { keyInputProcessor, ...playerConfig.control };
+                    case "bot":
+                        return playerConfig.control;
+                }
+            })();
+            return { game, control };
         });
 
         this.sendAttackToMyself = matchConfig.sendAttackToMyself;
@@ -122,20 +144,23 @@ export class PlayScene extends Phaser.Scene {
             if (e.repeat) return;
 
             for (const player of this.players) {
-                if (player.keyBinding.reload.includes(e.code)) this.reload();
-                else if (player.keyBinding.quit.includes(e.code)) this.quit();
+                if (player.control.type === "keyboard") {
+                    if (player.control.reload.includes(e.code)) this.reload();
+                    else if (player.control.quit.includes(e.code)) this.quit();
 
-                player.keyInputProcessor.keyDown(e.code);
+                    player.control.keyInputProcessor.keyDown(e.code);
+                }
             }
         });
-
         this.input.keyboard?.on("keyup", (e: KeyboardEvent) => {
             if (!this.game.inputEnabled) return;
 
             for (const player of this.players) {
-                player.keyInputProcessor.keyUp(e.code);
+                if (player.control.type === "keyboard") {
+                    player.control.keyInputProcessor.keyUp(e.code);
+                }
             }
-        })
+        });
 
         const rebootButton = this.add.dom(200, 100, "div", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0; user-select: none;", "New Game");
         rebootButton.addListener("click");
