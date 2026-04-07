@@ -264,7 +264,7 @@ export class MenuScene extends Phaser.Scene {
                 matchConfig: {
                     players: [{
                         // @ts-ignore
-                        keyBinding: keyBindingConfig,
+                        control: { type: "keyboard", ...keyBindingConfig },
                         game: gameConfig
                     }],
                     session: { type: GameSession.SessionType.Line, targetLines: 40, timeLimit: 0 },
@@ -283,7 +283,7 @@ export class MenuScene extends Phaser.Scene {
                 matchConfig: {
                     players: [{
                         // @ts-ignore
-                        keyBinding: keyBindingConfig,
+                        control: { type: "keyboard", ...keyBindingConfig },
                         game: gameConfig
                     }],
                     session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
