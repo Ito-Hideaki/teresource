@@ -97,6 +97,7 @@ export class SingleGame {
 
         this.gameUpdator = gameUpdator;
         this.gameContext = gameContext;
+        this.gameHighContext = gameHighContext;
         this.gameViewController = gameViewController;
         this.controlOrderProvider = controlOrderProvider;
     }

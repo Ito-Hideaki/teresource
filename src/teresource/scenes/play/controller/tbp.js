@@ -1,5 +1,50 @@
-import { GameContext } from "../infra/context";
+import { GameAttackState } from "../core/attack";
+import { Cell, CellBoard, Mino } from "../core/mechanics";
+import { MinoQueueManager } from "../core/minomanager";
+import { GameContext, GameHighContext } from "../infra/context";
 import { ControlOrder } from "./controlorder";
+
+/** @param {Mino} mino */
+function minoChar(mino) {
+    return mino.type.toUpperCase();
+}
+
+/** @param {Cell} cell */
+function cellChar(cell) {
+    if(cell.isBlock) {
+        return "G";
+    } else {
+        return null;
+    }
+}
+
+/**
+ *  @param {GameContext} gameContext
+ *  @param {GameAttackState} gameAttackState
+ */
+function createStartMessageCreator(gameContext, gameAttackState) {
+    const { cellBoard, minoQueueManager, heldMinoManager } = gameContext;
+    return function() {
+        const heldMino = heldMinoManager.getMino();
+        const board = new Array(40).fill().map((_, i) => {
+        const cellRow = cellBoard.table.at(-i);
+        if(cellRow) return new Array(10).fill().map((_, j) => {
+                const cell = cellRow.at(j);
+                if(cell) return cellChar(cell);
+                else return null;
+            });
+            else return new Array(10).fill(null);
+        });
+        return {
+            type: "start",
+            hold: heldMino ? minoChar(heldMino) : null,
+            queue: minoQueueManager.minoQueue.map(mino => minoChar(mino)),
+            combo: gameAttackState.combo,
+            back_to_back: gameAttackState.B2B,
+            board
+        }
+    }
+}
 
 function sendJson(json) {
     console.log(json);
@@ -12,10 +57,12 @@ export class TBPHandler {
     /** @type { Phaser.Events.EventEmitter } */
     static devResponseEmitter;
 
-    /** @param {BotConfig} botConfig @param {GameContext} gameContext */
-    constructor(botConfig, gameContext) {
+    /** @param {BotConfig} botConfig @param {GameContext} gameContext @param {GameHighContext} gameHighContext */
+    constructor(botConfig, gameContext, gameHighContext) {
         this.type = botConfig.type;
+        this.terminated = false;
         this.responseEmitter = TBPHandler.devResponseEmitter;
+        this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState);
 
         if(this.type === "test2") this.#session();
     }
@@ -27,26 +74,36 @@ export class TBPHandler {
                 if(message.type !== type) return;
 
                 this.responseEmitter.off("response", callback);
-                res(message);
+                if(this.terminated) {
+                    rej();
+                } else {
+                    res(message);
+                }
             };
             this.responseEmitter.on("response", callback);
         });
     }
 
     async #session() {
-        //launch CC
+        try {
+            //launch CC
 
-        await this.#waitForResponse("info");
+            await this.#waitForResponse("info");
 
-        sendJson(JSON.stringify({ type: "rules" }));
+            sendJson(JSON.stringify({ type: "rules" }));
 
-        await this.#waitForResponse("ready");
+            await this.#waitForResponse("ready");
 
-        console.log("Bot is Ready!");
+            sendJson(JSON.stringify(this.createStartMessage()));
+
+        } catch(e) {
+            //Terminate Bot Gracefully
+            console.log("Bot terminated");
+        }
     }
 
     quit() {
-
+        this.terminated = true;
     }
 
     update() {

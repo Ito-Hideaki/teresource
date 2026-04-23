@@ -131,7 +131,7 @@ export class PlayScene extends Phaser.Scene {
                         const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, game.controlOrderProvider);
                         return { keyInputProcessor, ...playerConfig.control };
                     case "bot":
-                        const handler = new TBPHandler(playerConfig.control.botConfig, game.gameContext);
+                        const handler = new TBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext);
                         return { handler, ...playerConfig.control };
                 }
             })();
