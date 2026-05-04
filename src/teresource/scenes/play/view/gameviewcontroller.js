@@ -35,7 +35,5 @@ export class GameViewController {
         this.#elements.gameEffectManagerView.update(deltaTime);
         this.#elements.gameStatsView.update();
         this.#elements.scheduledDamageView.update();
-
-        this.#reportStack.renewAll();
     }
 }

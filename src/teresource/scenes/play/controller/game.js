@@ -20,6 +20,7 @@ import { GameStatsView } from "../view/gamestatsview";
 import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from "../core/garbage";
 import { ScheduledDamageView } from "../view/scheduleddamageview";
 import { MINO_DATA_INDEX } from "../core/coredata";
+import { GameAudioPlayer } from "../audio/gameaudioplayer";
 
 /** 
  * @typedef {{
@@ -94,6 +95,8 @@ export class SingleGame {
 
         //Create elements of the scene
         const { gameViewController } = this.#createView({ gameConfig, gameHighContext, gameContext, scene });
+
+        this.audioPlayer = new GameAudioPlayer(scene, gameReportStack);
 
         this.gameUpdator = gameUpdator;
         this.gameContext = gameContext;

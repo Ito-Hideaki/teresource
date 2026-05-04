@@ -92,6 +92,7 @@ export class GameUpdator {
     }
 
     update(deltaTime: number): UpdateResult {
+        this.reporter.renewAll();
 
         const result: UpdateResult = {
             placed: false
@@ -271,5 +272,9 @@ class GameReporter {
 
     addScheduledDamage(scheduledDamage: ScheduledDamage) {
         this.reportStack.add(new RecieveScheduledDamageReport(scheduledDamage));
+    }
+
+    renewAll() {
+        this.reportStack.renewAll();
     }
 }

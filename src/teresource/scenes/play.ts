@@ -199,6 +199,7 @@ export class PlayScene extends Phaser.Scene {
 
         this.players.forEach(player => {
             player.game.gameViewController.update(deltaTime);
+            player.game.audioPlayer.update();
         });
     }
 

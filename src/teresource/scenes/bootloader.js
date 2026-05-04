@@ -3,6 +3,7 @@ import { viteURLify } from "#util";
 import { createSecondLevelTextures, loadFirstLevelTextures as loadFirstLevelTexturesOfPlayScene } from "./play";
 import { generateCellSheetTextureKey } from "./play/view/celltexturecore";
 import { createMenuTexture } from "./menu";
+import { loadAudio } from "./play/audio/loadaudio";
 
 export class BootloaderScene extends Phaser.Scene {
     constructor() {
@@ -32,6 +33,7 @@ export class BootloaderScene extends Phaser.Scene {
         new Promise((resolve, reject) => {
             this.load.on("progress", setProgress);
             loadFirstLevelTexturesOfPlayScene(this);
+            loadAudio(scene);
             this.load.once("complete", () => { resolve() });
             this.load.start();
         }).then(() => {
