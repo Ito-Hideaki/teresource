@@ -96,6 +96,14 @@ export class TBPHandler {
 
             sendJson(JSON.stringify(this.createStartMessage()));
 
+            while(true) {
+
+                sendJson(JSON.stringify({ type: "suggest" }));
+
+                const { moves } = await this.#waitForResponse("suggestion");
+
+                sendJson(JSON.stringify({ type: "play", move: moves[0] }));
+            }
         } catch(e) {
             //Terminate Bot Gracefully
             console.log("Bot terminated");

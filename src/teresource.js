@@ -5,6 +5,7 @@ import { createConfigUIElement } from "./teresource/configUI";
 import { createLogBox } from "./teresource/logUI";
 import { MenuScene } from "./teresource/scenes/menu";
 import { TBPHandler } from "./teresource/scenes/play/controller/tbp";
+import { CC2Handler } from "./cc2";
 
 addEventListener("DOMContentLoaded", () => {
 
@@ -63,4 +64,8 @@ addEventListener("DOMContentLoaded", () => {
     window.devBot = function(json) {
         TBPHandler.devResponseEmitter.emit("response", json);
     }
+
+    new CC2Handler(obj => {
+        console.log(obj);
+    });
 });
