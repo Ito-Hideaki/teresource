@@ -118,14 +118,16 @@ export class GameAttackState {
         if (isAllClear) window.log("All Clear!");
 
         const damage = !clearedRowList.length ? 0 : this.#calcDamage(clearedRowList);
+        const B2B = clearedRowList.length && this.B2B;
+        const combo = clearedRowList.length && this.combo;
 
         return new LineClearAttackData({
             clearedRowList,
-            combo: this.combo,
+            combo,
             isSpecial: this.isLastMoveSpecial,
             isMini: this.isLastMoveMini,
             isAllClear,
-            B2B: this.B2B,
+            B2B,
             damage
         });
     }
