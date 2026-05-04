@@ -10,6 +10,12 @@ export class GameAudioPlayer {
 
         if(lineClearAttackData) {
             this.playPlacingSound(lineClearAttackData);
+        } else {
+            if(this.reportStack.minoFall.length) this.scene.sound.play("mino_fall");
+
+            if(this.reportStack.minoHorizontalMove.length) this.scene.sound.play("mino_move_horizontal");
+
+            if(this.reportStack.minoRotate.length) this.scene.sound.play("mino_rotate");
         }
     }
 
