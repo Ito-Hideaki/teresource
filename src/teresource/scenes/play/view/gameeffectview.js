@@ -82,7 +82,7 @@ class LineClearWipeEffectGraphics extends Phaser.GameObjects.Graphics {
     }
 
     destroy() {
-        this.scene.events.off("update", this.update);
+        this.scene.events.off("update", this.update, this);
         super.destroy();
     }
 }
