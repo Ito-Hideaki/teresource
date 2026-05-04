@@ -3,7 +3,7 @@ import { ControlOrder, ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
 import { Cell, Mino } from "../core/mechanics";
-import { LineClearReport, GameReportStack, RecieveScheduledDamageReport } from "./report";
+import { LineClearReport, GameReportStack, RecieveScheduledDamageReport, MinoFallReport, MinoRotateReport, HardDropReport, MinoHorizontalMoveReport } from "./report";
 import { GameAttackState, LineClearAttackData } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
@@ -145,9 +145,7 @@ export class GameUpdator {
             const { boardUpdateDiff, lineClearAttackData, clearedRowList } = this.doNormalUpdate(deltaTime, controlOrder);
 
             //report
-            if (boardUpdateDiff.placed && lineClearAttackData?.clearedRowList.length && lineClearAttackData) {
-                this.reporter.addForEveryUpdate(boardUpdateDiff, lineClearAttackData, clearedRowList);
-            }
+            this.reporter.addForEveryUpdate(boardUpdateDiff, lineClearAttackData, clearedRowList);
 
             //stats
             if(lineClearAttackData && lineClearAttackData.clearedRowList.length) {
@@ -258,8 +256,17 @@ export class GameUpdator {
 class GameReporter {
     constructor(private reportStack: GameReportStack) {}
 
-    addForEveryUpdate(diff: BoardUpdateDiff, lineClearAttackData: LineClearAttackData, rowList: NormalUpdateResult["clearedRowList"]) {
-        this.reportStack.add(new LineClearReport(lineClearAttackData, rowList));
+    addForEveryUpdate(diff: BoardUpdateDiff, lineClearAttackData: LineClearAttackData | undefined, rowList: NormalUpdateResult["clearedRowList"]) {
+        if(lineClearAttackData) this.reportStack.add(new LineClearReport(lineClearAttackData, rowList));
+
+        const rotated = diff.appliedRotationAngle !== 0;
+        if(rotated) this.reportStack.add(new MinoRotateReport());
+
+        if(!rotated && diff.horizontalMinoMove !== 0) this.reportStack.add(new MinoHorizontalMoveReport());
+
+        if(!rotated && !diff.placedByHardDrop && diff.verticalMinoMove > 0) this.reportStack.add(new MinoFallReport());
+
+        if(diff.placedByHardDrop) this.reportStack.add(new HardDropReport());
     }
 
     addScheduledDamage(scheduledDamage: ScheduledDamage) {
