@@ -2,12 +2,13 @@ import { BoardUpdater, BoardUpdateDiff } from "./boardcontroller";
 import { ControlOrder, ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
+import { Cell, Mino } from "../core/mechanics";
 import { LineClearReport, GameReportStack, RecieveScheduledDamageReport } from "./report";
 import { GameAttackState, LineClearAttackData } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
 import { GameSession, GameSessionConfig } from "./gamesession";
-import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from "../core/garbage";
+import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider, ScheduledDamage } from "../core/garbage";
 
 declare global {
     interface Window {
@@ -30,28 +31,31 @@ type UpdateResult = {
 type NormalUpdateResult = {
     boardUpdateDiff: BoardUpdateDiff;
     lineClearAttackData: LineClearAttackData | undefined;
+    clearedRowList: Cell[][];
 };
 
 /** Update the game */
 export class GameUpdator {
 
-    private gameHighContext: GameHighContext;
+    private gameHighContext;
 
-    //References
-    private boardUpdater: BoardUpdater;
-    private controlOrderProvider: ControlOrderProvider;
-    private currentMinoManager: GameContext["currentMinoManager"];
-    private minoQueueManager: GameContext["minoQueueManager"];
-    private heldMinoManager: GameContext["heldMinoManager"];
-    private boardUpdateState: GameContext["boardUpdateState"];
-    private damageProviderPerMino: LinearDamageProvider;
-    private gameReportStack: GameReportStack;
-    private gameStatsManager: GameStatsManager;
-    lineClearManager: LineClearManager;
-    gameAttackState: GameAttackState;
-    private doesCurrentMinoCollide: () => boolean;
-    private garbageGenerator: GarbageGenerator;
+    //Given from Parameters
+    private controlOrderProvider;
+    private currentMinoManager;
+    private minoQueueManager;
+    private heldMinoManager;
+    private boardUpdateState;
+    private damageProviderPerMino;
+    private gameStatsManager;
+    lineClearManager;
+    gameAttackState;
+    private garbageGenerator;
     private gravityPowerBase: number;
+
+    //Instantiated
+    private boardUpdater;
+    private reporter;
+    private doesCurrentMinoCollide;
 
     //States
     allowGarbageNext: boolean;
@@ -65,7 +69,6 @@ export class GameUpdator {
         { damageProviderPerMino }: { damageProviderPerMino: LinearDamageProvider }
     ) {
         this.controlOrderProvider = gameHighContext.controlOrderProvider;
-        this.boardUpdater = new BoardUpdater(gameContext);
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.gameStatsManager = gameHighContext.gameStatsManager;
@@ -80,11 +83,12 @@ export class GameUpdator {
         this.currentMinoManager = gameContext.currentMinoManager;
         this.heldMinoManager = gameContext.heldMinoManager;
         this.boardUpdateState = gameContext.boardUpdateState;
-        this.gameReportStack = gameContext.gameReportStack;
-        this.doesCurrentMinoCollide = createFunction_DoesCurrentMinoCollide(gameContext);
         this.allowGarbageNext = false;
-
         this.gameHighContext = gameHighContext;
+
+        this.doesCurrentMinoCollide = createFunction_DoesCurrentMinoCollide(gameContext);
+        this.boardUpdater = new BoardUpdater(gameContext);
+        this.reporter = new GameReporter(gameContext.gameReportStack);
     }
 
     update(deltaTime: number): UpdateResult {
@@ -138,7 +142,18 @@ export class GameUpdator {
             }
 
             //Finally update board
-            const { boardUpdateDiff, lineClearAttackData } = this.doNormalUpdate(deltaTime, controlOrder);
+            const { boardUpdateDiff, lineClearAttackData, clearedRowList } = this.doNormalUpdate(deltaTime, controlOrder);
+
+            //report
+            if (boardUpdateDiff.placed && lineClearAttackData?.clearedRowList.length && lineClearAttackData) {
+                this.reporter.addForEveryUpdate(boardUpdateDiff, lineClearAttackData, clearedRowList);
+            }
+
+            //stats
+            if(lineClearAttackData && lineClearAttackData.clearedRowList.length) {
+                this.gameStatsManager.setNewLineClearAttackData(lineClearAttackData);
+            }
+
             if (boardUpdateDiff.placed) result.placed = true;
             result.lineClearAttackData = lineClearAttackData;
         }
@@ -165,10 +180,8 @@ export class GameUpdator {
         if (!this.session.isOver) {
             this.gameStatsManager.update(deltaTime);
 
-            this.gameReportStack.lineClear.forEach((lineClearReport) => {
-                const lineCount = lineClearReport.data.clearedRowList.length;
-                window.log(`${lineCount} line(s) cleared`);
-            });
+            const lineCount = result.lineClearAttackData?.clearedRowList.length;
+            if(lineCount) { window.log(`${lineCount} line(s) cleared`); }
         }
 
         //auto damage
@@ -207,19 +220,13 @@ export class GameUpdator {
             ? this.gameAttackState.createLineClearAttackData(rowToClearList)
             : undefined;
 
-        //Start line clear effect
-        if (boardUpdateDiff.placed && rowToClearList.length && lineClearAttackData) {
-            this.gameReportStack.add(new LineClearReport(lineClearAttackData, clearedRowList));
-            this.gameStatsManager.setNewLineClearAttackData(lineClearAttackData);
-        }
-
         //Garbage
         this.allowGarbageNext = boardUpdateDiff.placed;
 
-        return { boardUpdateDiff, lineClearAttackData };
+        return { boardUpdateDiff, lineClearAttackData, clearedRowList };
     }
 
-    private putNewMino(mino: GameContext["currentMinoManager"]["mino"]): void {
+    private putNewMino(mino: Mino): void {
         this.currentMinoManager.startNextMino(mino);
         this.boardUpdateState.startNewMino();
         this.controlOrderProvider.resetARR();
@@ -244,6 +251,18 @@ export class GameUpdator {
             arrived: false
         };
         this.scheduledDamageState.damageStack.push(scheduledDamage);
-        this.gameReportStack.add(new RecieveScheduledDamageReport(scheduledDamage));
+        this.reporter.addScheduledDamage(scheduledDamage);
+    }
+}
+
+class GameReporter {
+    constructor(private reportStack: GameReportStack) {}
+
+    addForEveryUpdate(diff: BoardUpdateDiff, lineClearAttackData: LineClearAttackData, rowList: NormalUpdateResult["clearedRowList"]) {
+        this.reportStack.add(new LineClearReport(lineClearAttackData, rowList));
+    }
+
+    addScheduledDamage(scheduledDamage: ScheduledDamage) {
+        this.reportStack.add(new RecieveScheduledDamageReport(scheduledDamage));
     }
 }
