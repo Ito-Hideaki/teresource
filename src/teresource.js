@@ -5,7 +5,7 @@ import { createConfigUIElement } from "./teresource/configUI";
 import { createLogBox } from "./teresource/logUI";
 import { MenuScene } from "./teresource/scenes/menu";
 import { TBPHandler } from "./teresource/scenes/play/controller/tbp";
-import { CC2Handler } from "./cc2";
+import { CC2Handler } from "#cc2";
 
 addEventListener("DOMContentLoaded", () => {
 
