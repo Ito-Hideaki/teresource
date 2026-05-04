@@ -62,6 +62,8 @@ function getControlOrderProviderConfig(gameConfig) {
 
 export class SingleGame {
 
+    #gameReportStack;
+
     /** @param {PlayScene} scene @param {GameConfig} gameConfig */
     constructor(scene, gameConfig) {
         const boardSize = new BoardSize(gameConfig.boardHeight * 2, gameConfig.boardWidth);
@@ -97,6 +99,8 @@ export class SingleGame {
         const { gameViewController } = this.#createView({ gameConfig, gameHighContext, gameContext, scene });
 
         this.audioPlayer = new GameAudioPlayer(scene, gameReportStack);
+
+        this.#gameReportStack = gameReportStack;
 
         this.gameUpdator = gameUpdator;
         this.gameContext = gameContext;
@@ -140,6 +144,10 @@ export class SingleGame {
         });
 
         return { gameViewController };
+    }
+
+    renewReport() {
+        this.#gameReportStack.renewAll();
     }
 }
 
