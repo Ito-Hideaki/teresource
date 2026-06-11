@@ -29,6 +29,10 @@ export class MinoFallReport {
     readonly type = "MinoFall";
 }
 
+export class SpecialRotateReport {
+    readonly type = "SpecialRotate";
+}
+
 /** contain report stacks that become empty every frame */
 export class ReportStack {
     constructor() {
@@ -38,7 +42,7 @@ export class ReportStack {
     }
 }
 
-type GameReport = LineClearReport | RecieveScheduledDamageReport | MinoHorizontalMoveReport | MinoFallReport | MinoRotateReport | HardDropReport;
+type GameReport = LineClearReport | RecieveScheduledDamageReport | MinoHorizontalMoveReport | MinoFallReport | MinoRotateReport | HardDropReport | SpecialRotateReport;
 
 export class GameReportStack {
     lineClear: LineClearReport[] = [];
@@ -47,6 +51,7 @@ export class GameReportStack {
     minoFall: MinoFallReport[] = [];
     minoRotate: MinoRotateReport[] = [];
     hardDrop: HardDropReport[] = [];
+    specialRotate: SpecialRotateReport[] = [];
 
     add(report: GameReport) {
         switch(report.type) {
@@ -68,6 +73,9 @@ export class GameReportStack {
             case "MinoRotate":
                 this.minoRotate.push(report);
                 break;
+            case "SpecialRotate":
+                this.specialRotate.push(report);
+                break;
         }
     }
 
@@ -78,5 +86,6 @@ export class GameReportStack {
         this.minoRotate = [];
         this.minoFall = [];
         this.hardDrop = [];
+        this.specialRotate = [];
     }
 }

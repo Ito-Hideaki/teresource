@@ -15,7 +15,13 @@ export class GameAudioPlayer {
 
             if(this.reportStack.minoHorizontalMove.length) this.scene.sound.play("mino_move_horizontal");
 
-            if(this.reportStack.minoRotate.length) this.scene.sound.play("mino_rotate");
+            if(this.reportStack.minoRotate.length) {
+                if(this.reportStack.specialRotate.length) {
+                    this.scene.sound.play("mino_rotate_special");
+                } else {
+                    this.scene.sound.play("mino_rotate");
+                }
+            }
         }
     }
 

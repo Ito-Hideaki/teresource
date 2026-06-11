@@ -3,7 +3,7 @@ import { ControlOrder, ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
 import { Cell, Mino } from "../core/mechanics";
-import { LineClearReport, GameReportStack, RecieveScheduledDamageReport, MinoFallReport, MinoRotateReport, HardDropReport, MinoHorizontalMoveReport } from "./report";
+import { LineClearReport, GameReportStack, RecieveScheduledDamageReport, MinoFallReport, MinoRotateReport, HardDropReport, MinoHorizontalMoveReport, SpecialRotateReport } from "./report";
 import { GameAttackState, LineClearAttackData } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
@@ -88,7 +88,7 @@ export class GameUpdator {
 
         this.doesCurrentMinoCollide = createFunction_DoesCurrentMinoCollide(gameContext);
         this.boardUpdater = new BoardUpdater(gameContext);
-        this.reporter = new GameReporter(gameContext.gameReportStack);
+        this.reporter = new GameReporter(gameContext.gameReportStack, gameHighContext.gameAttackState);
     }
 
     update(deltaTime: number): UpdateResult {
@@ -253,13 +253,15 @@ export class GameUpdator {
 }
 
 class GameReporter {
-    constructor(private reportStack: GameReportStack) {}
+    constructor(private reportStack: GameReportStack, private attackState: GameAttackState) {}
 
     addForEveryUpdate(diff: BoardUpdateDiff, lineClearAttackData: LineClearAttackData | undefined, rowList: NormalUpdateResult["clearedRowList"]) {
         if(lineClearAttackData) this.reportStack.add(new LineClearReport(lineClearAttackData, rowList));
 
         const rotated = diff.appliedRotationAngle !== 0;
         if(rotated) this.reportStack.add(new MinoRotateReport());
+
+        if(rotated && this.attackState.isLastMoveSpecial) this.reportStack.add(new SpecialRotateReport());
 
         if(!rotated && diff.horizontalMinoMove !== 0) this.reportStack.add(new MinoHorizontalMoveReport());
 

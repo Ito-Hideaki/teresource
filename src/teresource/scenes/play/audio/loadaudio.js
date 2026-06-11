@@ -6,6 +6,7 @@ const SOUND_EFFECT_FILES = {
     "mino_fall" : "ミノ落下.mp3",
     "mino_move_horizontal" : "ミノ移動.mp3",
     "mino_rotate": "ミノ回転.mp3",
+    "mino_rotate_special": "3版_ミノ回転入れ.mp3",
 }
 
 const AUDIO_FILES = {

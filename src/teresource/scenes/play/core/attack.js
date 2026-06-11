@@ -82,7 +82,6 @@ export class GameAttackState {
         if (rotateOccured) {
             this.isLastMoveSpecial = detectTSpecial(this.cellBoard, this.currentMinoManager);
             this.isLastMoveMini = detectTMini(this.cellBoard, this.currentMinoManager);
-            if (this.isLastMoveSpecial) window.log("Special!");
         } else if (moveOccured) {
             this.isLastMoveSpecial = false;
             this.isLastMoveMini = false;
