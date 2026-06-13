@@ -156,7 +156,7 @@ export class GameUpdator {
             if (this.minoQueueAssistant.spawnNextMinoWhenPlaced()) {
                 whenNewMinoSpawned();
             }
-
+            //immediately quit when the current mino collides
             if (this.doesCurrentMinoCollide()) {
                 this.session.markAsOver();
                 return result;
@@ -167,7 +167,7 @@ export class GameUpdator {
             if (controlOrder.get(ControlOrder.HOLD) && this.minoQueueAssistant.trySpawnHeldMino()) {
                 whenNewMinoSpawned();
             }
-
+            //immediately quit when the current mino collides
             if (this.doesCurrentMinoCollide()) {
                 this.session.markAsOver();
                 return result;
