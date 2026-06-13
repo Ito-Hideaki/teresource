@@ -122,71 +122,11 @@ export class GameUpdator {
     }
 
     update(deltaTime: number): UpdateResult {
-        const result: UpdateResult = {
-            placed: false
-        };
-
+        
         this.lineClearManager.update(deltaTime);
 
-        if (!this.lineClearManager.isDuringLineClear() && !this.session.isOver) {
-            //add garbage
-            if (this.allowGarbageNext) {
-                const damageStack = this.scheduledDamageState.damageStack;
-                let scheduledDamage = damageStack[0];
-                while (scheduledDamage && scheduledDamage.arrived) {
-                    damageStack.splice(0, 1);
-                    this.garbageGenerator.addGarbage(scheduledDamage.length);
-
-                    scheduledDamage = damageStack[0];
-                }
-            }
-
-            //check if the game has reached session goal
-            if (this.session.isTargetCompleted()) {
-                this.session.markAsOver();
-                return result;
-            }
-
-            const whenNewMinoSpawned = () => {
-                this.boardUpdateState.startNewMino();
-                this.controlOrderProvider.resetARR();
-            }
-
-            //Take new mino from queue
-            if (this.minoQueueAssistant.spawnNextMinoWhenPlaced()) {
-                whenNewMinoSpawned();
-            }
-            //immediately quit when the current mino collides
-            if (this.doesCurrentMinoCollide()) {
-                this.session.markAsOver();
-                return result;
-            }
-
-            //Take held mino
-            const controlOrder = this.controlOrderProvider.provideControlOrder();
-            if (controlOrder.get(ControlOrder.HOLD) && this.minoQueueAssistant.trySpawnHeldMino()) {
-                whenNewMinoSpawned();
-            }
-            //immediately quit when the current mino collides
-            if (this.doesCurrentMinoCollide()) {
-                this.session.markAsOver();
-                return result;
-            }
-
-            //Finally update board
-            const { boardUpdateDiff, lineClearAttackData, clearedRowList } = this.doNormalUpdate(deltaTime, controlOrder);
-
-            //report
-            this.reporter.addForEveryUpdate(boardUpdateDiff, lineClearAttackData, clearedRowList);
-
-            //stats
-            if(lineClearAttackData && lineClearAttackData.clearedRowList.length) {
-                this.gameStatsManager.setNewLineClearAttackData(lineClearAttackData);
-            }
-
-            if (boardUpdateDiff.placed) result.placed = true;
-            result.lineClearAttackData = lineClearAttackData;
-        }
+        const simulatable = !this.lineClearManager.isDuringLineClear() && !this.session.isOver;
+        const result = (simulatable && this.simulate(deltaTime)) || { placed: false };
 
         //create outgoing attack
         if(result.lineClearAttackData) {
@@ -229,6 +169,70 @@ export class GameUpdator {
         });
 
         return result;
+    }
+
+    private simulate(deltaTime: number): UpdateResult | undefined {
+
+        //add garbage
+        if (this.allowGarbageNext) {
+            const damageStack = this.scheduledDamageState.damageStack;
+            let scheduledDamage = damageStack[0];
+            while (scheduledDamage && scheduledDamage.arrived) {
+                damageStack.splice(0, 1);
+                this.garbageGenerator.addGarbage(scheduledDamage.length);
+
+                scheduledDamage = damageStack[0];
+            }
+        }
+
+        //check if the game has reached session goal
+        if (this.session.isTargetCompleted()) {
+            this.session.markAsOver();
+            return;
+        }
+
+        const whenNewMinoSpawned = () => {
+            this.boardUpdateState.startNewMino();
+            this.controlOrderProvider.resetARR();
+        }
+
+        //Take new mino from queue
+        if (this.minoQueueAssistant.spawnNextMinoWhenPlaced()) {
+            whenNewMinoSpawned();
+        }
+        //immediately quit when the current mino collides
+        if (this.doesCurrentMinoCollide()) {
+            this.session.markAsOver();
+            return;
+        }
+
+        //Take held mino
+        const controlOrder = this.controlOrderProvider.provideControlOrder();
+        const usedHold = controlOrder.get(ControlOrder.HOLD) && this.minoQueueAssistant.trySpawnHeldMino();
+        if (usedHold) {
+            whenNewMinoSpawned();
+        }
+        //immediately quit when the current mino collides
+        if (this.doesCurrentMinoCollide()) {
+            this.session.markAsOver();
+            return;
+        }
+
+        //Finally update board
+        const { boardUpdateDiff, lineClearAttackData, clearedRowList } = this.doNormalUpdate(deltaTime, controlOrder);
+
+        //report
+        this.reporter.addForEveryUpdate(boardUpdateDiff, lineClearAttackData, clearedRowList);
+
+        //stats
+        if(lineClearAttackData && lineClearAttackData.clearedRowList.length) {
+            this.gameStatsManager.setNewLineClearAttackData(lineClearAttackData);
+        }
+
+        const placed = boardUpdateDiff.placed;
+        return {
+            placed, lineClearAttackData
+        }
     }
 
     private doNormalUpdate(deltaTime: number, controlOrder: ControlOrder): NormalUpdateResult {
