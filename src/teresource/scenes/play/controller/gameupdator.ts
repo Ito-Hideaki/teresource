@@ -9,6 +9,40 @@ import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
 import { GameSession, GameSessionConfig } from "./gamesession";
 import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider, ScheduledDamage } from "../core/garbage";
+import { CurrentMinoManager, HeldMinoManager, MinoQueueManager } from "../core/minomanager";
+
+
+/** Manage multiple mino managers regarding the spawning of a mino. */
+class MinoQueueAssistant {
+    currentManager: CurrentMinoManager;
+    queueManager: MinoQueueManager;
+    heldManager: HeldMinoManager;
+    constructor(gameContext: GameContext) {
+        this.currentManager = gameContext.currentMinoManager;
+        this.queueManager = gameContext.minoQueueManager;
+        this.heldManager = gameContext.heldMinoManager;
+    }
+
+    /** @return tell if a new mino was spawned */
+    spawnNextMinoWhenPlaced() {
+        if (this.currentManager.isPlaced) {
+            this.heldManager.resetLimit();
+            this.currentManager.startNextMino(this.queueManager.takeNextMino());
+            return true;
+        }
+        return false;
+    }
+
+    /** @return tell if a new mino was spawned */
+    trySpawnHeldMino() {
+        if (this.heldManager.canRecieveMino()) {
+            const recievedMino = this.heldManager.recieveMino(this.currentManager.mino);
+            this.currentManager.startNextMino(recievedMino ?? this.queueManager.takeNextMino());
+            return true;
+        }
+        return false;
+    }
+}
 
 declare global {
     interface Window {
@@ -41,9 +75,6 @@ export class GameUpdator {
 
     //Given from Parameters
     private controlOrderProvider;
-    private currentMinoManager;
-    private minoQueueManager;
-    private heldMinoManager;
     private boardUpdateState;
     private damageProviderPerMino;
     private gameStatsManager;
@@ -56,6 +87,7 @@ export class GameUpdator {
     private boardUpdater;
     private reporter;
     private doesCurrentMinoCollide;
+    private minoQueueAssistant;
 
     //States
     allowGarbageNext: boolean;
@@ -79,9 +111,7 @@ export class GameUpdator {
 
         this.damageProviderPerMino = damageProviderPerMino;
 
-        this.minoQueueManager = gameContext.minoQueueManager;
-        this.currentMinoManager = gameContext.currentMinoManager;
-        this.heldMinoManager = gameContext.heldMinoManager;
+        this.minoQueueAssistant = new MinoQueueAssistant(gameContext);
         this.boardUpdateState = gameContext.boardUpdateState;
         this.allowGarbageNext = false;
         this.gameHighContext = gameHighContext;
@@ -117,10 +147,14 @@ export class GameUpdator {
                 return result;
             }
 
+            const whenNewMinoSpawned = () => {
+                this.boardUpdateState.startNewMino();
+                this.controlOrderProvider.resetARR();
+            }
+
             //Take new mino from queue
-            if (this.currentMinoManager.isPlaced) {
-                this.heldMinoManager.resetLimit();
-                this.putNewMino(this.minoQueueManager.takeNextMino());
+            if (this.minoQueueAssistant.spawnNextMinoWhenPlaced()) {
+                whenNewMinoSpawned();
             }
 
             if (this.doesCurrentMinoCollide()) {
@@ -130,9 +164,8 @@ export class GameUpdator {
 
             //Take held mino
             const controlOrder = this.controlOrderProvider.provideControlOrder();
-            if (controlOrder.get(ControlOrder.HOLD) && this.heldMinoManager.canRecieveMino()) {
-                const recievedMino = this.heldMinoManager.recieveMino(this.currentMinoManager.mino);
-                this.putNewMino(recievedMino ?? this.minoQueueManager.takeNextMino());
+            if (controlOrder.get(ControlOrder.HOLD) && this.minoQueueAssistant.trySpawnHeldMino()) {
+                whenNewMinoSpawned();
             }
 
             if (this.doesCurrentMinoCollide()) {
@@ -221,12 +254,6 @@ export class GameUpdator {
         this.allowGarbageNext = boardUpdateDiff.placed;
 
         return { boardUpdateDiff, lineClearAttackData, clearedRowList };
-    }
-
-    private putNewMino(mino: Mino): void {
-        this.currentMinoManager.startNextMino(mino);
-        this.boardUpdateState.startNewMino();
-        this.controlOrderProvider.resetARR();
     }
 
     setSession(session: GameSession): void {
