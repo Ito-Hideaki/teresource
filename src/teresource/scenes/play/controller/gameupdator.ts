@@ -3,7 +3,7 @@ import { ControlOrder, ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
 import { Cell, Mino } from "../core/mechanics";
-import { LineClearReport, GameReportStack, RecieveScheduledDamageReport, MinoFallReport, MinoRotateReport, HardDropReport, MinoHorizontalMoveReport, SpecialRotateReport } from "./report";
+import { GameReportStack } from "./report";
 import { GameAttackState, LineClearAttackData } from "../core/attack";
 import { GameStatsManager } from "./stats";
 import { createFunction_DoesCurrentMinoCollide } from "./gameover";
@@ -256,21 +256,21 @@ class GameReporter {
     constructor(private reportStack: GameReportStack, private attackState: GameAttackState) {}
 
     addForEveryUpdate(diff: BoardUpdateDiff, lineClearAttackData: LineClearAttackData | undefined, rowList: NormalUpdateResult["clearedRowList"]) {
-        if(lineClearAttackData) this.reportStack.add(new LineClearReport(lineClearAttackData, rowList));
+        if(lineClearAttackData) this.reportStack.add({ type: "LineClear", data: lineClearAttackData, rowList });
 
         const rotated = diff.appliedRotationAngle !== 0;
-        if(rotated) this.reportStack.add(new MinoRotateReport());
+        if(rotated) this.reportStack.add({ type: "MinoRotate" });
 
-        if(rotated && this.attackState.isLastMoveSpecial) this.reportStack.add(new SpecialRotateReport());
+        if(rotated && this.attackState.isLastMoveSpecial) this.reportStack.add({ type: "SpecialRotate" });
 
-        if(!rotated && diff.horizontalMinoMove !== 0) this.reportStack.add(new MinoHorizontalMoveReport());
+        if(!rotated && diff.horizontalMinoMove !== 0) this.reportStack.add({ "type": "MinoHorizontalMove" });
 
-        if(!rotated && !diff.placedByHardDrop && diff.verticalMinoMove > 0) this.reportStack.add(new MinoFallReport());
+        if(!rotated && !diff.placedByHardDrop && diff.verticalMinoMove > 0) this.reportStack.add({ type: "MinoFall" });
 
-        if(diff.placedByHardDrop) this.reportStack.add(new HardDropReport());
+        if(diff.placedByHardDrop) this.reportStack.add({ type: "HardDrop" });
     }
 
     addScheduledDamage(scheduledDamage: ScheduledDamage) {
-        this.reportStack.add(new RecieveScheduledDamageReport(scheduledDamage));
+        this.reportStack.add({ type: "ReceiveScheduledDamage", scheduledDamage });
     }
 }

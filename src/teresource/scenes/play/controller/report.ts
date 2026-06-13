@@ -2,90 +2,83 @@ import { LineClearAttackData } from "../core/attack";
 import { ScheduledDamage } from "../core/garbage";
 import { Cell } from "../core/mechanics";
 
-export class LineClearReport {
-    readonly type = "LineClear";
-    constructor(public data: LineClearAttackData, public rowList: Cell[][]) {}
+export type LineClearReport = {
+    type: "LineClear";
+    data: LineClearAttackData;
+    rowList: Cell[][];
 }
 
-export class RecieveScheduledDamageReport {
-    readonly type = "RecieveScheduledDamage";
-    parentClass = RecieveScheduledDamageReport;
-    constructor(public scheduledDamage: ScheduledDamage) {}
+export type ReceiveScheduledDamageReport = {
+    type: "ReceiveScheduledDamage";
+    scheduledDamage: ScheduledDamage;
 }
 
-export class MinoHorizontalMoveReport {
-    readonly type = "MinoHorizontalMove";
+export type MinoHorizontalMoveReport = {
+    type: "MinoHorizontalMove";
 }
 
-export class MinoRotateReport {
-    readonly type = "MinoRotate";
+export type MinoRotateReport  = {
+    type: "MinoRotate";
 }
 
-export class HardDropReport {
-    readonly type = "HardDrop";
+export type HardDropReport = {
+    type: "HardDrop";
 }
 
-export class MinoFallReport {
-    readonly type = "MinoFall";
+export type MinoFallReport = {
+    type: "MinoFall";
 }
 
-export class SpecialRotateReport {
-    readonly type = "SpecialRotate";
+export type SpecialRotateReport = {
+    type: "SpecialRotate";
 }
 
-/** contain report stacks that become empty every frame */
-export class ReportStack {
+//type Report = LineClearReport | ReceiveScheduledDamageReport | MinoHorizontalMoveReport | MinoFallReport | MinoRotateReport | HardDropReport | SpecialRotateReport;
+
+type Reports = {
+    LineClear: LineClearReport;
+    ReceiveScheduledDamage: ReceiveScheduledDamageReport;
+    MinoHorizontalMove: MinoHorizontalMoveReport;
+    MinoFall: MinoFallReport;
+    MinoRotate: MinoRotateReport;
+    HardDrop: HardDropReport;
+    SpecialRotate: SpecialRotateReport;
+}
+
+type ReportStore<T extends keyof Reports> = {
+    [Key in T]: Array<Reports[Key]> 
+}
+
+function createReportStore<T extends Array<keyof Reports>>(reportKeys: T) {
+    const store = {} as ReportStore<T[number]>;
+    reportKeys.forEach((key: T[number]) => {
+        store[key] = [];
+    });
+    return store;
+}
+
+class ReportStack<T extends keyof Reports> {
+    store: ReportStore<T>;
+    private reportKeys: T[];
+    constructor(reportKeys: T[]) {
+        this.reportKeys = reportKeys;
+        this.store = createReportStore(this.reportKeys);
+    }
+    add<S extends T>(report: Reports[S]) {
+        const type = report.type as S;
+        this.store[type].push(report);
+    }
+    renewAll() {
+        this.store = createReportStore(this.reportKeys);
+    }
+}
+
+const GAME_REPORT_KEYS = ["LineClear", "ReceiveScheduledDamage", "MinoHorizontalMove", "MinoFall", "MinoRotate", "HardDrop", "SpecialRotate"] as const;
+type GameReportKey = typeof GAME_REPORT_KEYS[number];
+//type GameReport = Reports[GameReportKey];
+
+export class GameReportStack extends ReportStack<GameReportKey> {
     constructor() {
-        this.renewAll();
-    }
-    renewAll() {
-    }
-}
-
-type GameReport = LineClearReport | RecieveScheduledDamageReport | MinoHorizontalMoveReport | MinoFallReport | MinoRotateReport | HardDropReport | SpecialRotateReport;
-
-export class GameReportStack {
-    lineClear: LineClearReport[] = [];
-    recieveScheduledDamage: RecieveScheduledDamageReport[] = [];
-    minoHorizontalMove: MinoHorizontalMoveReport[] = [];
-    minoFall: MinoFallReport[] = [];
-    minoRotate: MinoRotateReport[] = [];
-    hardDrop: HardDropReport[] = [];
-    specialRotate: SpecialRotateReport[] = [];
-
-    add(report: GameReport) {
-        switch(report.type) {
-            case "LineClear":
-                this.lineClear.push(report);
-                break;
-            case "RecieveScheduledDamage":
-                this.recieveScheduledDamage.push(report);
-                break;
-            case "HardDrop":
-                this.hardDrop.push(report);
-                break;
-            case "MinoFall":
-                this.minoFall.push(report);
-                break;
-            case "MinoHorizontalMove":
-                this.minoHorizontalMove.push(report);
-                break;
-            case "MinoRotate":
-                this.minoRotate.push(report);
-                break;
-            case "SpecialRotate":
-                this.specialRotate.push(report);
-                break;
-        }
-    }
-
-    renewAll() {
-        this.lineClear = [];
-        this.recieveScheduledDamage = [];
-        this.minoHorizontalMove = [];
-        this.minoRotate = [];
-        this.minoFall = [];
-        this.hardDrop = [];
-        this.specialRotate = [];
+        super(GAME_REPORT_KEYS.slice());
     }
 }

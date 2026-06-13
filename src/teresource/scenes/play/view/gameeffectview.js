@@ -1,4 +1,3 @@
-import { LineClearReport } from "../controller/report";
 import { GameViewContext } from "../infra/context";
 import Phaser from "phaser";
 import { createCellViewParamsFromCell, generateCellSheetTextureFrameKey } from "./celltexturecore";
@@ -13,7 +12,7 @@ class LineClearWipeEffectGraphics extends Phaser.GameObjects.Graphics {
     #cellWidth;
     #boardSize;
 
-    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {import("../controller/report").LineClearReport} report */
     constructor(scene, gvContext, report) {
         super(scene);
         this.#rowToClearList = report.data.clearedRowList;
@@ -87,7 +86,7 @@ class LineClearWipeEffectGraphics extends Phaser.GameObjects.Graphics {
     }
 }
 
-/** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+/** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {import("../controller/report").LineClearReport} report */
 function createFlashEffects(scene, gvContext, report) {
     const gameobjects = [];
     const cellWidth = gvContext.getBoardCellWidth();
@@ -121,7 +120,7 @@ function createFlashEffects(scene, gvContext, report) {
     return gameobjects;
 }
 
-/** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+/** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {import("../controller/report").LineClearReport} report */
 function createChocoShatteringEffects(scene, gvContext, report) {
     const gameobjects = [];
     const cellWidth = gvContext.getBoardCellWidth();
@@ -192,7 +191,7 @@ const POPUP_STYLE_CONFIG = {
 };
 
 class LineClearPopupText extends Phaser.GameObjects.Text {
-    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {import("../controller/report").LineClearReport} report */
     constructor(scene, gvContext, report) {
         let sentence;
         if (report.data.clearedRowList.length === 1 && report.data.isSpecial && report.data.isMini) {
@@ -210,7 +209,7 @@ class LineClearPopupText extends Phaser.GameObjects.Text {
 }
 
 class LineClearPopupSpecialText extends Phaser.GameObjects.Text {
-    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {import("../controller/report").LineClearReport} report */
     constructor(scene, gvContext, report) {
         const sentence = "すぺしゃる";
         super(scene, gvContext.getRelativeBoardX(0) - 20, -25, sentence, {
@@ -223,7 +222,7 @@ class LineClearPopupSpecialText extends Phaser.GameObjects.Text {
 }
 
 class LineClearPopupComboText extends Phaser.GameObjects.Text {
-    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {import("../controller/report").LineClearReport} report */
     constructor(scene, gvContext, report) {
         const sentence = `${report.data.combo}れん`;
         super(scene, gvContext.getRelativeBoardX(0) - 20, 45, sentence, {
@@ -236,7 +235,7 @@ class LineClearPopupComboText extends Phaser.GameObjects.Text {
 }
 
 class LineClearPopupB2BText extends Phaser.GameObjects.Text {
-    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {LineClearReport} report */
+    /** @param {Phaser.Scene} scene @param {GameViewContext} gvContext @param {import("../controller/report").LineClearReport} report */
     constructor(scene, gvContext, report) {
         const sentence = `ばっくとぅーばっく`;
         super(scene, gvContext.getRelativeBoardX(0) - 20, 75, sentence, {
@@ -260,7 +259,7 @@ class LineClearPopupView {
         this.#scene = scene;
     }
 
-    /** @param {LineClearReport} report */
+    /** @param {import("../controller/report").LineClearReport} report */
     create(report) {
         const text = new LineClearPopupText(this.#scene, this.#gvContext, report);
         this.#scene.add.existing(text);
@@ -336,7 +335,7 @@ export class GameEffectManagerView {
     }
 
     update(delta_s) {
-        this.#gameReportStack.lineClear.forEach(report => {
+        this.#gameReportStack.store.LineClear.forEach(report => {
             this.createLineClearEffect(report);
             this.#lineClearPopupView.create(report);
             if (report.data.isAllClear) {
@@ -347,7 +346,7 @@ export class GameEffectManagerView {
         });
     }
 
-    /** @param {LineClearReport} report */
+    /** @param {import("../controller/report").LineClearReport} report */
     createLineClearEffect(report) {
         switch (this.#skin) {
             case "choco":

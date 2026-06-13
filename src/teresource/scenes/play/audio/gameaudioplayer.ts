@@ -1,4 +1,4 @@
-import { GameReportStack, ReportStack } from "../controller/report";
+import { GameReportStack } from "../controller/report";
 import Phaser from "phaser";
 import { LineClearAttackData } from "../core/attack";
 
@@ -6,17 +6,18 @@ export class GameAudioPlayer {
     constructor(private scene: Phaser.Scene, private reportStack: GameReportStack) {}
 
     update() {
-        const lineClearAttackData = this.reportStack.lineClear.length ? this.reportStack.lineClear[0].data : undefined;
+        const store = this.reportStack.store;
+        const lineClearAttackData = store.LineClear.length ? store.LineClear[0].data : undefined;
 
         if(lineClearAttackData) {
             this.playPlacingSound(lineClearAttackData);
         } else {
-            if(this.reportStack.minoFall.length) this.scene.sound.play("mino_fall");
+            if(store.MinoFall.length) this.scene.sound.play("mino_fall");
 
-            if(this.reportStack.minoHorizontalMove.length) this.scene.sound.play("mino_move_horizontal");
+            if(store.MinoHorizontalMove.length) this.scene.sound.play("mino_move_horizontal");
 
-            if(this.reportStack.minoRotate.length) {
-                if(this.reportStack.specialRotate.length) {
+            if(store.MinoRotate.length) {
+                if(store.SpecialRotate.length) {
                     this.scene.sound.play("mino_rotate_special");
                 } else {
                     this.scene.sound.play("mino_rotate");
@@ -29,7 +30,7 @@ export class GameAudioPlayer {
         if(lineClearAttackData.clearedRowList.length) {
             //play line clear sound
         } else {
-            if (this.reportStack.hardDrop.length) {
+            if (this.reportStack.store.HardDrop.length) {
                 this.scene.sound.play("mino_hard_drop");
             }
         }

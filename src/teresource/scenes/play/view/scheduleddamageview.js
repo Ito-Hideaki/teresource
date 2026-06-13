@@ -37,7 +37,7 @@ export class ScheduledDamageView {
 
     update() {
         //add new objects
-        this.#reportStack.recieveScheduledDamage.forEach(report => {
+        this.#reportStack.store.ReceiveScheduledDamage.forEach(report => {
             const object = new ScheduledDamageObject(this.#scene, report.scheduledDamage);
             this.#scene.add.existing(object);
             this.#boardContainer.add(object);

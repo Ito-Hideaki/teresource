@@ -35,7 +35,7 @@ export class GameStatsView {
     }
 
     update() {
-        if (this.#gameReportStack.lineClear[0]) {
+        if (this.#gameReportStack.store.LineClear[0]) {
             this.clearedLineText.setText(`${this.#gameStats.clearedLines}ライン消した`);
             this.scoreText.setText(`スコア　${this.#gameStats.score.toString().padStart(5, "0")}`);
             this.#scene.add.tween({
