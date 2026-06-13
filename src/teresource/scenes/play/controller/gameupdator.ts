@@ -143,7 +143,7 @@ class Simulator {
         const { boardUpdateDiff, lineClearAttackData, clearedRowList } = this.doNormalUpdate(deltaTime, controlOrder);
 
         //report
-        this.reporter.addForEveryUpdate(boardUpdateDiff, lineClearAttackData, clearedRowList);
+        this.reporter.addForEveryUpdate({ diff: boardUpdateDiff, lineClearAttackData, rowList: clearedRowList, usedHold });
 
         return {
             placed: boardUpdateDiff.placed,
@@ -328,16 +328,26 @@ export class GameUpdator {
 class GameReporter {
     constructor(private reportStack: GameReportStack, private attackState: GameAttackState) {}
 
-    addForEveryUpdate(diff: BoardUpdateDiff, lineClearAttackData: LineClearAttackData | undefined, rowList: NormalUpdateResult["clearedRowList"]) {
+    addForEveryUpdate({ diff, lineClearAttackData, rowList, usedHold } : { diff: BoardUpdateDiff, lineClearAttackData: LineClearAttackData | undefined, rowList: NormalUpdateResult["clearedRowList"], usedHold: boolean }) {
         if(lineClearAttackData) this.reportStack.add({ type: "LineClear", data: lineClearAttackData, rowList });
 
-        const rotated = diff.appliedRotationAngle !== 0;
-        if(rotated) this.reportStack.add({ type: "MinoRotate" });
+        this.reportHold(usedHold);
+        this.reportTransform(diff);
+    }
 
-        if(rotated && this.attackState.isLastMoveSpecial) this.reportStack.add({ type: "SpecialRotate" });
+    private reportHold(usedHold: boolean) {
+        if(usedHold) this.reportStack.add({ type: "Hold" });
+    }
+
+    private reportTransform(diff: BoardUpdateDiff) {
+        const rotated = diff.appliedRotationAngle !== 0;
+
+        if(rotated) {
+            this.reportStack.add({ type: "MinoRotate" });
+            if(this.attackState.isLastMoveSpecial) this.reportStack.add({ type: "SpecialRotate" });
+        }
 
         if(!rotated && diff.horizontalMinoMove !== 0) this.reportStack.add({ "type": "MinoHorizontalMove" });
-
         if(!rotated && !diff.placedByHardDrop && diff.verticalMinoMove > 0) this.reportStack.add({ type: "MinoFall" });
 
         if(diff.placedByHardDrop) this.reportStack.add({ type: "HardDrop" });
