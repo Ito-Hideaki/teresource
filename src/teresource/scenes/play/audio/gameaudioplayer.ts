@@ -35,6 +35,9 @@ export class GameAudioPlayer {
             if (this.reportStack.store.HardDrop.length) {
                 this.scene.sound.play("mino_hard_drop");
             }
+            if (this.reportStack.store.LockDown.length) {
+                this.scene.sound.play("mino_lock");
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ const SOUND_EFFECT_FILES = {
     "mino_rotate": "ミノ回転.mp3",
     "mino_rotate_special": "3版_ミノ回転入れ.mp3",
     "mino_hold": "ミノホールド.mp3",
+    "mino_lock": "ミノ設置.mp3",
 }
 
 const AUDIO_FILES = {
