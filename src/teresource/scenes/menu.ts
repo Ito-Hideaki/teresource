@@ -226,6 +226,7 @@ export class MenuScene extends Phaser.Scene {
 <table style="border: none; width:100%;">
 <tr><th style="width:50%;">画像</th><th>hide</th style="width:50%;"></tr>
 <tr><th>プログラム</th><th>hide</th></tr>
+<tr><th>効果音</th><th>ike</th></tr>
 </table>
 `;
         creditsElm.style.fontSize = "30px";
