@@ -12,6 +12,8 @@ export class GameAudioPlayer {
         if(lineClearAttackData) {
             this.playPlacingSound(lineClearAttackData);
         } else {
+            if(store.Hold.length) this.scene.sound.play("mino_hold");
+
             if(store.MinoFall.length) this.scene.sound.play("mino_fall");
 
             if(store.MinoHorizontalMove.length) this.scene.sound.play("mino_move_horizontal");
