@@ -37,6 +37,10 @@ export type HoldReport = {
     type: "Hold";
 }
 
+export type LockDownReport = {
+    type: "LockDown";
+}
+
 //type Report = LineClearReport | ReceiveScheduledDamageReport | MinoHorizontalMoveReport | MinoFallReport | MinoRotateReport | HardDropReport | SpecialRotateReport;
 
 type Reports = {
@@ -48,6 +52,7 @@ type Reports = {
     HardDrop: HardDropReport;
     SpecialRotate: SpecialRotateReport;
     Hold: HoldReport;
+    LockDown: LockDownReport;
 }
 
 type ReportStore<T extends keyof Reports> = {
@@ -78,7 +83,7 @@ class ReportStack<T extends keyof Reports> {
     }
 }
 
-const GAME_REPORT_KEYS = ["LineClear", "ReceiveScheduledDamage", "MinoHorizontalMove", "MinoFall", "MinoRotate", "HardDrop", "SpecialRotate", "Hold"] as const;
+const GAME_REPORT_KEYS = ["LineClear", "ReceiveScheduledDamage", "MinoHorizontalMove", "MinoFall", "MinoRotate", "HardDrop", "SpecialRotate", "Hold", "LockDown"] as const;
 type GameReportKey = typeof GAME_REPORT_KEYS[number];
 //type GameReport = Reports[GameReportKey];
 

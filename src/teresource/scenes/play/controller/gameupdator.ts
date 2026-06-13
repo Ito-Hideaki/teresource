@@ -351,6 +351,7 @@ class GameReporter {
         if(!rotated && !diff.placedByHardDrop && diff.verticalMinoMove > 0) this.reportStack.add({ type: "MinoFall" });
 
         if(diff.placedByHardDrop) this.reportStack.add({ type: "HardDrop" });
+        if(diff.placedByLockDown) this.reportStack.add({ type: "LockDown" });
     }
 
     addScheduledDamage(scheduledDamage: ScheduledDamage) {
