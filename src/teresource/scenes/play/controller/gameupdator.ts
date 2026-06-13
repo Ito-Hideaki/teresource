@@ -44,6 +44,142 @@ class MinoQueueAssistant {
     }
 }
 
+
+type UpdateResult = {
+    placed: boolean;
+    lineClearAttackData?: LineClearAttackData;
+    outgoingAttack?: OutgoingAttack;
+    endedSession: boolean;
+};
+
+type NormalUpdateResult = {
+    boardUpdateDiff: BoardUpdateDiff;
+    lineClearAttackData: LineClearAttackData | undefined;
+    clearedRowList: Cell[][];
+};
+
+/** simulate the mechanism that works when the player can control the game.  */
+class Simulator {
+
+    //Given from Parameters
+    private controlOrderProvider;
+    private boardUpdateState;
+    lineClearManager;
+    gameAttackState;
+    private garbageGenerator;
+
+    //Instantiated
+    private boardUpdater;
+    private reporter;
+    private doesCurrentMinoCollide;
+    private minoQueueAssistant;
+
+    //State
+    private scheduledDamageState;
+
+    constructor(
+        gameContext: GameContext,
+        gameHighContext: GameHighContext,
+    ) {
+        this.controlOrderProvider = gameHighContext.controlOrderProvider;
+        this.lineClearManager = gameHighContext.lineClearManager;
+        this.gameAttackState = gameHighContext.gameAttackState;
+        this.garbageGenerator = gameHighContext.garbageGenerator;
+
+        this.scheduledDamageState = gameHighContext.scheduledDamageState;
+
+        this.minoQueueAssistant = new MinoQueueAssistant(gameContext);
+        this.boardUpdateState = gameContext.boardUpdateState;
+
+        this.doesCurrentMinoCollide = createFunction_DoesCurrentMinoCollide(gameContext);
+        this.boardUpdater = new BoardUpdater(gameContext);
+        this.reporter = new GameReporter(gameContext.gameReportStack, gameHighContext.gameAttackState);
+    }
+
+    simulate(
+        deltaTime: number,
+        { allowGarbageNext, session } : { allowGarbageNext: boolean; session: GameSession; }
+    ): UpdateResult {
+
+        const RESULT_SESSION_ENDS = { placed: false, endedSession: true };
+
+        //add garbage
+        if (allowGarbageNext) {
+            const damageStack = this.scheduledDamageState.damageStack;
+            let scheduledDamage = damageStack[0];
+            while (scheduledDamage && scheduledDamage.arrived) {
+                damageStack.splice(0, 1);
+                this.garbageGenerator.addGarbage(scheduledDamage.length);
+
+                scheduledDamage = damageStack[0];
+            }
+        }
+
+        //check if the game has reached session goal
+        if (session.isTargetCompleted()) return RESULT_SESSION_ENDS;
+
+        const whenNewMinoSpawned = () => {
+            this.boardUpdateState.startNewMino();
+            this.controlOrderProvider.resetARR();
+        }
+
+        //Take new mino from queue
+        if (this.minoQueueAssistant.spawnNextMinoWhenPlaced()) {
+            whenNewMinoSpawned();
+        }
+        //immediately quit when the current mino collides
+        if (this.doesCurrentMinoCollide()) return RESULT_SESSION_ENDS;
+
+        //Take held mino
+        const controlOrder = this.controlOrderProvider.provideControlOrder();
+        const usedHold = controlOrder.get(ControlOrder.HOLD) && this.minoQueueAssistant.trySpawnHeldMino();
+        if (usedHold) {
+            whenNewMinoSpawned();
+        }
+        //immediately quit when the current mino collides
+        if (this.doesCurrentMinoCollide()) return RESULT_SESSION_ENDS;
+
+        //Finally update board
+        const { boardUpdateDiff, lineClearAttackData, clearedRowList } = this.doNormalUpdate(deltaTime, controlOrder);
+
+        //report
+        this.reporter.addForEveryUpdate(boardUpdateDiff, lineClearAttackData, clearedRowList);
+
+        return {
+            placed: boardUpdateDiff.placed,
+            lineClearAttackData,
+            endedSession: false
+        }
+    }
+
+    /** Must be called every frame to set parameters properly */
+    updateGameConfig({ gravity }: { gravity : number }) {
+        this.boardUpdateState.gravity = gravity;
+    }
+
+    private doNormalUpdate(deltaTime: number, controlOrder: ControlOrder): NormalUpdateResult {
+
+        const boardUpdateDiff: BoardUpdateDiff = this.boardUpdater.update(controlOrder.value, deltaTime);
+        this.controlOrderProvider.receiveControlResult(boardUpdateDiff);
+        this.controlOrderProvider.advanceTime(deltaTime);
+
+        //Clear filled line (row)
+        const rowToClearList = this.lineClearManager.findRowToClearList();
+        const clearedRowList = this.lineClearManager.startClear(rowToClearList);
+
+        //Update attack state
+        this.gameAttackState.update(boardUpdateDiff, rowToClearList.length); //refactor
+
+        const lineClearAttackData = boardUpdateDiff.placed
+            ? this.gameAttackState.createLineClearAttackData(rowToClearList)
+            : undefined;
+
+        return { boardUpdateDiff, lineClearAttackData, clearedRowList };
+    }
+}
+
+
+
 declare global {
     interface Window {
         log: (...args: unknown[]) => void;
@@ -56,17 +192,6 @@ export type AutoDamageConfig = {
 
 export type OutgoingAttack = { amount: number, delay_s: number };
 
-type UpdateResult = {
-    placed: boolean;
-    lineClearAttackData?: LineClearAttackData;
-    outgoingAttack?: OutgoingAttack;
-};
-
-type NormalUpdateResult = {
-    boardUpdateDiff: BoardUpdateDiff;
-    lineClearAttackData: LineClearAttackData | undefined;
-    clearedRowList: Cell[][];
-};
 
 /** Update the game */
 export class GameUpdator {
@@ -74,20 +199,15 @@ export class GameUpdator {
     private gameHighContext;
 
     //Given from Parameters
-    private controlOrderProvider;
-    private boardUpdateState;
     private damageProviderPerMino;
     private gameStatsManager;
     lineClearManager;
     gameAttackState;
-    private garbageGenerator;
     private gravityPowerBase: number;
 
     //Instantiated
-    private boardUpdater;
     private reporter;
-    private doesCurrentMinoCollide;
-    private minoQueueAssistant;
+    private simulator;
 
     //States
     allowGarbageNext: boolean;
@@ -100,25 +220,20 @@ export class GameUpdator {
         gravityPowerBase: number,
         { damageProviderPerMino }: { damageProviderPerMino: LinearDamageProvider }
     ) {
-        this.controlOrderProvider = gameHighContext.controlOrderProvider;
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.gameStatsManager = gameHighContext.gameStatsManager;
-        this.garbageGenerator = gameHighContext.garbageGenerator;
         this.gravityPowerBase = gravityPowerBase;
 
         this.scheduledDamageState = gameHighContext.scheduledDamageState;
 
         this.damageProviderPerMino = damageProviderPerMino;
 
-        this.minoQueueAssistant = new MinoQueueAssistant(gameContext);
-        this.boardUpdateState = gameContext.boardUpdateState;
         this.allowGarbageNext = false;
         this.gameHighContext = gameHighContext;
 
-        this.doesCurrentMinoCollide = createFunction_DoesCurrentMinoCollide(gameContext);
-        this.boardUpdater = new BoardUpdater(gameContext);
         this.reporter = new GameReporter(gameContext.gameReportStack, gameHighContext.gameAttackState);
+        this.simulator = new Simulator(gameContext, gameHighContext);
     }
 
     update(deltaTime: number): UpdateResult {
@@ -126,7 +241,14 @@ export class GameUpdator {
         this.lineClearManager.update(deltaTime);
 
         const simulatable = !this.lineClearManager.isDuringLineClear() && !this.session.isOver;
-        const result = (simulatable && this.simulate(deltaTime)) || { placed: false };
+        const result: UpdateResult = (simulatable && this.simulator.simulate(deltaTime, this))
+        || { placed: false, endedSession: false };
+
+        //garbage
+        this.allowGarbageNext = result.placed;
+
+        //session
+        if(result.endedSession) this.session.markAsOver();
 
         //create outgoing attack
         if(result.lineClearAttackData) {
@@ -148,11 +270,19 @@ export class GameUpdator {
 
         //update stats
         if (!this.session.isOver) {
-            this.gameStatsManager.update(deltaTime);
 
             const lineCount = result.lineClearAttackData?.clearedRowList.length;
-            if(lineCount) { window.log(`${lineCount} line(s) cleared`); }
+            if(lineCount && result.lineClearAttackData) {
+                this.gameStatsManager.setNewLineClearAttackData(result.lineClearAttackData);
+                window.log(`${lineCount} line(s) cleared`);
+            }
+            this.gameStatsManager.update(deltaTime);
         }
+
+        //update game config of the simulator e.g. gravity
+        this.simulator.updateGameConfig({
+            gravity: 0.5 * this.gravityPowerBase ** this.gameStatsManager.stats.level,
+        });
 
         //auto damage
         if (result.placed) {
@@ -171,94 +301,6 @@ export class GameUpdator {
         return result;
     }
 
-    private simulate(deltaTime: number): UpdateResult | undefined {
-
-        //add garbage
-        if (this.allowGarbageNext) {
-            const damageStack = this.scheduledDamageState.damageStack;
-            let scheduledDamage = damageStack[0];
-            while (scheduledDamage && scheduledDamage.arrived) {
-                damageStack.splice(0, 1);
-                this.garbageGenerator.addGarbage(scheduledDamage.length);
-
-                scheduledDamage = damageStack[0];
-            }
-        }
-
-        //check if the game has reached session goal
-        if (this.session.isTargetCompleted()) {
-            this.session.markAsOver();
-            return;
-        }
-
-        const whenNewMinoSpawned = () => {
-            this.boardUpdateState.startNewMino();
-            this.controlOrderProvider.resetARR();
-        }
-
-        //Take new mino from queue
-        if (this.minoQueueAssistant.spawnNextMinoWhenPlaced()) {
-            whenNewMinoSpawned();
-        }
-        //immediately quit when the current mino collides
-        if (this.doesCurrentMinoCollide()) {
-            this.session.markAsOver();
-            return;
-        }
-
-        //Take held mino
-        const controlOrder = this.controlOrderProvider.provideControlOrder();
-        const usedHold = controlOrder.get(ControlOrder.HOLD) && this.minoQueueAssistant.trySpawnHeldMino();
-        if (usedHold) {
-            whenNewMinoSpawned();
-        }
-        //immediately quit when the current mino collides
-        if (this.doesCurrentMinoCollide()) {
-            this.session.markAsOver();
-            return;
-        }
-
-        //Finally update board
-        const { boardUpdateDiff, lineClearAttackData, clearedRowList } = this.doNormalUpdate(deltaTime, controlOrder);
-
-        //report
-        this.reporter.addForEveryUpdate(boardUpdateDiff, lineClearAttackData, clearedRowList);
-
-        //stats
-        if(lineClearAttackData && lineClearAttackData.clearedRowList.length) {
-            this.gameStatsManager.setNewLineClearAttackData(lineClearAttackData);
-        }
-
-        const placed = boardUpdateDiff.placed;
-        return {
-            placed, lineClearAttackData
-        }
-    }
-
-    private doNormalUpdate(deltaTime: number, controlOrder: ControlOrder): NormalUpdateResult {
-        //update gravity
-        this.boardUpdateState.gravity = 0.5 * this.gravityPowerBase ** this.gameStatsManager.stats.level;
-
-        const boardUpdateDiff: BoardUpdateDiff = this.boardUpdater.update(controlOrder.value, deltaTime);
-        this.controlOrderProvider.receiveControlResult(boardUpdateDiff);
-        this.controlOrderProvider.advanceTime(deltaTime);
-
-        //Clear filled line (row)
-        const rowToClearList = this.lineClearManager.findRowToClearList();
-        const clearedRowList = this.lineClearManager.startClear(rowToClearList);
-
-        //Update attack state
-        this.gameAttackState.update(boardUpdateDiff, rowToClearList.length); //refactor
-
-        const lineClearAttackData = boardUpdateDiff.placed
-            ? this.gameAttackState.createLineClearAttackData(rowToClearList)
-            : undefined;
-
-        //Garbage
-        this.allowGarbageNext = boardUpdateDiff.placed;
-
-        return { boardUpdateDiff, lineClearAttackData, clearedRowList };
-    }
 
     setSession(session: GameSession): void {
         this.session = session;
