@@ -369,7 +369,7 @@ export class MenuScene extends Phaser.Scene {
         });
 
         scene.menuObj.ee.on("opencustomgametab", () => {
-            if (!this.customGameTab) this.customGameTab = new CustomGameTab(scene);
+            if (!this.customGameTab) this.customGameTab = new CustomGameTab((data: PlaySceneData) => scene.scene.start("play", data));
         });
 
         scene.menuObj.ee.on("closecustomgametab", () => {
@@ -378,7 +378,7 @@ export class MenuScene extends Phaser.Scene {
         });
 
         scene.menuObj.ee.on("playcustomgame", () => {
-            this.customGameTab?.play();            
+            this.customGameTab?.play(keyBindingConfigUIDataHandler.getConfig());            
         });
 
         scene.menuObj.ee.on("opensettings", () => {
@@ -396,6 +396,10 @@ export class MenuScene extends Phaser.Scene {
         scene.menuObj.ee.on("closecredits", () => {
             this.creditsDOM.setVisible(false);
         })
+
+        this.events.on("shutdown", () => {
+            this.customGameTab?.terminate();
+        });
     }
 
     update() {
