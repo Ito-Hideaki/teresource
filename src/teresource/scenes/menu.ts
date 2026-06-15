@@ -248,7 +248,7 @@ export class MenuScene extends Phaser.Scene {
 
         this.creditsDOM.setVisible(false);
 
-        const { setVisible: setSettingsVisible, configUIDataHandlerMap } = createAndAddSettingsPanel();
+        const { setVisible: setSettingsVisible, configUIDataHandlerMap, destroyPanel: destroySettingsPanel } = createAndAddSettingsPanel();
         const keyBindingConfigUIDataHandler = configUIDataHandlerMap.keyBinding;
         setSettingsVisible(false);
 
@@ -407,6 +407,7 @@ export class MenuScene extends Phaser.Scene {
             if (this.customGameTab) {
                 this.customGameTab.terminate();
             }
+            destroySettingsPanel();
 
             this.events.off("shutdown");
         });
