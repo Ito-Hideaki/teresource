@@ -5,6 +5,7 @@ import { KeyBindingConfig } from "./play/controller/controlorder";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
 import { PlaySceneData } from "./play";
 import { GameSession, GameSessionConfig } from "./play/controller/gamesession";
+import { CustomGameTab } from "./menu/customgame";
 
 const TEXT_LEFT = 100;
 
@@ -98,6 +99,9 @@ class MenuObject {
                     { name: "BOT (INVINCIBLE)", onEnter: "playbotdemo2" },
                 ]
             },
+            { name: "Custom Game", onEnter: "opencustomgametab", onEscape: "closecustomgametab", children: [
+                { name: "Play", onEnter: "playcustomgame" },
+            ] },
             { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
             { name: "Credits", onEnter: "opencredits", onEscape: "closecredits" }
         ]);
@@ -204,6 +208,8 @@ export class MenuScene extends Phaser.Scene {
     menuObj: MenuObject
     //@ts-ignore
     creditsDOM: Phaser.GameObjects.DOMElement
+
+    customGameTab: CustomGameTab | undefined;
 
     constructor() {
         super('menu');
@@ -362,39 +368,18 @@ export class MenuScene extends Phaser.Scene {
             scene.scene.start("play", playSceneData);
         });
 
-        // scene.menuObj.ee.on("playcustomgame", () => {
-        //     const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
+        scene.menuObj.ee.on("opencustomgametab", () => {
+            if (!this.customGameTab) this.customGameTab = new CustomGameTab(scene);
+        });
 
-        //     //@ts-ignore
-        //     const { configUIDataHandlerMap } = this.game;
+        scene.menuObj.ee.on("closecustomgametab", () => {
+            if (this.customGameTab) this.customGameTab.terminate();
+            this.customGameTab = undefined;
+        });
 
-        //     const gameConfig = {
-        //         bag: {
-        //             minoTypeToUseList: Object.keys(MINO_DATA_INDEX)
-        //         },
-        //         ...configUIDataHandlerMap.game.getConfig(),
-        //         personalization: configUIDataHandlerMap.personalization.getConfig(),
-        //         handling: configUIDataHandlerMap.handling.getConfig(),
-        //         autoDamage: configUIDataHandlerMap.autoDamage.getConfig()
-        //     } as GameConfig;
-
-        //     const UIObjectiveConfig = configUIDataHandlerMap.objective.getConfig();
-        //     //@ts-ignore
-        //     const sessionConfig = UIObjectiveConfig.session as GameSessionConfig;
-        //     const matchConfig: MatchConfig = {
-        //         players: [{
-        //             // @ts-ignore
-        //             keyBinding: keyBindingConfig,
-        //             game: gameConfig
-        //         }, {
-        //             // @ts-ignore
-        //             keyBinding: keyBindingConfig,
-        //             game: gameConfig
-        //         },],
-        //         session: sessionConfig
-        //     };
-        //     scene.scene.start("play", { matchConfig });
-        // });
+        scene.menuObj.ee.on("playcustomgame", () => {
+            this.customGameTab?.play();            
+        });
 
         scene.menuObj.ee.on("opensettings", () => {
             setSettingsVisible(true);
