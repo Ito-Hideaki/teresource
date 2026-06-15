@@ -93,15 +93,17 @@ class MenuObject {
             {
                 name: "Play Demo", children: [
                     { name: "40LINE", onEnter: "play40linedemo" },
-                    { name: "BACKFIRE", onEnter: "playbackfiredemo"},
+                    { name: "BACKFIRE", onEnter: "playbackfiredemo" },
                     { name: "2P", onEnter: "play2pdemo" },
                     { name: "BOT", onEnter: "playbotdemo" },
                     { name: "BOT (INVINCIBLE)", onEnter: "playbotdemo2" },
                 ]
             },
-            { name: "Custom Game", onEnter: "opencustomgametab", onEscape: "closecustomgametab", children: [
-                { name: "Play", onEnter: "playcustomgame" },
-            ] },
+            {
+                name: "Custom Game", onEnter: "opencustomgametab", onEscape: "closecustomgametab", children: [
+                    { name: "Play", onEnter: "playcustomgame" },
+                ]
+            },
             { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
             { name: "Credits", onEnter: "opencredits", onEscape: "closecredits" }
         ]);
@@ -208,8 +210,8 @@ export class MenuScene extends Phaser.Scene {
     menuObj: MenuObject
     //@ts-ignore
     creditsDOM: Phaser.GameObjects.DOMElement
-
-    customGameTab: CustomGameTab | undefined;
+    //@ts-ignore
+    customGameTab: CustomGameTab | null;
 
     constructor() {
         super('menu');
@@ -224,6 +226,8 @@ export class MenuScene extends Phaser.Scene {
         scene.add.text(TEXT_LEFT, 50, "Teresource", { color: "black", fontSize: 70, fontFamily: "sans-serif" });
 
         this.menuObj = new MenuObject(scene);
+
+        this.customGameTab = null;
 
         const creditsElm = document.createElement('div');
         creditsElm.innerHTML = `
@@ -373,12 +377,14 @@ export class MenuScene extends Phaser.Scene {
         });
 
         scene.menuObj.ee.on("closecustomgametab", () => {
-            if (this.customGameTab) this.customGameTab.terminate();
-            this.customGameTab = undefined;
+            if (this.customGameTab) {
+                this.customGameTab.terminate();
+                this.customGameTab = null;
+            }
         });
 
         scene.menuObj.ee.on("playcustomgame", () => {
-            this.customGameTab?.play(keyBindingConfigUIDataHandler.getConfig());            
+            this.customGameTab?.play(keyBindingConfigUIDataHandler.getConfig());
         });
 
         scene.menuObj.ee.on("opensettings", () => {
@@ -398,7 +404,11 @@ export class MenuScene extends Phaser.Scene {
         })
 
         this.events.on("shutdown", () => {
-            this.customGameTab?.terminate();
+            if (this.customGameTab) {
+                this.customGameTab.terminate();
+            }
+
+            this.events.off("shutdown");
         });
     }
 
