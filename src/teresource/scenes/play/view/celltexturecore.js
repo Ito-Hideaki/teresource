@@ -5,10 +5,12 @@ export const GOBI = {
     invisible: "u",
     normal: "n",
     active: "a",
+    ghost: "g",
 }
 export const visibleGobis = [
     GOBI.normal,
-    GOBI.active
+    GOBI.active,
+    GOBI.ghost,
 ]
 
 /**
@@ -25,7 +27,10 @@ export const visibleGobis = [
 
 /** Gobi is a string of the combined cell status, e.g. isActive. Does not include wholy invisible states. @param {Cell} cell @return {string} gobi  */
 function createStatusGobi(cell) {
-    if (!cell.isBlock) return GOBI.invisible;
+    if (!cell.isBlock) {
+        if(cell.isGhost) return GOBI.ghost;
+        return GOBI.invisible;
+    }
     if (cell.isActive) return GOBI.active;
     return GOBI.normal;
 }

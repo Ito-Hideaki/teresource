@@ -74,7 +74,8 @@ export class Mino {
 
     /**
      * @param {{
-     *     isActive: boolean
+     *     isActive: boolean,
+     *     isGhost?: boolean,
      * }} $
      * @return {{table: Cell[][], topLeft: { column: number, row: number } }} topLeft: relative topleft cell position of the table*/
     convertToTable($ = {}) {
@@ -83,11 +84,13 @@ export class Mino {
             const tableRow = [];
             array.forEach((value, column) => {
                 const rot0cellPos = Mino.#rotatePos(this.#shape, row, column, -this.#rotation);
+                const isBlock = value && !$.isGhost;
                 const cell = new Cell(
-                    value,
+                    isBlock,
                     MINO_DATA_INDEX[this.#type].color,
                     {
                         isActive: $.isActive,
+                        isGhost: $.isGhost,
                         rotation: this.#rotation,
                         partColumn: rot0cellPos.column,
                         partRow: rot0cellPos.row
@@ -109,6 +112,7 @@ export class Cell {
 
     #isBlock;
     #isActive;
+    #isGhost;
     #color;
     /** 0, 90, 180 or 270 @type {number} */ #rotation;
     /** located row of this cell in the mino table (rotation = 0) */ #partRow;
@@ -119,6 +123,7 @@ export class Cell {
      * @param {string} color
      * @param {{
      * isActive?: boolean,
+     * isGhost? : boolean,
      * rotation?: number,
      * partRow? : number,
      * partColumn? : number
@@ -127,6 +132,7 @@ export class Cell {
     constructor(isBlock, color = "red", $ = {}) {
         this.#isBlock = isBlock;
         this.#isActive = $.isActive ?? false;
+        this.#isGhost = $.isGhost ?? false;
         this.#rotation = $.rotation ?? 0;
         this.#partRow = $.partRow;
         this.#partColumn = $.partColumn;
@@ -141,6 +147,7 @@ export class Cell {
 
     get isBlock() { return this.#isBlock }
     get isActive() { return this.#isActive }
+    get isGhost() { return this.#isGhost }
     get color() { return this.#color }
     get rotation() { return this.#rotation }
     get partRow() { return this.#partRow }

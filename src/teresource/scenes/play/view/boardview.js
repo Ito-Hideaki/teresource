@@ -68,7 +68,7 @@ export class BoardView {
         /** duplicated board for drawing */
         const compositedBoard = (() => {
             if (this.#currentMinoManager.isPlaced) return this.#cellBoard.duplicate();
-            const { table, topLeft } = this.#currentMinoManager.mino.convertToTable({ isActive: true });
+            const { table, topLeft } = this.#currentMinoManager.mino.convertToTable({ isGhost: true });
             return this.#cellBoard.duplicate().compositeMinoTable(
                 table,
                 this.#currentMinoManager.row + topLeft.row,
