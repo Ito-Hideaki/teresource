@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { Cell, CellBoard, BoardSize } from "../core/mechanics";
 import { CurrentMinoManager } from "../core/minomanager";
-import { createCellViewParamsFromCell } from "./celltexturecore";
+import { createCellViewParamsFromCell, generateCellSheetTextureFrameKey } from "./celltexturecore";
 import { GameViewContext, GameContext } from "../infra/context";
 import { ImageBoard, CellImage } from "./cellimage";
 
@@ -68,8 +68,14 @@ export class BoardView {
         /** duplicated board for drawing */
         const compositedBoard = (() => {
             if (this.#currentMinoManager.isPlaced) return this.#cellBoard.duplicate();
-            const { table, topLeft } = this.#currentMinoManager.mino.convertToTable({ isGhost: true });
+            const { table, topLeft } = this.#currentMinoManager.mino.convertToTable({ isActive: true });
+            const gRowMove = this.#cellBoard.tryMoveMinoVertically(this.#cellBoard.rowCount+10, this.#currentMinoManager.mino, this.#currentMinoManager.row, this.#currentMinoManager.column);
+            const gTable = this.#currentMinoManager.mino.convertToTable({ isGhost: true }).table;
             return this.#cellBoard.duplicate().compositeMinoTable(
+                gTable,
+                this.#currentMinoManager.row + topLeft.row + gRowMove,
+                this.#currentMinoManager.column + topLeft.column
+            ).compositeMinoTable(
                 table,
                 this.#currentMinoManager.row + topLeft.row,
                 this.#currentMinoManager.column + topLeft.column

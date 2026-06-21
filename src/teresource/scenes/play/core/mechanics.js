@@ -85,12 +85,13 @@ export class Mino {
             array.forEach((value, column) => {
                 const rot0cellPos = Mino.#rotatePos(this.#shape, row, column, -this.#rotation);
                 const isBlock = value && !$.isGhost;
+                const isActualGhostBlock = value && $.isGhost;
                 const cell = new Cell(
                     isBlock,
                     MINO_DATA_INDEX[this.#type].color,
                     {
                         isActive: $.isActive,
-                        isGhost: $.isGhost,
+                        isGhost: isActualGhostBlock,
                         rotation: this.#rotation,
                         partColumn: rot0cellPos.column,
                         partRow: rot0cellPos.row
@@ -148,6 +149,7 @@ export class Cell {
     get isBlock() { return this.#isBlock }
     get isActive() { return this.#isActive }
     get isGhost() { return this.#isGhost }
+    get isVisible() { return this.#isBlock || this.#isGhost }
     get color() { return this.#color }
     get rotation() { return this.#rotation }
     get partRow() { return this.#partRow }
@@ -160,8 +162,7 @@ export class Cell {
  * @param {Cell} minoCell
  */
 function getCompositionResultCell(boardCell, minoCell) {
-    if (!minoCell.isBlock) return boardCell;
-    return minoCell;
+    return minoCell.isVisible ? minoCell : boardCell;
 }
 
 
