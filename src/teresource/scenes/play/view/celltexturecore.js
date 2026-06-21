@@ -70,8 +70,8 @@ export function generateCellSheetTextureUrl(skin, extend = false) {
 
 /** @param {CellViewParams} cellViewParams @param {boolean} extend @return {string} */
 export function generateCellSheetTextureFrameKey(cellViewParams, extend = false) {
-    cellViewParams.skin = "skin";
-    let key = generateCellTextureKey(cellViewParams);
+    const paramsNoSkin = { ...cellViewParams, skin: "skin" };
+    let key = generateCellTextureKey(paramsNoSkin);
     if(extend) {
         key += "extend";
         key += `_rot${cellViewParams.rotation}`;
