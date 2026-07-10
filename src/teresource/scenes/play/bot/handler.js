@@ -2,7 +2,7 @@ import { GameAttackState } from "../core/attack";
 import { Cell, CellBoard, Mino } from "../core/mechanics";
 import { MinoQueueManager } from "../core/minomanager";
 import { GameContext, GameHighContext } from "../infra/context";
-import { ControlOrder } from "./controlorder";
+import { ControlOrder } from "../controller/controlorder";
 
 /** @param {Mino} mino */
 function minoChar(mino) {

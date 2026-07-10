@@ -7,7 +7,7 @@ import { viteURLify } from "#util";
 import { GameSessionConfig } from "./play/controller/gamesession";
 import { ConfigUIDataHandler } from "../configUI";
 import { ConfigCategory } from "../configUIData";
-import { BotConfig, TBPHandler } from "./play/controller/tbp";
+import { BotConfig, TBPHandler } from "./play/bot/handler";
 
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene: Phaser.Scene) {
