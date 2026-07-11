@@ -94,16 +94,30 @@ export class TBPHandler {
     terminated: boolean;
     private controlOrderProvider;
     private impl;
+    private createStartMessage;
+    private board;
 
-    constructor(impl: TBPImpl, controlOrderProvider: ControlOrderProvider) {
+    constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext) {
         this.terminated = false;
-        this.controlOrderProvider = controlOrderProvider;
+        this.controlOrderProvider = gameHighContext.controlOrderProvider;
+        this.board = gameContext.cellBoard;
         this.impl = impl;
         this.impl.addListener(this.onMessage.bind(this));
+        this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState);
     }
 
     onMessage(message: Core.BotMessage) {
-
+        console.log(message);
+        switch(message.type) {
+            case "info":
+                this.impl.sendMessageObject({ type: "rules" });
+                break;
+            case "ready":
+                this.impl.sendMessageObject(this.createStartMessage());
+                break;
+            case "suggestion":
+                break;
+        }
     }
 
     quit() {
@@ -119,5 +133,5 @@ function createImpl(type: BotConfig["type"]) {
 }
 
 export function createTBPHandler(config: BotConfig, gameContext: GameContext, gameHighContext: GameHighContext) {
-    return new TBPHandler(createImpl(config.type), gameHighContext.controlOrderProvider);
+    return new TBPHandler(createImpl(config.type), gameContext, gameHighContext);
 };
