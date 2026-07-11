@@ -7,7 +7,7 @@ import { viteURLify } from "#util";
 import { GameSessionConfig } from "./play/controller/gamesession";
 import { ConfigUIDataHandler } from "../configUI";
 import { ConfigCategory } from "../configUIData";
-import { BotConfig, TBPHandler } from "./play/bot/handler";
+import { BotConfig, createTBPHandler, TBPHandler } from "./play/bot/handler";
 
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene: Phaser.Scene) {
@@ -131,7 +131,7 @@ export class PlayScene extends Phaser.Scene {
                         const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, game.controlOrderProvider);
                         return { keyInputProcessor, ...playerConfig.control };
                     case "bot":
-                        const handler = new TBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext);
+                        const handler = createTBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext);
                         return { handler, ...playerConfig.control };
                 }
             })();
@@ -177,13 +177,6 @@ export class PlayScene extends Phaser.Scene {
 
     update(time: number, delta: number) {
         const deltaTime = delta / 1000;
-
-        this.players.forEach(player => {
-            if(player.control.type !== "bot") return;
-
-            const controlOrder = player.control.handler.update();
-            player.game.controlOrderProvider.setNewPlayerInput(controlOrder.value);
-        })
 
         this.players.forEach(player => {
             const gameUpdator = player.game.gameUpdator;
