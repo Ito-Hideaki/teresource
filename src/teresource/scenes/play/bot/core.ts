@@ -22,9 +22,13 @@ export type InfoMessage = {
     features: Array<any>
 };
 
+export type ReadyMessage = {
+    type: "ready"
+};
+
 export type SuggestionMessage = {
     type: "suggestion",
     moves: Move[]
 };
 
-export type BotMessage = InfoMessage | SuggestionMessage;
+export type BotMessage = InfoMessage | ReadyMessage | SuggestionMessage;
