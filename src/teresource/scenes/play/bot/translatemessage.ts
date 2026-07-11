@@ -31,5 +31,5 @@ function translateLocation(location: Core.Location, board: CellBoard) {
     const { sx, sy, rotation } = translateOrientation(location.type, location.orientation);
     const y = board.rowCount - 1 - location.y + sy;
     const x = location.x + sx;
-    return { x, y, rotation };
+    return { type: location.type, x, y, rotation };
 };
