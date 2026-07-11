@@ -4,14 +4,15 @@ import { MinoQueueManager } from "../core/minomanager";
 import { GameContext, GameHighContext } from "../infra/context";
 import { ControlOrder, ControlOrderProvider } from "../controller/controlorder";
 import { viteURLify } from "#util";
+import * as Core from "./core";
 
 export type BotConfig = { type: "test1" | "test2" };
 
 type TBPImpl = {
     sendMessageObject: (message: any) => void,
     terminate: () => void,
-    addListener: (message: any) => void
-}
+    addListener: (listener: (message: Core.BotMessage) => any) => void
+};
 
 const emptyImpl: TBPImpl = {
     sendMessageObject: (message: any) => {},
@@ -27,13 +28,13 @@ function createWorkerImpl(type: keyof typeof WORKER_PATHS): TBPImpl {
     const workerPath = WORKER_PATHS[type];
     if(!workerPath) throw "tbp worker path not found";
     const worker = new Worker(viteURLify(workerPath), { type: "module" });
-    const listeners: Array<(message: any) => any> = [];
+    const listeners: Array<(message: Core.BotMessage) => any> = [];
     worker.onmessage = e => {
         for(const listener of listeners) listener(JSON.parse(e.data));
     };
     let terminated = false;
     return {
-        addListener: function(listener: (message: any) => any) {
+        addListener: function(listener: (message: Core.BotMessage) => any) {
             listeners.push(listener);
         },
         terminate: function() {
@@ -101,7 +102,7 @@ export class TBPHandler {
         this.impl.addListener(this.onMessage.bind(this));
     }
 
-    onMessage(message: any) {
+    onMessage(message: Core.BotMessage) {
 
     }
 
