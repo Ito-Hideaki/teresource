@@ -172,6 +172,12 @@ export class PlayScene extends Phaser.Scene {
         const quitButton = this.add.dom(350, 100, "div", "font-size: 20px; background-color: yellow; padding: 10px; border: 5px solid #aa0; user-select: none;", "Quit");
         quitButton.addListener("click");
         quitButton.on("click", this.quit, this);
+
+        this.events.once("shutdown", () => {
+            for(const player of this.players) {
+                if(player.control.type === "bot") player.control.handler.quit();
+            };
+        });
     }
 
 
