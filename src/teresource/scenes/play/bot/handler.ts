@@ -4,13 +4,13 @@ import { MinoQueueManager } from "../core/minomanager";
 import { GameContext, GameHighContext } from "../infra/context";
 import { ControlOrder } from "../controller/controlorder";
 
-/** @param {Mino} mino */
-function minoChar(mino) {
+export type BotConfig = { type: "test1" | "test2" };
+
+function minoChar(mino: Mino) {
     return mino.type.toUpperCase();
 }
 
-/** @param {Cell} cell */
-function cellChar(cell) {
+function cellChar(cell: Cell) {
     if(cell.isBlock) {
         return "G";
     } else {
@@ -18,17 +18,13 @@ function cellChar(cell) {
     }
 }
 
-/**
- *  @param {GameContext} gameContext
- *  @param {GameAttackState} gameAttackState
- */
-function createStartMessageCreator(gameContext, gameAttackState) {
+function createStartMessageCreator(gameContext: GameContext, gameAttackState: GameAttackState) {
     const { cellBoard, minoQueueManager, heldMinoManager } = gameContext;
     return function() {
         const heldMino = heldMinoManager.getMino();
-        const board = new Array(40).fill().map((_, i) => {
+        const board = new Array(40).fill(0).map((_, i) => {
         const cellRow = cellBoard.table.at(-i);
-        if(cellRow) return new Array(10).fill().map((_, j) => {
+        if(cellRow) return new Array(10).fill(0).map((_, j) => {
                 const cell = cellRow.at(j);
                 if(cell) return cellChar(cell);
                 else return null;
@@ -46,19 +42,21 @@ function createStartMessageCreator(gameContext, gameAttackState) {
     }
 }
 
-function sendJson(json) {
+function sendJson(json: string) {
     console.log(json);
 }
 
-/** @typedef {{ type: "test1" | "test2" }} BotConfig */
-
 export class TBPHandler {
 
-    /** @type { Phaser.Events.EventEmitter } */
-    static devResponseEmitter;
+    type: BotConfig["type"];
+    terminated: boolean;
+    responseEmitter;
+    createStartMessage;
 
-    /** @param {BotConfig} botConfig @param {GameContext} gameContext @param {GameHighContext} gameHighContext */
-    constructor(botConfig, gameContext, gameHighContext) {
+    /** @type { Phaser.Events.EventEmitter } */
+    static devResponseEmitter: Phaser.Events.EventEmitter;
+
+    constructor(botConfig: BotConfig, gameContext: GameContext, gameHighContext: GameHighContext) {
         this.type = botConfig.type;
         this.terminated = false;
         this.responseEmitter = TBPHandler.devResponseEmitter;
@@ -67,9 +65,9 @@ export class TBPHandler {
         if(this.type === "test2") this.#session();
     }
 
-    #waitForResponse(type) {
+    #waitForResponse(type: string) {
         return new Promise((res, rej) => {
-            const callback = json => {
+            const callback = (json: string) => {
                 const message = JSON.parse(json);
                 if(message.type !== type) return;
 
