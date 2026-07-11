@@ -4,8 +4,6 @@ import { BootloaderScene } from "./teresource/scenes/bootloader";
 import { createConfigUIElement } from "./teresource/configUI";
 import { createLogBox } from "./teresource/logUI";
 import { MenuScene } from "./teresource/scenes/menu";
-import { TBPHandler } from "./teresource/scenes/play/bot/handler";
-import { CC2Handler } from "#cc2";
 
 addEventListener("DOMContentLoaded", () => {
 
@@ -58,14 +56,5 @@ addEventListener("DOMContentLoaded", () => {
         if (game.canvas) {
             outerGameBox.style.width = `${game.canvas.clientWidth}px`;
         }
-    });
-
-    TBPHandler.devResponseEmitter = new Phaser.Events.EventEmitter();
-    window.devBot = function(json) {
-        TBPHandler.devResponseEmitter.emit("response", json);
-    }
-
-    new CC2Handler(obj => {
-        console.log(obj);
     });
 });

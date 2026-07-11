@@ -19,7 +19,6 @@
     "phaser": "^3.90.0"
   },
   "imports": {
-    "#util": "./src/teresource/util.js",
-    "#cc2": "./src/cc2.js"
+    "#util": "./src/teresource/util.js"
   }
 }
