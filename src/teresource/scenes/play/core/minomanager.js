@@ -49,6 +49,9 @@ export class CurrentMinoManager {
         return this.#isPlaced;
     };
 
+    getSpawnColumn() { return this.#spawnColumn }
+    getSpawnRow() { return this.#spawnRow }
+
     /** Copy public and private members and returns it @return {CurrentMinoManager} */
     duplicate() {
         const copied = new CurrentMinoManager(this.#spawnRow, this.#spawnColumn);
