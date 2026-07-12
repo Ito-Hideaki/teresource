@@ -35,7 +35,7 @@ export class Mino {
     #shape;
 
     /**
-     * @param {string} type
+     * @param {import("./coredata").MinoType} type
      * @param {number} rotation 0, 90, 180, 270 clockwise
      * */
     constructor(type, rotation = 0) {

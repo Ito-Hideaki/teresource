@@ -104,7 +104,7 @@ export class HeldMinoManager {
 
 
 
-/** @typedef {{minoTypeToUseList:string[]}} BagConfig */
+/** @typedef {{minoTypeToUseList:import("./coredata").MinoType[]}} BagConfig */
 
 export class Bag {
     static TYPES = {
