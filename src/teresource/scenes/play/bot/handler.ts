@@ -46,8 +46,7 @@ function createWorkerImpl(type: keyof typeof WORKER_PATHS): TBPImpl {
             }
         },
         sendMessageObject(obj: any) {
-            if(terminated) throw "Error: worker has terminated";
-            worker.postMessage(JSON.stringify(obj));
+            if(!terminated) worker.postMessage(JSON.stringify(obj));
         }
     }
 };
