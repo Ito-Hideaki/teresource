@@ -5,6 +5,7 @@ import { GameContext, GameHighContext } from "../infra/context";
 import { ControlOrder, ControlOrderProvider } from "../controller/controlorder";
 import { viteURLify } from "#util";
 import * as TBP from "./core";
+import { translateLocation } from "./translatemessage";
 
 export type BotConfig = { type: "test1" | "test2" };
 
@@ -116,6 +117,8 @@ export class TBPHandler {
                 this.impl.sendMessageObject(this.createStartMessage());
                 break;
             case "suggestion":
+                const move = message.moves[0];
+                const trsLocation = translateLocation(move.location, this.board);
                 break;
         }
     }
