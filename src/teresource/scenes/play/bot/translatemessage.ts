@@ -1,5 +1,6 @@
 import { CellBoard } from "../core/mechanics";
 import * as TBP from "./core";
+import * as TRS from "./trscore";
 
 //** return a difference of the origin from SRS true rotation in teresource-style coordinate */
 function translateOrientation(type: TBP.MinoType, orientation: TBP.Orientation) {
@@ -27,9 +28,9 @@ function translateOrientation(type: TBP.MinoType, orientation: TBP.Orientation) 
     }
 };
 
-function translateLocation(location: TBP.Location, board: CellBoard) {
+export function translateLocation(location: TBP.Location, board: CellBoard): TRS.Location {
     const { sx, sy, rotation } = translateOrientation(location.type, location.orientation);
     const y = board.rowCount - 1 - location.y + sy;
     const x = location.x + sx;
-    return { type: location.type, x, y, rotation };
+    return { type: TRS.MINO_TYPE_MAP[location.type], x, y, rotation };
 };
