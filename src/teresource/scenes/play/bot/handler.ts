@@ -6,6 +6,7 @@ import { ControlOrder, ControlOrderProvider } from "../controller/controlorder";
 import { viteURLify } from "#util";
 import * as TBP from "./core";
 import { translateLocation } from "./translatemessage";
+import { RouteSearcher } from "./search";
 
 export type BotConfig = { type: "test1" | "test2" };
 
@@ -96,6 +97,7 @@ export class TBPHandler {
     private controlOrderProvider;
     private impl;
     private createStartMessage;
+    private routeSearcher;
     private board;
 
     constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext) {
@@ -105,6 +107,7 @@ export class TBPHandler {
         this.impl = impl;
         this.impl.addListener(this.onMessage.bind(this));
         this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState);
+        this.routeSearcher = new RouteSearcher(gameContext);
     }
 
     onMessage(message: TBP.BotMessage) {
@@ -119,6 +122,8 @@ export class TBPHandler {
             case "suggestion":
                 const move = message.moves[0];
                 const trsLocation = translateLocation(move.location, this.board);
+                const route = this.routeSearcher.search(trsLocation);
+                console.log(route);
                 break;
         }
     }
