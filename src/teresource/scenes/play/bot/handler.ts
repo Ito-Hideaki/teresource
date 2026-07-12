@@ -121,6 +121,7 @@ export class TBPHandler {
                 break;
             case "suggestion":
                 const move = message.moves[0];
+                this.impl.sendMessageObject({ "type" : "play", "move" : move });
                 const trsLocation = translateLocation(move.location, this.board);
                 const route = this.routeSearcher.search(trsLocation);
                 console.log(route);
