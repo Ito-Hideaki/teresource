@@ -93,7 +93,13 @@ export class RouteSearcher {
             }
         }
 
-        //move horizontally
+        while(paths.at(-1)!.x !== this.spawnColumn) {
+            const lastPath = paths.at(-1)!;
+            paths.push({
+                ...lastPath,
+                x: lastPath.x + ( lastPath.x < this.spawnColumn ? 1 : -1)
+            });
+        }
 
         //rotate
 
