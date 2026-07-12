@@ -76,19 +76,16 @@ export class RouteSearcher {
         const root = this.nodes.getNode(location);
         root.depth = 0;
 
-        const route: Node[] = this.searchWhileUnderground(root);
-        const skyRoot = route.at(-1);
-
-        //move vertically
+        const paths: TRS.Location[] = this.searchWhileUnderground(root);
 
         //move horizontally
 
         //rotate
 
-        return route.map(node => node.location);
+        return paths;
     }
 
-    searchWhileUnderground(root: Node): Node[] {
+    searchWhileUnderground(root: Node): TRS.Location[] {
         const queue: Node[] = [root];
         let skyRoot: Node | undefined = undefined;
         for(let i = 0; queue.length > i; i++) {
@@ -106,6 +103,6 @@ export class RouteSearcher {
 
         //generate route
 
-        return [skyRoot];
+        return [skyRoot].map(node => node.location);
     }
 }
