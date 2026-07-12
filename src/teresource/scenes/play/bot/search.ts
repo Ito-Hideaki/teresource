@@ -30,7 +30,7 @@ class NodeUtility {
         this.board[location.y][location.x][location.rotation] ??= {
             location: { ...location },
             depth: -1,
-            parent
+            parent: undefined
         };
         return this.board[location.y][location.x][location.rotation];
     }
