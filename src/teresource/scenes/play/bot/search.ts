@@ -101,7 +101,8 @@ export class RouteSearcher {
             });
         }
 
-        //rotate
+        if(paths.at(-1)!.rotation === 180) paths.push({ ...paths.at(-1)!, rotation: 90 });
+        if(paths.at(-1)!.rotation === 90 || paths.at(-1)!.rotation === 270) paths.push({ ...paths.at(-1)!, rotation: 0 });
 
         return paths;
     }
