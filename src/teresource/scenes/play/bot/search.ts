@@ -77,6 +77,21 @@ export class RouteSearcher {
         root.depth = 0;
 
         const paths: TRS.Location[] = this.searchWhileUnderground(root);
+        const isHardDroppable = paths.length === 1;
+
+        if(isHardDroppable) {
+            paths.push({
+                ...paths.at(-1)!,
+                y: this.spawnRow
+            });
+        } else {
+            while(paths.at(-1)!.y > this.spawnRow) {
+                paths.push({
+                    ...paths.at(-1)!,
+                    y: paths.at(-1)!.y - 1
+                });
+            }
+        }
 
         //move horizontally
 
