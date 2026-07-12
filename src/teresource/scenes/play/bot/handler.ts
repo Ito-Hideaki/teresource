@@ -118,6 +118,7 @@ export class TBPHandler {
                 break;
             case "ready":
                 this.impl.sendMessageObject(this.createStartMessage());
+                setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
                 break;
             case "suggestion":
                 const move = message.moves[0];
@@ -125,6 +126,7 @@ export class TBPHandler {
                 const trsLocation = translateLocation(move.location, this.board);
                 const route = this.routeSearcher.search(trsLocation);
                 console.log(route);
+                setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
                 break;
         }
     }
