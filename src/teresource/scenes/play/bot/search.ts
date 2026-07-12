@@ -1,4 +1,3 @@
-import { MinoType } from "../core/coredata";
 import { GameContext } from "../infra/context";
 import * as TRS from "./trscore";
 
@@ -23,7 +22,7 @@ class NodeUtility {
         this.board = {};
     }
 
-    getNode(location: TRS.Location, parent: Node) {
+    getNode(location: TRS.Location) {
 
         this.board[location.y] ??= {};
         this.board[location.y][location.x] ??= {};
@@ -33,5 +32,57 @@ class NodeUtility {
             parent: undefined
         };
         return this.board[location.y][location.x][location.rotation];
+    }
+
+    reset() {
+        this.board = {};
+    }
+}
+
+export class RouteSearcher {
+    private spawnRow;
+    private spawnColumn;
+    private nodes;
+
+    constructor(gameContext: GameContext) {
+        this.spawnRow = gameContext.currentMinoManager.getSpawnRow();
+        this.spawnColumn = gameContext.currentMinoManager.getSpawnColumn();
+        this.nodes = new NodeUtility(gameContext);
+    }
+
+    search(location: TRS.Location): TRS.Location[] {
+        this.nodes.reset();
+
+        const root = this.nodes.getNode(location);
+        root.depth = 0;
+
+        const route: Node[] = this.searchWhileUnderground(root);
+        const skyRoot = route.at(-1);
+
+        //move vertically
+
+        //move horizontally
+
+        //rotate
+
+        return route.map(node => node.location);
+    }
+
+    searchWhileUnderground(root: Node): Node[] {
+        const queue: Node[] = [root];
+        let skyRoot: Node | undefined = undefined;
+        for(let i = 0; queue.length > i; i++) {
+            const node = queue[i];
+            //find it sky root and break
+            //get each child node
+            //if it had not been discovered
+            //set depth and parent
+            //add to the queue
+        }
+        if(!skyRoot) {} //do some exception
+
+        //generate route
+
+        return [];
     }
 }
