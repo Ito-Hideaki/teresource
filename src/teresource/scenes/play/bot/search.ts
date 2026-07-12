@@ -1,3 +1,4 @@
+import { Mino } from "../core/mechanics";
 import { GameContext } from "../infra/context";
 import * as TRS from "./trscore";
 
@@ -60,11 +61,13 @@ export class RouteSearcher {
     private spawnRow;
     private spawnColumn;
     private nodes;
+    private collision;
 
     constructor(gameContext: GameContext) {
         this.spawnRow = gameContext.currentMinoManager.getSpawnRow();
         this.spawnColumn = gameContext.currentMinoManager.getSpawnColumn();
         this.nodes = new NodeUtility(gameContext);
+        this.collision = new CollisionUtil(gameContext);
     }
 
     search(location: TRS.Location): TRS.Location[] {
@@ -90,16 +93,19 @@ export class RouteSearcher {
         let skyRoot: Node | undefined = undefined;
         for(let i = 0; queue.length > i; i++) {
             const node = queue[i];
-            //find it sky root and break
+            if(this.collision.isReachableWithHardDrop(node.location)) {
+                skyRoot = node;
+                break;
+            }
             //get each child node
             //if it had not been discovered
             //set depth and parent
             //add to the queue
         }
-        if(!skyRoot) {} //do some exception
+        if(!skyRoot) { throw "unable to reach the sky" } //do some exception
 
         //generate route
 
-        return [];
+        return [skyRoot];
     }
 }
