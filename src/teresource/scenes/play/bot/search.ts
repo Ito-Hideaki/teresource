@@ -39,6 +39,23 @@ class NodeUtility {
     }
 }
 
+class CollisionUtil {
+    private cellBoard;
+    private spawnRow;
+
+    constructor(gameContext: GameContext) {
+        this.cellBoard = gameContext.cellBoard;
+        this.spawnRow = gameContext.currentMinoManager.getSpawnRow();
+    }
+
+    isReachableWithHardDrop(location: TRS.Location) {
+        const mino = new Mino(location.type, location.rotation);
+        const hardDropDiff = Math.max(this.spawnRow - location.y, 0);
+        const possibleVerticalMove = this.cellBoard.tryMoveMinoVertically(hardDropDiff, mino, location.y, location.x);
+        return possibleVerticalMove === hardDropDiff;
+    }
+}
+
 export class RouteSearcher {
     private spawnRow;
     private spawnColumn;
