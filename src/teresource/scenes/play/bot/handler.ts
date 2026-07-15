@@ -8,6 +8,7 @@ import { viteURLify } from "#util";
 import * as TBP from "./core";
 import { translateLocation } from "./translatemessage";
 import { RouteSearcher } from "./search";
+import { BotControlOrderProvider } from "./controlorder";
 
 export type BotConfig = { type: "test1" | "test2" };
 
@@ -100,9 +101,9 @@ export class TBPHandler {
     private routeSearcher;
     private board;
 
-    constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext) {
+    constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderProvider: BotControlOrderProvider) {
         this.terminated = false;
-        this.controlOrderProvider = gameHighContext.controlOrderProvider;
+        this.controlOrderProvider = controlOrderProvider;
         this.board = gameContext.cellBoard;
         this.impl = impl;
         this.impl.addListener(this.onMessage.bind(this));
@@ -143,6 +144,6 @@ function createImpl(type: BotConfig["type"]) {
     return createWorkerImpl(type);
 }
 
-export function createTBPHandler(config: BotConfig, gameContext: GameContext, gameHighContext: GameHighContext) {
-    return new TBPHandler(createImpl(config.type), gameContext, gameHighContext);
+export function createTBPHandler(config: BotConfig, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderProvider: BotControlOrderProvider) {
+    return new TBPHandler(createImpl(config.type), gameContext, gameHighContext, controlOrderProvider);
 };

@@ -4,4 +4,11 @@ import { ControlOrder, ControlOrderProviderConfig, HumanControlOrderProvider } f
 
 export type ControlOrderProvider = HumanControlOrderProvider | BotControlOrderProvider;
 
-export type ControlOrderProviderCreator = (config: ControlOrderProviderConfig) => ControlOrderProvider;
+export type ControlOrderProviderNeedInit = (config: ControlOrderProviderConfig) => ControlOrderProvider;
+
+export function createControlOrderProviderNeedInit(controlOrderProvider: ControlOrderProvider): ControlOrderProviderNeedInit {
+    return function(config: ControlOrderProviderConfig) {
+        controlOrderProvider.init(config);
+        return controlOrderProvider;
+    }
+}

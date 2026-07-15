@@ -106,12 +106,15 @@ export class HumanControlOrderProvider {
         return this.DASTimerF <= 0 && (this.leftMoveDown || this.rightMoveDown);
     }
 
-    /** @param {ControlOrderProviderConfig} config */
-    constructor(config) {
-        this.#ARRConfig = config.ARR;
-        this.#DASConfig = config.DAS;
+    constructor() {
         this.#controlOrder = new ControlOrder();
         this.#horizontalJudge = new HorizontalLastPriorityJudge();
+    }
+
+/** @param {ControlOrderProviderConfig} config */
+    init(config) {
+        this.#ARRConfig = config.ARR;
+        this.#DASConfig = config.DAS;
     }
 
     #resetDAS() {

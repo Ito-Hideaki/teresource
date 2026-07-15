@@ -1,13 +1,15 @@
 import Phaser from "phaser";
 import { cellImgSkins } from "./play/view/viewdata";
 import { GameConfig, SingleGame } from "./play/controller/game";
-import { KeyBindingConfig, KeyInputProcessor } from "./play/controller/controlorder";
+import { ControlOrderProviderConfig, HumanControlOrderProvider, KeyBindingConfig, KeyInputProcessor } from "./play/controller/controlorder";
 import { CellSheetParent, loadCellSkinTextures } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 import { GameSessionConfig } from "./play/controller/gamesession";
 import { ConfigUIDataHandler } from "../configUI";
 import { ConfigCategory } from "../configUIData";
 import { BotConfig, createTBPHandler, TBPHandler } from "./play/bot/handler";
+import { createControlOrderProviderNeedInit } from "./play/controller/controlordertype";
+import { BotControlOrderProvider } from "./play/bot/controlorder";
 
 /** Load textures that are used to create next level textures @param {Phaser.Scene} scene */
 export function loadFirstLevelTextures(scene: Phaser.Scene) {
@@ -118,20 +120,29 @@ export class PlayScene extends Phaser.Scene {
         const playerNumber = matchConfig.players.length;
 
         this.players = matchConfig.players.map((playerConfig, i) => {
-            const game = new SingleGame(this, playerConfig.game);
+            const controlOrderProviderNeedInit = (() => {
+                switch(playerConfig.control.type) {
+                    case "keyboard":
+                        return createControlOrderProviderNeedInit(new HumanControlOrderProvider());
+                    case "bot":
+                        return createControlOrderProviderNeedInit(new BotControlOrderProvider());
+                }
+            })();
+
+            const game = new SingleGame(this, playerConfig.game, controlOrderProviderNeedInit);
             const container = game.gameViewController.boardContainer;
             container.scale = 4 / (playerNumber + 3);
             container.x = this.game.canvas.width * ((i + 0.5) / playerNumber);
             container.y = this.game.canvas.height / 2;
             game.gameUpdator.setSessionFromConfig(matchConfig.session);
-
             const control: Player["control"] = (() => {
                 switch (playerConfig.control.type) {
                     case "keyboard":
                         const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, game.controlOrderProvider);
                         return { keyInputProcessor, ...playerConfig.control };
                     case "bot":
-                        const handler = createTBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext);
+                        const botControlOrderProvider = game.controlOrderProvider as BotControlOrderProvider;
+                        const handler = createTBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext, botControlOrderProvider);
                         return { handler, ...playerConfig.control };
                 }
             })();

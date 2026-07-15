@@ -64,8 +64,8 @@ export class SingleGame {
 
     #gameReportStack;
 
-    /** @param {PlayScene} scene @param {GameConfig} gameConfig */
-    constructor(scene, gameConfig) {
+    /** @param {PlayScene} scene @param {GameConfig} gameConfig @param {import("./controlordertype").ControlOrderProviderCreator} createControlOrderProvider*/
+    constructor(scene, gameConfig, createControlOrderProvider) {
         const boardSize = new BoardSize(gameConfig.boardHeight * 2, gameConfig.boardWidth);
         const currentMinoManager = new CurrentMinoManager(
             boardSize.rowCount - gameConfig.boardHeight,
@@ -84,7 +84,7 @@ export class SingleGame {
         const gameAttackState = new GameAttackState(gameContext);
         const garbageGenerator = new GarbageGenerator(cellBoard, gameConfig.garbage);
         const scheduledDamageState = new GameScheduledDamageState();
-        const controlOrderProvider = new HumanControlOrderProvider(getControlOrderProviderConfig(gameConfig));
+        const controlOrderProvider = createControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const gameStats = new GameStats();
         const gameStatsManager = new GameStatsManager(gameStats, gameConfig.startLevel);
         const gameHighContext = new GameHighContext({
