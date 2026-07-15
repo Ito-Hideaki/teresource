@@ -70,18 +70,18 @@ export class RouteSearcher {
         this.collision = new CollisionUtil(gameContext);
     }
 
-    search(location: TRS.Location): TRS.Location[] {
+    search(location: TRS.Location): Node[] {
         this.nodes.reset();
 
         const root = this.nodes.getNode(location);
         root.depth = 0;
 
-        const paths: TRS.Location[] = this.searchWhileUnderground(root);
+        const paths: Node[] = this.searchWhileUnderground(root);
 
         return paths;
     }
 
-    searchWhileUnderground(root: Node): TRS.Location[] {
+    searchWhileUnderground(root: Node): Node[] {
         const queue: Node[] = [root];
         let skyRoot: Node | undefined = undefined;
         for(let i = 0; queue.length > i; i++) {
@@ -99,6 +99,6 @@ export class RouteSearcher {
 
         //generate route
 
-        return [skyRoot].map(node => node.location);
+        return [skyRoot];
     }
 }
