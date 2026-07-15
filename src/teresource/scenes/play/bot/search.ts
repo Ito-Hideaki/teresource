@@ -77,32 +77,6 @@ export class RouteSearcher {
         root.depth = 0;
 
         const paths: TRS.Location[] = this.searchWhileUnderground(root);
-        const isHardDroppable = paths.length === 1;
-
-        if(isHardDroppable) {
-            paths.push({
-                ...paths.at(-1)!,
-                y: this.spawnRow
-            });
-        } else {
-            while(paths.at(-1)!.y > this.spawnRow) {
-                paths.push({
-                    ...paths.at(-1)!,
-                    y: paths.at(-1)!.y - 1
-                });
-            }
-        }
-
-        while(paths.at(-1)!.x !== this.spawnColumn) {
-            const lastPath = paths.at(-1)!;
-            paths.push({
-                ...lastPath,
-                x: lastPath.x + ( lastPath.x < this.spawnColumn ? 1 : -1)
-            });
-        }
-
-        if(paths.at(-1)!.rotation === 180) paths.push({ ...paths.at(-1)!, rotation: 90 });
-        if(paths.at(-1)!.rotation === 90 || paths.at(-1)!.rotation === 270) paths.push({ ...paths.at(-1)!, rotation: 0 });
 
         return paths;
     }
