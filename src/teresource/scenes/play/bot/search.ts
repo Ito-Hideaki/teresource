@@ -1,12 +1,21 @@
+import { ControlOrder } from "../controller/controlorder";
 import { Mino } from "../core/mechanics";
 import { GameContext } from "../infra/context";
 import * as TRS from "./trscore";
 
-type Node = {
+type UnconnectedNode = {
     location: TRS.Location;
-    depth: number;
-    parent: Node | undefined;
 };
+
+type ConnectedNode = UnconnectedNode & {
+    depth: number;
+    parent: Node;
+    controlToParent: number;
+};
+
+type Node = UnconnectedNode | ConnectedNode;
+
+type Path = [UnconnectedNode, ...ConnectedNode[]];
 
 type NodeCell = { [k: number]: Node };
 type NodeRow = { [k: number]: NodeCell };
@@ -28,9 +37,7 @@ class NodeUtility {
         this.board[location.y] ??= {};
         this.board[location.y][location.x] ??= {};
         this.board[location.y][location.x][location.rotation] ??= {
-            location: { ...location },
-            depth: -1,
-            parent: undefined
+            location: { ...location }
         };
         return this.board[location.y][location.x][location.rotation];
     }
@@ -70,18 +77,17 @@ export class RouteSearcher {
         this.collision = new CollisionUtil(gameContext);
     }
 
-    search(location: TRS.Location): Node[] {
+    search(location: TRS.Location): Path {
         this.nodes.reset();
 
         const root = this.nodes.getNode(location);
-        root.depth = 0;
 
-        const paths: Node[] = this.searchWhileUnderground(root);
+        const paths = this.searchWhileUnderground(root);
 
         return paths;
     }
 
-    searchWhileUnderground(root: Node): Node[] {
+    searchWhileUnderground(root: Node): Path {
         const queue: Node[] = [root];
         let skyRoot: Node | undefined = undefined;
         for(let i = 0; queue.length > i; i++) {
