@@ -8,7 +8,8 @@ type UnconnectedNode = {
     parent: undefined;
 };
 
-type ConnectedNode = UnconnectedNode & {
+type ConnectedNode = {
+    location: TRS.Location;
     parent: Node;
     controlToParent: number;
 };
