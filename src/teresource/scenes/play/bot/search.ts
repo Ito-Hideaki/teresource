@@ -16,7 +16,7 @@ type ConnectedNode = {
 
 type Node = UnconnectedNode | ConnectedNode;
 
-type Path = [UnconnectedNode, ...ConnectedNode[]];
+type Path = [...ConnectedNode[], UnconnectedNode];
 
 type NodeCell = { [k: number]: Node };
 type NodeRow = { [k: number]: NodeCell };
@@ -109,11 +109,9 @@ export class RouteSearcher {
                 }
             }
         }
-        if(!skyRoot) { throw "unable to reach the sky" } //do some exception
-
-        //generate route
-
-        return [skyRoot];
+        if(!skyRoot) throw "unable to reach the sky";
+        const path = this.recursivelyGeneratePath(skyRoot);
+        return path;
     }
 
     private getEachChildNode(node: Node) {
@@ -124,5 +122,20 @@ export class RouteSearcher {
         ];
         //verify nodes if it's reachable
         return nodes;
+    }
+
+    private recursivelyGeneratePath(leaf: Node): Path {
+        let current: Node = leaf;
+        const routes: ConnectedNode[] = [];
+        let root: undefined | UnconnectedNode = undefined;
+        while(!root) {
+            if(current.parent) {
+                routes.push(current);
+                current = current.parent;
+            } else {
+                root = current;
+            }
+        }
+        return [ ...routes, root ];
     }
 }
