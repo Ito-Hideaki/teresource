@@ -1,9 +1,7 @@
+import { BotControlOrderProvider } from "../bot/controlorder";
 import { BoardUpdateDiff } from "./boardcontroller";
-import { ControlOrder } from "./controlorder";
+import { ControlOrder, ControlOrderProviderConfig, HumanControlOrderProvider } from "./controlorder";
 
-export interface ControlOrderProvider {
-    resetARR: () => void;
-    provideControlOrder: () => ControlOrder;
-    advanceTime: (deltaTime: number) => void;
-    recieveControlResult: (controlDiff: BoardUpdateDiff) => void;
-};
+export type ControlOrderProvider = HumanControlOrderProvider | BotControlOrderProvider;
+
+export type ControlOrderProviderCreator = (config: ControlOrderProviderConfig) => ControlOrderProvider;
