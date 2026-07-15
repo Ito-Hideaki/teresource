@@ -107,4 +107,14 @@ export class RouteSearcher {
 
         return [skyRoot];
     }
+
+    private getEachChildNode(node: Node) {
+        const { x, y, rotation } = node.location;
+        const nodes: [number, Node][] = [
+            [ControlOrder.MOVE_LEFT, this.nodes.getNode({ ...node.location, x: x+1 })],
+            [ControlOrder.MOVE_RIGHT, this.nodes.getNode({ ...node.location, x: x-1 })]
+        ];
+        //verify nodes if it's reachable
+        return nodes;
+    }
 }
