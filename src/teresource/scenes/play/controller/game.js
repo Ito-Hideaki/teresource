@@ -1,7 +1,6 @@
 import { CurrentMinoManager, Bag, MinoQueueManager, HeldMinoManager } from "../core/minomanager";
 import { BoardSize, CellBoard } from "../core/mechanics";
 import { BoardUpdater, BoardUpdateState } from "./boardcontroller";
-import { ControlOrderProvider } from "./controlorder";
 import { GameContext, GameHighContext, GameViewContext } from "../infra/context";
 import { GameViewController } from "../view/gameviewcontroller";
 import { GameUpdator } from "./gameupdator";
@@ -21,6 +20,7 @@ import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from
 import { ScheduledDamageView } from "../view/scheduleddamageview";
 import { MINO_DATA_INDEX } from "../core/coredata";
 import { GameAudioPlayer } from "../audio/gameaudioplayer";
+import { HumanControlOrderProvider } from "./controlorder";
 
 /** 
  * @typedef {{
@@ -84,7 +84,7 @@ export class SingleGame {
         const gameAttackState = new GameAttackState(gameContext);
         const garbageGenerator = new GarbageGenerator(cellBoard, gameConfig.garbage);
         const scheduledDamageState = new GameScheduledDamageState();
-        const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
+        const controlOrderProvider = new HumanControlOrderProvider(getControlOrderProviderConfig(gameConfig));
         const gameStats = new GameStats();
         const gameStatsManager = new GameStatsManager(gameStats, gameConfig.startLevel);
         const gameHighContext = new GameHighContext({
