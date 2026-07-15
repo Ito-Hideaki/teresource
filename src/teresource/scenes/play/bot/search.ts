@@ -5,10 +5,10 @@ import * as TRS from "./trscore";
 
 type UnconnectedNode = {
     location: TRS.Location;
+    parent: undefined;
 };
 
 type ConnectedNode = UnconnectedNode & {
-    depth: number;
     parent: Node;
     controlToParent: number;
 };
@@ -37,7 +37,8 @@ class NodeUtility {
         this.board[location.y] ??= {};
         this.board[location.y][location.x] ??= {};
         this.board[location.y][location.x][location.rotation] ??= {
-            location: { ...location }
+            location: { ...location },
+            parent: undefined
         };
         return this.board[location.y][location.x][location.rotation];
     }
@@ -96,10 +97,16 @@ export class RouteSearcher {
                 skyRoot = node;
                 break;
             }
-            //get each child node
-            //if it had not been discovered
-            //set depth and parent
-            //add to the queue
+            const children = this.getEachChildNode(node);
+            for(const child of children) {
+                const childNode = child[1];
+                if(!childNode.parent) {
+                    const modifyNode: any = childNode;
+                    modifyNode.parent = node;
+                    modifyNode.controlToParent = child[0];
+                    queue.push(modifyNode);
+                }
+            }
         }
         if(!skyRoot) { throw "unable to reach the sky" } //do some exception
 
