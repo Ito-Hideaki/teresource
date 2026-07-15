@@ -123,8 +123,8 @@ export class TBPHandler {
                 const move = message.moves[0];
                 this.impl.sendMessageObject({ "type" : "play", "move" : move });
                 const trsLocation = translateLocation(move.location, this.board);
-                const paths = this.routeSearcher.search(trsLocation);
-                console.log(paths);
+                const path = this.routeSearcher.search(trsLocation);
+                console.log(path);
                 setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
                 break;
         }

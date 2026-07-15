@@ -82,9 +82,9 @@ export class RouteSearcher {
 
         const root = this.nodes.getNode(location);
 
-        const paths = this.searchWhileUnderground(root);
+        const path = this.searchWhileUnderground(root);
 
-        return paths;
+        return path;
     }
 
     searchWhileUnderground(root: Node): Path {
