@@ -33,6 +33,8 @@ export class BotControlOrderProvider {
         if(!this.pathQueue.length) return new ControlOrder(0);
 
         const node = this.currentNode ?? this.initCurrentNode();
+        if(node.location.type !== this.currentMinoManager.mino.type) return new ControlOrder(ControlOrder.HOLD);
+
         const firstNode = this.pathQueue[0].route.at(0) ?? this.pathQueue[0].goal;
         const rotationDiff = (node.location.rotation - this.currentMinoManager.mino.rotation + 360) % 360;
         if(node === firstNode) {
