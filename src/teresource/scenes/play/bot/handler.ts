@@ -65,7 +65,7 @@ function cellChar(cell: Cell) {
 }
 
 function createStartMessageCreator(gameContext: GameContext, gameAttackState: GameAttackState) {
-    const { cellBoard, minoQueueManager, heldMinoManager } = gameContext;
+    const { cellBoard, minoQueueManager, heldMinoManager, currentMinoManager } = gameContext;
     return function() {
         const heldMino = heldMinoManager.getMino();
         const board = new Array(40).fill(0).map((_, i) => {
@@ -80,7 +80,7 @@ function createStartMessageCreator(gameContext: GameContext, gameAttackState: Ga
         return {
             type: "start",
             hold: heldMino ? minoChar(heldMino) : null,
-            queue: minoQueueManager.minoQueue.map(mino => minoChar(mino)),
+            queue: [minoChar(currentMinoManager.mino), ...minoQueueManager.minoQueue.map(mino => minoChar(mino))],
             combo: gameAttackState.combo,
             back_to_back: gameAttackState.B2B,
             board
