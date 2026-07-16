@@ -1,6 +1,7 @@
 import { CellBoard, BoardSize } from "../core/mechanics";
 import { CurrentMinoManager, HeldMinoManager, MinoQueueManager } from "../core/minomanager";
 import { BoardUpdateState } from "../controller/boardcontroller";
+import { ControlOrderProvider } from "../controller/controlorder";
 import { CellSheetParent } from "../view/customtexture";
 import { RotationSystem } from "../core/rotationsystem";
 import { GameReportStack } from "../controller/report";
@@ -42,7 +43,7 @@ export class GameHighContext {
      *     gameStats: GameStats,
      *     gameStatsManager: GameStatsManager,
      *     gameAttackState: GameAttackState,
-     *     controlOrderProvider: import("../controller/controlordertype").ControlOrderProvider,
+     *     controlOrderProvider: ControlOrderProvider,
      *     lineClearManager : LineClearManager,
      * garbageGenerator  : GarbageGenerator,
      * scheduledDamageState : GameScheduledDamageState,
