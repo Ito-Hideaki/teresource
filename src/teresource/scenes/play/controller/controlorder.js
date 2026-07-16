@@ -79,6 +79,27 @@ class HorizontalLastPriorityJudge {
  * }} ControlOrderProviderConfig
  *  */
 
+const dummyProvider = {
+    provideControlOrder: () => new ControlOrder(0),
+    receiveControlResult: (diff) => {},
+    resetARR: () => {},
+    advanceTime: (deltaTime) => {}
+}
+
+export class ControlOrderGateway {
+
+    provideControlOrder = () => this.#provider.provideControlOrder();
+    receiveControlResult = (diff) => this.#provider.receiveControlResult(diff);
+    resetARR = () => this.#provider.resetARR();
+    advanceTime = (deltaTime) => this.#provider.advanceTime(deltaTime);
+
+    #provider = dummyProvider;
+
+    setProvider(provider) {
+        this.#provider = provider;
+    }
+}
+
 /** receives player inputs, calculates DAS, ARR and else and provides controlOrder for each frame
  * Flow : setNewPlayerInput > provideControlOrder > receiveControlResult > advanceTime
  */
@@ -104,12 +125,13 @@ export class ControlOrderProvider {
         return this.DASTimerF <= 0 && (this.leftMoveDown || this.rightMoveDown);
     }
 
-    /** @param {ControlOrderProviderConfig} config */
-    constructor(config) {
+    /** @param {ControlOrderProviderConfig} config @param {ControlOrderAdapter} adapter */
+    constructor(config, adapter) {
         this.#ARRConfig = config.ARR;
         this.#DASConfig = config.DAS;
         this.#controlOrder = new ControlOrder();
         this.#horizontalJudge = new HorizontalLastPriorityJudge();
+        adapter.setProvider(this.provideControlOrder.bind(this));
     }
 
     #resetDAS() {
