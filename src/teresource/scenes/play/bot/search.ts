@@ -16,7 +16,10 @@ type ConnectedNode = {
 
 type Node = UnconnectedNode | ConnectedNode;
 
-type Path = [...ConnectedNode[], UnconnectedNode];
+export type Path = {
+    undergroundPath: ConnectedNode[];
+    goal:  UnconnectedNode;
+}
 
 type NodeCell = { [k: number]: Node };
 type NodeRow = { [k: number]: NodeCell };
@@ -126,16 +129,16 @@ export class RouteSearcher {
 
     private recursivelyGeneratePath(leaf: Node): Path {
         let current: Node = leaf;
-        const routes: ConnectedNode[] = [];
+        const route: ConnectedNode[] = [];
         let root: undefined | UnconnectedNode = undefined;
         while(!root) {
             if(current.parent) {
-                routes.push(current);
+                route.push(current);
                 current = current.parent;
             } else {
                 root = current;
             }
         }
-        return [ ...routes, root ];
+        return { undergroundPath: route, goal: root };
     }
 }
