@@ -106,7 +106,6 @@ export class SingleGame {
         this.gameContext = gameContext;
         this.gameHighContext = gameHighContext;
         this.gameViewController = gameViewController;
-        this.controlOrderProvider = controlOrderProvider;``
     }
 
     /** @param {{ gameConfig: GameConfig, gameHighContext: GameHighContext, gameContext: GameContext, scene: Phaser.Scene }} */
