@@ -23,8 +23,15 @@ export class BotControlOrderProvider {
         return this.currentNode;
     }
 
+    private place() {
+        this.pathQueue.splice(0, 1);
+        this.currentNode = undefined;
+        return new ControlOrder(ControlOrder.HARD_DROP);
+    }
+
     provideControlOrder() {
         if(!this.pathQueue.length) return new ControlOrder(0);
+
         const node = this.currentNode ?? this.initCurrentNode();
         const firstNode = this.pathQueue[0].route.at(0) ?? this.pathQueue[0].goal;
         const rotationDiff = (node.location.rotation - this.currentMinoManager.mino.rotation + 360) % 360;
@@ -34,6 +41,8 @@ export class BotControlOrderProvider {
             } else if(node.location.x !== this.currentMinoManager.column) {
                 const isRight = (node.location.x - this.currentMinoManager.column) > 0;
                 return new ControlOrder(isRight ? ControlOrder.MOVE_RIGHT : ControlOrder.MOVE_LEFT);
+            } else {
+                if(!node.parent) return this.place();
             }
         } else if(node.parent) {
 
