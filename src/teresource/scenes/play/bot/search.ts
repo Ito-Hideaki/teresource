@@ -17,7 +17,7 @@ type ConnectedNode = {
 type Node = UnconnectedNode | ConnectedNode;
 
 export type Path = {
-    undergroundPath: ConnectedNode[];
+    route: ConnectedNode[];
     goal:  UnconnectedNode;
 }
 
@@ -139,6 +139,6 @@ export class RouteSearcher {
                 root = current;
             }
         }
-        return { undergroundPath: route, goal: root };
+        return { route, goal: root };
     }
 }
