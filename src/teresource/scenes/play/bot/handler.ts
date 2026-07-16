@@ -7,6 +7,7 @@ import { viteURLify } from "#util";
 import * as TBP from "./core";
 import { translateLocation } from "./translatemessage";
 import { RouteSearcher } from "./search";
+import { BotControlOrderProvider } from "./provider";
 
 export type BotConfig = { type: "test1" | "test2" };
 
@@ -93,20 +94,20 @@ function sendJson(json: string) {
 
 export class TBPHandler {
     terminated: boolean;
-    private controlOrderGateway;
     private impl;
     private createStartMessage;
     private routeSearcher;
     private board;
+    private controlOrderProvider;
 
     constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
         this.terminated = false;
         this.board = gameContext.cellBoard;
         this.impl = impl;
-        this.controlOrderGateway = controlOrderGateway;
         this.impl.addListener(this.onMessage.bind(this));
         this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState);
         this.routeSearcher = new RouteSearcher(gameContext);
+        this.controlOrderProvider = new BotControlOrderProvider(gameContext, controlOrderGateway);
     }
 
     onMessage(message: TBP.BotMessage) {
