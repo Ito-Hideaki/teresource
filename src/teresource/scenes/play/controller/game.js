@@ -84,7 +84,6 @@ export class SingleGame {
         const gameAttackState = new GameAttackState(gameContext);
         const garbageGenerator = new GarbageGenerator(cellBoard, gameConfig.garbage);
         const scheduledDamageState = new GameScheduledDamageState();
-        const controlOrderProvider = controlOrderGateway;
         const gameStats = new GameStats();
         const gameStatsManager = new GameStatsManager(gameStats, gameConfig.startLevel);
         const gameHighContext = new GameHighContext({

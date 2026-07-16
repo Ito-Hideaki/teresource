@@ -62,7 +62,7 @@ type NormalUpdateResult = {
 class Simulator {
 
     //Given from Parameters
-    private controlOrderProvider;
+    private controlOrderGateway;
     private boardUpdateState;
     lineClearManager;
     gameAttackState;
@@ -82,7 +82,7 @@ class Simulator {
         gameHighContext: GameHighContext,
         controlOrderGateway: ControlOrderGateway
     ) {
-        this.controlOrderProvider = controlOrderGateway;
+        this.controlOrderGateway = controlOrderGateway;
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.garbageGenerator = gameHighContext.garbageGenerator;
@@ -121,7 +121,7 @@ class Simulator {
 
         const whenNewMinoSpawned = () => {
             this.boardUpdateState.startNewMino();
-            this.controlOrderProvider.resetARR();
+            this.controlOrderGateway.resetARR();
         }
 
         //Take new mino from queue
@@ -132,7 +132,7 @@ class Simulator {
         if (this.doesCurrentMinoCollide()) return RESULT_SESSION_ENDS;
 
         //Take held mino
-        const controlOrder = this.controlOrderProvider.provideControlOrder();
+        const controlOrder = this.controlOrderGateway.provideControlOrder();
         const usedHold = controlOrder.get(ControlOrder.HOLD) && this.minoQueueAssistant.trySpawnHeldMino();
         if (usedHold) {
             whenNewMinoSpawned();
@@ -161,8 +161,8 @@ class Simulator {
     private doNormalUpdate(deltaTime: number, controlOrder: ControlOrder): NormalUpdateResult {
 
         const boardUpdateDiff: BoardUpdateDiff = this.boardUpdater.update(controlOrder.value, deltaTime);
-        this.controlOrderProvider.receiveControlResult(boardUpdateDiff);
-        this.controlOrderProvider.advanceTime(deltaTime);
+        this.controlOrderGateway.receiveControlResult(boardUpdateDiff);
+        this.controlOrderGateway.advanceTime(deltaTime);
 
         //Clear filled line (row)
         const rowToClearList = this.lineClearManager.findRowToClearList();
