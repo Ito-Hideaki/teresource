@@ -125,7 +125,7 @@ export class TBPHandler {
                 this.impl.sendMessageObject({ "type" : "play", "move" : move });
                 const trsLocation = translateLocation(move.location, this.board);
                 const path = this.routeSearcher.search(trsLocation);
-                console.log(path);
+                this.controlOrderProvider.addPath(path);
                 setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
                 break;
         }

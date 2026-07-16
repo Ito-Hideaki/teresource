@@ -14,7 +14,7 @@ type ConnectedNode = {
     controlToParent: number;
 };
 
-type Node = UnconnectedNode | ConnectedNode;
+export type Node = UnconnectedNode | ConnectedNode;
 
 export type Path = {
     route: ConnectedNode[];
