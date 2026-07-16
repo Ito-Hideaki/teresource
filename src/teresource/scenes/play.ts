@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { cellImgSkins } from "./play/view/viewdata";
 import { GameConfig, SingleGame } from "./play/controller/game";
-import { KeyBindingConfig, KeyInputProcessor } from "./play/controller/controlorder";
+import { ControlOrderGateway, HumanControlOrderProvider, KeyBindingConfig, KeyInputProcessor } from "./play/controller/controlorder";
 import { CellSheetParent, loadCellSkinTextures } from "./play/view/customtexture";
 import { viteURLify } from "#util";
 import { GameSessionConfig } from "./play/controller/gamesession";
@@ -118,7 +118,8 @@ export class PlayScene extends Phaser.Scene {
         const playerNumber = matchConfig.players.length;
 
         this.players = matchConfig.players.map((playerConfig, i) => {
-            const game = new SingleGame(this, playerConfig.game);
+            const controlOrderGateway = new ControlOrderGateway();
+            const game = new SingleGame(this, playerConfig.game, controlOrderGateway);
             const container = game.gameViewController.boardContainer;
             container.scale = 4 / (playerNumber + 3);
             container.x = this.game.canvas.width * ((i + 0.5) / playerNumber);
@@ -128,10 +129,11 @@ export class PlayScene extends Phaser.Scene {
             const control: Player["control"] = (() => {
                 switch (playerConfig.control.type) {
                     case "keyboard":
-                        const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, game.controlOrderProvider);
+                        const controlOrderProvider = new HumanControlOrderProvider({ ...playerConfig.game.handling }, controlOrderGateway);
+                        const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, controlOrderProvider);
                         return { keyInputProcessor, ...playerConfig.control };
                     case "bot":
-                        const handler = createTBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext);
+                        const handler = createTBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext, controlOrderGateway);
                         return { handler, ...playerConfig.control };
                 }
             })();

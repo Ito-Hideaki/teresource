@@ -2,7 +2,7 @@ import { GameAttackState } from "../core/attack";
 import { Cell, CellBoard, Mino } from "../core/mechanics";
 import { MinoQueueManager } from "../core/minomanager";
 import { GameContext, GameHighContext } from "../infra/context";
-import { ControlOrder, ControlOrderProvider } from "../controller/controlorder";
+import { ControlOrder, ControlOrderGateway } from "../controller/controlorder";
 import { viteURLify } from "#util";
 import * as TBP from "./core";
 import { translateLocation } from "./translatemessage";
@@ -93,17 +93,17 @@ function sendJson(json: string) {
 
 export class TBPHandler {
     terminated: boolean;
-    private controlOrderProvider;
+    private controlOrderGateway;
     private impl;
     private createStartMessage;
     private routeSearcher;
     private board;
 
-    constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext) {
+    constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
         this.terminated = false;
-        this.controlOrderProvider = gameHighContext.controlOrderProvider;
         this.board = gameContext.cellBoard;
         this.impl = impl;
+        this.controlOrderGateway = controlOrderGateway;
         this.impl.addListener(this.onMessage.bind(this));
         this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState);
         this.routeSearcher = new RouteSearcher(gameContext);
@@ -142,6 +142,6 @@ function createImpl(type: BotConfig["type"]) {
     return createWorkerImpl(type);
 }
 
-export function createTBPHandler(config: BotConfig, gameContext: GameContext, gameHighContext: GameHighContext) {
-    return new TBPHandler(createImpl(config.type), gameContext, gameHighContext);
+export function createTBPHandler(config: BotConfig, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
+    return new TBPHandler(createImpl(config.type), gameContext, gameHighContext, controlOrderGateway);
 };

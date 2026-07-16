@@ -1,7 +1,7 @@
 import { CurrentMinoManager, Bag, MinoQueueManager, HeldMinoManager } from "../core/minomanager";
 import { BoardSize, CellBoard } from "../core/mechanics";
 import { BoardUpdater, BoardUpdateState } from "./boardcontroller";
-import { ControlOrderProvider } from "./controlorder";
+import { ControlOrderGateway } from "./controlorder";
 import { GameContext, GameHighContext, GameViewContext } from "../infra/context";
 import { GameViewController } from "../view/gameviewcontroller";
 import { GameUpdator } from "./gameupdator";
@@ -64,8 +64,8 @@ export class SingleGame {
 
     #gameReportStack;
 
-    /** @param {PlayScene} scene @param {GameConfig} gameConfig */
-    constructor(scene, gameConfig) {
+    /** @param {PlayScene} scene @param {GameConfig} gameConfig @param {ControlOrderGateway} controlOrderGateway*/
+    constructor(scene, gameConfig, controlOrderGateway) {
         const boardSize = new BoardSize(gameConfig.boardHeight * 2, gameConfig.boardWidth);
         const currentMinoManager = new CurrentMinoManager(
             boardSize.rowCount - gameConfig.boardHeight,
@@ -84,16 +84,16 @@ export class SingleGame {
         const gameAttackState = new GameAttackState(gameContext);
         const garbageGenerator = new GarbageGenerator(cellBoard, gameConfig.garbage);
         const scheduledDamageState = new GameScheduledDamageState();
-        const controlOrderProvider = new ControlOrderProvider(getControlOrderProviderConfig(gameConfig));
+        const controlOrderProvider = controlOrderGateway;
         const gameStats = new GameStats();
         const gameStatsManager = new GameStatsManager(gameStats, gameConfig.startLevel);
         const gameHighContext = new GameHighContext({
-            gameStats, gameStatsManager, gameAttackState, controlOrderProvider, lineClearManager,  garbageGenerator, scheduledDamageState
+            gameStats, gameStatsManager, gameAttackState, lineClearManager,  garbageGenerator, scheduledDamageState
         })
 
         const damageProviderPerMino = new LinearDamageProvider(gameConfig.autoDamage.attackPerMino, gameConfig.autoDamage.attackDamage);
 
-        const gameUpdator = new GameUpdator(gameContext, gameHighContext, gameConfig.gravityPowerBase, { damageProviderPerMino });
+        const gameUpdator = new GameUpdator(gameContext, gameHighContext, gameConfig.gravityPowerBase, { damageProviderPerMino }, controlOrderGateway);
 
         //Create elements of the scene
         const { gameViewController } = this.#createView({ gameConfig, gameHighContext, gameContext, scene });
@@ -106,7 +106,7 @@ export class SingleGame {
         this.gameContext = gameContext;
         this.gameHighContext = gameHighContext;
         this.gameViewController = gameViewController;
-        this.controlOrderProvider = controlOrderProvider;
+        this.controlOrderProvider = controlOrderProvider;``
     }
 
     /** @param {{ gameConfig: GameConfig, gameHighContext: GameHighContext, gameContext: GameContext, scene: Phaser.Scene }} */

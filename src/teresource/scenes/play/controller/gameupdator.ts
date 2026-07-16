@@ -1,5 +1,5 @@
 import { BoardUpdater, BoardUpdateDiff } from "./boardcontroller";
-import { ControlOrder, ControlOrderProvider } from "./controlorder";
+import { ControlOrder, ControlOrderGateway } from "./controlorder";
 import { GameContext, GameHighContext } from "../infra/context";
 import { LineClearManager } from "../core/lineclear";
 import { Cell, Mino } from "../core/mechanics";
@@ -80,8 +80,9 @@ class Simulator {
     constructor(
         gameContext: GameContext,
         gameHighContext: GameHighContext,
+        controlOrderGateway: ControlOrderGateway
     ) {
-        this.controlOrderProvider = gameHighContext.controlOrderProvider;
+        this.controlOrderProvider = controlOrderGateway;
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.garbageGenerator = gameHighContext.garbageGenerator;
@@ -218,7 +219,8 @@ export class GameUpdator {
         gameContext: GameContext,
         gameHighContext: GameHighContext,
         gravityPowerBase: number,
-        { damageProviderPerMino }: { damageProviderPerMino: LinearDamageProvider }
+        { damageProviderPerMino }: { damageProviderPerMino: LinearDamageProvider },
+        controlOrderGateway: ControlOrderGateway
     ) {
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
@@ -233,7 +235,7 @@ export class GameUpdator {
         this.gameHighContext = gameHighContext;
 
         this.reporter = new GameReporter(gameContext.gameReportStack, gameHighContext.gameAttackState);
-        this.simulator = new Simulator(gameContext, gameHighContext);
+        this.simulator = new Simulator(gameContext, gameHighContext, controlOrderGateway);
     }
 
     update(deltaTime: number): UpdateResult {

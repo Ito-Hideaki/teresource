@@ -103,7 +103,7 @@ export class ControlOrderGateway {
 /** receives player inputs, calculates DAS, ARR and else and provides controlOrder for each frame
  * Flow : setNewPlayerInput > provideControlOrder > receiveControlResult > advanceTime
  */
-export class ControlOrderProvider {
+export class HumanControlOrderProvider {
 
     /** @type {ControlOrder} */
     #controlOrder;
@@ -125,13 +125,13 @@ export class ControlOrderProvider {
         return this.DASTimerF <= 0 && (this.leftMoveDown || this.rightMoveDown);
     }
 
-    /** @param {ControlOrderProviderConfig} config @param {ControlOrderAdapter} adapter */
-    constructor(config, adapter) {
+    /** @param {ControlOrderProviderConfig} config @param {ControlOrderGateway} gateway */
+    constructor(config, gateway) {
         this.#ARRConfig = config.ARR;
         this.#DASConfig = config.DAS;
         this.#controlOrder = new ControlOrder();
         this.#horizontalJudge = new HorizontalLastPriorityJudge();
-        adapter.setProvider(this.provideControlOrder.bind(this));
+        gateway.setProvider(this);
     }
 
     #resetDAS() {
@@ -218,7 +218,7 @@ export class KeyInputProcessor {
     #keyDownFlagIndex;
     #keyUpFlagIndex;
 
-    /** @param {KeyBindingConfig} keyBindingConfig */
+    /** @param {KeyBindingConfig} keyBindingConfig @param {HumanControlOrderProvider} controlOrderProvider */
     constructor(keyBindingConfig, controlOrderProvider) {
         this.#controlOrderProvider = controlOrderProvider;
 
