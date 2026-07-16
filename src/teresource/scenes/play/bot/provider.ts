@@ -23,7 +23,7 @@ export class BotControlOrderProvider {
 
     }
 
-    updateControlResult(diff: BoardUpdateDiff) {
+    receiveControlResult(diff: BoardUpdateDiff) {
 
     }
 
