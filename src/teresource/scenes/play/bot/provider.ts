@@ -37,7 +37,7 @@ export class BotControlOrderProvider {
         return this.currentMinoManager.row === location.y && this.currentMinoManager.column === location.x && this.currentMinoManager.mino.rotation === location.rotation;
     }
 
-    provideControlOrder() {
+    provideControlOrder(): ControlOrder {
         if(!this.pathQueue.length) return new ControlOrder(0);
 
         const node = this.currentNode ?? this.initCurrentNode();
@@ -65,7 +65,7 @@ export class BotControlOrderProvider {
                 case BotOrder.ROTATE_COUNTER_CLOCK: return new ControlOrder(ControlOrder.ROTATE_COUNTER_CLOCK);
             }
         } else {
-
+            return this.place();
         }
 
         return new ControlOrder(0);
