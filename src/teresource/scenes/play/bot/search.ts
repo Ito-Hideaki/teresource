@@ -11,6 +11,8 @@ export const BotOrder = {
     ROTATE_COUNTER_CLOCK: 5
 } as const;
 
+export type BotOrderValue = typeof BotOrder[keyof typeof BotOrder];
+
 type UnconnectedNode = {
     location: TRS.Location;
     parent: undefined;
@@ -19,7 +21,7 @@ type UnconnectedNode = {
 type ConnectedNode = {
     location: TRS.Location;
     parent: Node;
-    controlToParent: typeof BotOrder[keyof typeof BotOrder];
+    controlToParent: BotOrderValue;
 };
 
 export type Node = UnconnectedNode | ConnectedNode;
@@ -127,7 +129,7 @@ export class RouteSearcher {
 
     private getEachChildNode(node: Node) {
         const { x, y, rotation } = node.location;
-        const nodes: [number, Node][] = [
+        const nodes: [BotOrderValue, Node][] = [
             [BotOrder.MOVE_LEFT, this.nodes.getNode({ ...node.location, x: x+1 })],
             [BotOrder.MOVE_RIGHT, this.nodes.getNode({ ...node.location, x: x-1 })]
         ];
