@@ -119,7 +119,7 @@ export class RouteSearcher {
             const children = this.getEachChildNode(node);
             for(const child of children) {
                 const childNode = child[1];
-                if(!childNode.parent) {
+                if(childNode !== root && !childNode.parent) {
                     const modifyNode: any = childNode;
                     modifyNode.parent = node;
                     modifyNode.controlToParent = child[0];
