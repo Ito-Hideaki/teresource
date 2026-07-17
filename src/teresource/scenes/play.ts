@@ -187,6 +187,8 @@ export class PlayScene extends Phaser.Scene {
         const deltaTime = delta / 1000;
 
         this.players.forEach(player => {
+            if(player.control.type === "bot") player.control.handler.update();
+
             const gameUpdator = player.game.gameUpdator;
             const { outgoingAttack } = gameUpdator.update(deltaTime);
             if (!outgoingAttack) return;

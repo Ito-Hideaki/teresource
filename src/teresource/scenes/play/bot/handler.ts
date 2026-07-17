@@ -8,6 +8,7 @@ import * as TBP from "./core";
 import { translateLocation } from "./translatemessage";
 import { RouteSearcher } from "./search";
 import { BotControlOrderProvider } from "./provider";
+import { GameObserver } from "./observer";
 
 export type BotConfig = { type: "test1" | "test2" };
 
@@ -99,8 +100,10 @@ export class TBPHandler {
     private routeSearcher;
     private board;
     private controlOrderProvider;
+    private observer;
 
     constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
+        const VISIBLE_MINO_QUEUE_LENGTH = 5;
         this.terminated = false;
         this.board = gameContext.cellBoard;
         this.impl = impl;
@@ -108,6 +111,14 @@ export class TBPHandler {
         this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState, VISIBLE_MINO_QUEUE_LENGTH);
         this.routeSearcher = new RouteSearcher(gameContext);
         this.controlOrderProvider = new BotControlOrderProvider(gameContext, controlOrderGateway);
+        this.observer = new GameObserver(gameContext, VISIBLE_MINO_QUEUE_LENGTH);
+    }
+
+    update() {
+        const { newMinoQueue } = this.observer.check();
+        if(newMinoQueue.length) {
+            for(const mino of newMinoQueue) this.impl.sendMessageObject({ "type" : "new_piece", "piece" : minoChar(mino) });
+        }
     }
 
     onMessage(message: TBP.BotMessage) {
@@ -126,7 +137,7 @@ export class TBPHandler {
                 const trsLocation = translateLocation(move.location, this.board);
                 const path = this.routeSearcher.search(trsLocation);
                 this.controlOrderProvider.addPath(path);
-                setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
+                setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 500);
                 break;
         }
     }

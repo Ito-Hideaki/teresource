@@ -127,6 +127,7 @@ export class RouteSearcher {
                 }
             }
         }
+        console.log(queue);
         if(!skyRoot) throw "unable to reach the sky";
         const path = this.recursivelyGeneratePath(skyRoot);
         return path;
