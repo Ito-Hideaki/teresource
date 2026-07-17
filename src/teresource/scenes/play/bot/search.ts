@@ -73,8 +73,8 @@ class CollisionUtil {
 
     isReachableWithHardDrop(location: TRS.Location) {
         const mino = new Mino(location.type, location.rotation);
-        const hardDropDiff = Math.max(this.spawnRow - location.y, 0);
-        const possibleVerticalMove = this.cellBoard.tryMoveMinoVertically(hardDropDiff, mino, location.y, location.x);
+        const hardDropDiff = Math.max(location.y - this.spawnRow, 0);
+        const possibleVerticalMove = this.cellBoard.tryMoveMinoVertically(hardDropDiff, mino, this.spawnRow, location.x);
         return possibleVerticalMove === hardDropDiff;
     }
 }
