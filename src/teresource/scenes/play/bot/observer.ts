@@ -1,13 +1,13 @@
 import { Mino } from "../core/mechanics";
 import { GameContext } from "../infra/context";
 
-const VISIBLE_MINO_QUEUE_LENGTH = 5;
-
 export class GameObserver {
     private minoQueue;
     private lastMinoQueue: Mino[] = [];
-    constructor(gameContext: GameContext) {
+    private readonly visibleMinoQueueLength;
+    constructor(gameContext: GameContext, visibleMinoQueueLength: number) {
         this.minoQueue = gameContext.minoQueueManager.minoQueue;
+        this.visibleMinoQueueLength = visibleMinoQueueLength;
     }
 
     private checkMinoQueue() {

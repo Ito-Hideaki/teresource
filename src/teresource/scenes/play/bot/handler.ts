@@ -64,7 +64,7 @@ function cellChar(cell: Cell) {
     }
 }
 
-function createStartMessageCreator(gameContext: GameContext, gameAttackState: GameAttackState) {
+function createStartMessageCreator(gameContext: GameContext, gameAttackState: GameAttackState, visibleMinoQueueLength: number) {
     const { cellBoard, minoQueueManager, heldMinoManager, currentMinoManager } = gameContext;
     return function() {
         const heldMino = heldMinoManager.getMino();
@@ -80,7 +80,7 @@ function createStartMessageCreator(gameContext: GameContext, gameAttackState: Ga
         return {
             type: "start",
             hold: heldMino ? minoChar(heldMino) : null,
-            queue: [minoChar(currentMinoManager.mino), ...minoQueueManager.minoQueue.map(mino => minoChar(mino))],
+            queue: [minoChar(currentMinoManager.mino), ...minoQueueManager.minoQueue.slice(0, visibleMinoQueueLength).map(mino => minoChar(mino))],
             combo: gameAttackState.combo,
             back_to_back: gameAttackState.B2B,
             board
@@ -105,7 +105,7 @@ export class TBPHandler {
         this.board = gameContext.cellBoard;
         this.impl = impl;
         this.impl.addListener(this.onMessage.bind(this));
-        this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState);
+        this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState, VISIBLE_MINO_QUEUE_LENGTH);
         this.routeSearcher = new RouteSearcher(gameContext);
         this.controlOrderProvider = new BotControlOrderProvider(gameContext, controlOrderGateway);
     }
