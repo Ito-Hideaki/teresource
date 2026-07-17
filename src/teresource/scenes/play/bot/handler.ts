@@ -120,6 +120,7 @@ export class TBPHandler {
         if(newMinoQueue.length) {
             for(const mino of newMinoQueue) this.impl.sendMessageObject({ "type" : "new_piece", "piece" : minoChar(mino) });
         }
+        if(newPiece) this.impl.sendMessageObject({ "type" : "suggest" });
     }
 
     onMessage(message: TBP.BotMessage) {
@@ -138,7 +139,6 @@ export class TBPHandler {
                 const trsLocation = translateLocation(move.location, this.board);
                 const path = this.routeSearcher.search(trsLocation);
                 this.controlOrderProvider.addPath(path);
-                setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 500);
                 break;
         }
     }
