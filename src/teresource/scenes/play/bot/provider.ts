@@ -50,6 +50,12 @@ export class BotControlOrderProvider {
     }
 
     provideControlOrder(): ControlOrder {
+        const order = this.provideControlOrderInner();
+        if(!order.get(ControlOrder.START_SOFT_DROP)) order.setTrue(ControlOrder.STOP_SOFT_DROP);
+        return order;
+    }
+
+    private provideControlOrderInner(): ControlOrder {
         if(!this.pathQueue.length) return new ControlOrder(0);
 
         const node = this.currentNode ?? this.initCurrentNode();
