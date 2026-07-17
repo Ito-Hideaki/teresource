@@ -3,6 +3,14 @@ import { Mino } from "../core/mechanics";
 import { GameContext } from "../infra/context";
 import * as TRS from "./trscore";
 
+export const BotOrder = {
+    MOVE_LEFT: 1,
+    MOVE_RIGHT: 2,
+    MOVE_DOWN: 3,
+    ROTATE_CLOCK_WISE: 4,
+    ROTATE_COUNTER_CLOCK: 5
+} as const;
+
 type UnconnectedNode = {
     location: TRS.Location;
     parent: undefined;
@@ -11,7 +19,7 @@ type UnconnectedNode = {
 type ConnectedNode = {
     location: TRS.Location;
     parent: Node;
-    controlToParent: number;
+    controlToParent: typeof BotOrder[keyof typeof BotOrder];
 };
 
 export type Node = UnconnectedNode | ConnectedNode;
@@ -120,8 +128,8 @@ export class RouteSearcher {
     private getEachChildNode(node: Node) {
         const { x, y, rotation } = node.location;
         const nodes: [number, Node][] = [
-            [ControlOrder.MOVE_LEFT, this.nodes.getNode({ ...node.location, x: x+1 })],
-            [ControlOrder.MOVE_RIGHT, this.nodes.getNode({ ...node.location, x: x-1 })]
+            [BotOrder.MOVE_LEFT, this.nodes.getNode({ ...node.location, x: x+1 })],
+            [BotOrder.MOVE_RIGHT, this.nodes.getNode({ ...node.location, x: x-1 })]
         ];
         //verify nodes if it's reachable
         return nodes;
