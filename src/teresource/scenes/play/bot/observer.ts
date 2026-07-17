@@ -1,3 +1,4 @@
+import { BoardUpdateDiff } from "../controller/boardcontroller";
 import { Mino } from "../core/mechanics";
 import { GameContext } from "../infra/context";
 
@@ -5,6 +6,8 @@ export class GameObserver {
     private minoQueue;
     private lastMinoQueue: Mino[] = [];
     private readonly visibleMinoQueueLength;
+    private placed: boolean = false;
+
     constructor(gameContext: GameContext, visibleMinoQueueLength: number) {
         this.minoQueue = gameContext.minoQueueManager.minoQueue;
         this.visibleMinoQueueLength = visibleMinoQueueLength;
@@ -18,7 +21,13 @@ export class GameObserver {
         return newMinoQueue;
     }
 
-    check() {
-        return { newMinoQueue: this.checkMinoQueue() };
+    check(placed: boolean) {
+        this.placed ||= placed;
+        const newMinoQueue = this.checkMinoQueue();
+
+        const newPiece = newMinoQueue.length && this.placed;
+        if(newPiece) this.placed = false;
+
+        return { newMinoQueue, newPiece };
     }
 }

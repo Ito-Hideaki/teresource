@@ -9,6 +9,7 @@ import { translateLocation } from "./translatemessage";
 import { RouteSearcher } from "./search";
 import { BotControlOrderProvider } from "./provider";
 import { GameObserver } from "./observer";
+import { BoardUpdateDiff } from "../controller/boardcontroller";
 
 export type BotConfig = { type: "test1" | "test2" };
 
@@ -114,8 +115,8 @@ export class TBPHandler {
         this.observer = new GameObserver(gameContext, VISIBLE_MINO_QUEUE_LENGTH);
     }
 
-    update() {
-        const { newMinoQueue } = this.observer.check();
+    update(placed: boolean) {
+        const { newMinoQueue, newPiece } = this.observer.check(placed);
         if(newMinoQueue.length) {
             for(const mino of newMinoQueue) this.impl.sendMessageObject({ "type" : "new_piece", "piece" : minoChar(mino) });
         }
