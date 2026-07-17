@@ -43,8 +43,11 @@ export class BotControlOrderProvider {
             } else if(node.location.x !== this.currentMinoManager.column) {
                 const isRight = (node.location.x - this.currentMinoManager.column) > 0;
                 return new ControlOrder(isRight ? ControlOrder.MOVE_RIGHT : ControlOrder.MOVE_LEFT);
-            } else {
-                if(!node.parent) return this.place();
+            } else if(!node.parent) return this.place();
+            else if (node.location.y !== this.currentMinoManager.row) return new ControlOrder(ControlOrder.START_SOFT_DROP);
+            else {
+                this.currentNode = node.parent;
+                return this.provideControlOrder();
             }
         } else if(node.parent) {
 
