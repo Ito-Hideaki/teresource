@@ -77,6 +77,11 @@ class CollisionUtil {
         const possibleVerticalMove = this.cellBoard.tryMoveMinoVertically(hardDropDiff, mino, this.spawnRow, location.x);
         return possibleVerticalMove === hardDropDiff;
     }
+
+    doesCollide(location: TRS.Location) {
+        const mino = new Mino(location.type, location.rotation);
+        return this.cellBoard.doesMinoCollides(mino, location.y, location.x);
+    }
 }
 
 export class RouteSearcher {
@@ -131,10 +136,15 @@ export class RouteSearcher {
         const { x, y, rotation } = node.location;
         const nodes: [BotOrderValue, Node][] = [
             [BotOrder.MOVE_LEFT, this.nodes.getNode({ ...node.location, x: x+1 })],
-            [BotOrder.MOVE_RIGHT, this.nodes.getNode({ ...node.location, x: x-1 })]
+            [BotOrder.MOVE_RIGHT, this.nodes.getNode({ ...node.location, x: x-1 })],
+            [BotOrder.ROTATE_CLOCK_WISE, this.nodes.getNode({ ...node.location, rotation: (rotation+90)%360 })],
+            [BotOrder.ROTATE_COUNTER_CLOCK, this.nodes.getNode({ ...node.location, rotation: (rotation+270)%360 })]
         ];
         //verify nodes if it's reachable
-        return nodes;
+        const verified = nodes.filter(nodeTuple => {
+            return !this.collision.doesCollide(nodeTuple[1].location);
+        });
+        return verified;
     }
 
     private recursivelyGeneratePath(leaf: Node): Path {
