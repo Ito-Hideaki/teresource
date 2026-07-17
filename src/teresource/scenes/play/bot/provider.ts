@@ -33,7 +33,6 @@ export class BotControlOrderProvider {
     }
 
     private isOnLocation(location: TRS.Location) {
-        console.log(location, this.currentMinoManager.mino.rotation);
         return this.currentMinoManager.row === location.y && this.currentMinoManager.column === location.x && this.currentMinoManager.mino.rotation === location.rotation;
     }
 
