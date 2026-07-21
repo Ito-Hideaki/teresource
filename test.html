@@ -133,8 +133,9 @@
     </div>
     <script>
       window.addEventListener("load", () => {
-        console.log(window.location.href);
-        import("/src/test/bot.js").then(mod => {
+        const queryStr = window.location.search;
+        const script = new URLSearchParams(queryStr).get("script");
+        import(`/src/test/${script}`).then(mod => {
           mod.run();
         });
       });

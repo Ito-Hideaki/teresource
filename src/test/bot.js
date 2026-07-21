@@ -1,9 +1,9 @@
 import Phaser from "phaser";
-import { PlayScene } from "./teresource/scenes/play";
-import { BootloaderScene } from "./teresource/scenes/bootloader";
-import { createConfigUIElement } from "./teresource/configUI";
-import { createLogBox } from "./teresource/logUI";
-import { MenuScene } from "./teresource/scenes/menu";
+import { PlayScene } from "../teresource/scenes/play";
+import { BootloaderScene } from "../teresource/scenes/bootloader";
+import { createConfigUIElement } from "../teresource/configUI";
+import { createLogBox } from "../teresource/logUI";
+import { MenuScene } from "../teresource/scenes/menu";
 
 export const run = () => {
 
