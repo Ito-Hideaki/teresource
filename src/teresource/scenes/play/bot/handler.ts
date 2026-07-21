@@ -66,25 +66,41 @@ function cellChar(cell: Cell) {
     }
 }
 
-function createStartMessageCreator(gameContext: GameContext, gameAttackState: GameAttackState, visibleMinoQueueLength: number) {
-    const { cellBoard, minoQueueManager, heldMinoManager, currentMinoManager } = gameContext;
-    return function() {
-        const heldMino = heldMinoManager.getMino();
+class StartMessageCreator {
+    private heldMinoManager;
+    private minoQueueManager;
+    private currentMinoManager;
+    private cellBoard: CellBoard;
+    private gameAttackState: GameAttackState;
+    private visibleMinoQueueLength: number;
+
+    constructor(context: GameContext, gameAttackState: GameAttackState, visibleMinoQueueLength: number) {
+        this.heldMinoManager = context.heldMinoManager;
+        this.minoQueueManager = context.minoQueueManager;
+        this.currentMinoManager = context.currentMinoManager;
+        this.cellBoard = context.cellBoard;
+        this.gameAttackState = gameAttackState;
+        this.visibleMinoQueueLength = visibleMinoQueueLength;
+    }
+
+    create() {
+        const heldMino = this.heldMinoManager.getMino();
         const board = new Array(40).fill(0).map((_, i) => {
-        const cellRow = cellBoard.table.at(-i);
-        if(cellRow) return new Array(10).fill(0).map((_, j) => {
-                const cell = cellRow.at(j);
-                if(cell) return cellChar(cell);
-                else return null;
-            });
-            else return new Array(10).fill(null);
+            const cellRow = this.cellBoard.table.at(-i);
+            if(cellRow) {
+                return new Array(10).fill(0).map((_, j) => {
+                    const cell = cellRow.at(j);
+                    return cell ? cellChar(cell) : null;
+                });
+            }
+            return new Array(10).fill(null);
         });
         return {
             type: "start",
             hold: heldMino ? minoChar(heldMino) : null,
-            queue: [minoChar(currentMinoManager.mino), ...minoQueueManager.minoQueue.slice(0, visibleMinoQueueLength).map(mino => minoChar(mino))],
-            combo: gameAttackState.combo,
-            back_to_back: gameAttackState.B2B,
+            queue: [minoChar(this.currentMinoManager.mino), ...this.minoQueueManager.minoQueue.slice(0, this.visibleMinoQueueLength).map((mino: Mino) => minoChar(mino))],
+            combo: this.gameAttackState.combo,
+            back_to_back: this.gameAttackState.B2B,
             board
         }
     }
@@ -98,7 +114,7 @@ export class TBPHandler {
     terminated: boolean;
     private isActive;
     private impl;
-    private createStartMessage;
+    private startMessageCreator;
     private routeSearcher;
     private board;
     private controlOrderProvider;
@@ -111,7 +127,7 @@ export class TBPHandler {
         this.board = gameContext.cellBoard;
         this.impl = impl;
         this.impl.addListener(this.onMessage.bind(this));
-        this.createStartMessage = createStartMessageCreator(gameContext, gameHighContext.gameAttackState, VISIBLE_MINO_QUEUE_LENGTH);
+        this.startMessageCreator = new StartMessageCreator(gameContext, gameHighContext.gameAttackState, VISIBLE_MINO_QUEUE_LENGTH);
         this.routeSearcher = new RouteSearcher(gameContext);
         this.controlOrderProvider = new BotControlOrderProvider(gameContext, controlOrderGateway);
         this.observer = new GameObserver(gameContext, VISIBLE_MINO_QUEUE_LENGTH);
@@ -133,7 +149,7 @@ export class TBPHandler {
                 this.impl.sendMessageObject({ type: "rules" });
                 break;
             case "ready":
-                this.impl.sendMessageObject(this.createStartMessage());
+                this.impl.sendMessageObject(this.startMessageCreator.create());
                 this.isActive = true;
                 setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
                 break;
