@@ -13,7 +13,7 @@ import { BoardUpdateDiff } from "../controller/boardcontroller";
 
 export type BotConfig = { type: "test1" | "test2" };
 
-type TBPImpl = {
+interface TBPImpl {
     sendMessageObject: (message: any) => void,
     terminate: () => void,
     addListener: (listener: (message: TBP.BotMessage) => any) => void
@@ -29,30 +29,35 @@ const WORKER_PATHS = {
     "test2": "cc2/worker.js"
 };
 
-function createWorkerImpl(type: keyof typeof WORKER_PATHS): TBPImpl {
-    const workerPath = WORKER_PATHS[type];
-    if(!workerPath) throw "tbp worker path not found";
-    const worker = new Worker(viteURLify(workerPath), { type: "module" });
-    const listeners: Array<(message: TBP.BotMessage) => any> = [];
-    worker.onmessage = e => {
-        for(const listener of listeners) listener(JSON.parse(e.data));
-    };
-    let terminated = false;
-    return {
-        addListener: function(listener: (message: TBP.BotMessage) => any) {
-            listeners.push(listener);
-        },
-        terminate: function() {
-            if(!terminated) {
-                worker.terminate();
-                terminated = true;
-            }
-        },
-        sendMessageObject(obj: any) {
-            if(!terminated) worker.postMessage(JSON.stringify(obj));
+class WorkerImpl implements TBPImpl {
+    private worker;
+    private listeners: ((message: TBP.BotMessage) => any)[] = [];
+    private terminated = false;
+
+    constructor(type: keyof typeof WORKER_PATHS) {
+        const workerPath = WORKER_PATHS[type];
+        if(!workerPath) throw "tbp worker path not found";
+        this.worker = new Worker(viteURLify(workerPath), { type: "module" });
+        this.worker.onmessage = e => {
+            for(const listener of this.listeners) listener(JSON.parse(e.data));
+        };
+    }
+
+    addListener (listener: (message: TBP.BotMessage) => any) {
+        this.listeners.push(listener);
+    }
+
+    sendMessageObject (obj: any) {
+        if(!this.terminated) this.worker.postMessage(JSON.stringify(obj));
+    }
+
+    terminate() {
+        if(!this.terminated) {
+            this.worker.terminate();
+            this.terminated = true;
         }
     }
-};
+}
 
 function minoChar(mino: Mino) {
     return mino.type.toUpperCase();
@@ -173,7 +178,7 @@ export class TBPHandler {
 
 function createImpl(type: BotConfig["type"]) {
     if(type == "test1") return emptyImpl;
-    return createWorkerImpl(type);
+    return new WorkerImpl(type);
 }
 
 export function createTBPHandler(config: BotConfig, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
