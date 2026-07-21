@@ -37,7 +37,10 @@ import { GameAudioPlayer } from "../audio/gameaudioplayer";
  *      DAS: number,
  *      ARR: number,
  *  },
- *  autoDamage: import("./gameupdator").AutoDamageConfig
+ *  autoDamage: {
+ *      attackDamage: number,
+ *      attackPerMino: number
+ *  }
  * }} GameConfig
  *  */
 

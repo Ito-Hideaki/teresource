@@ -186,10 +186,6 @@ declare global {
     }
 }
 
-export type AutoDamageConfig = {
-    damagePerMino: number;
-};
-
 export type OutgoingAttack = { amount: number, delay_s: number };
 
 
