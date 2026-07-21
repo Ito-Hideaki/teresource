@@ -96,6 +96,7 @@ function sendJson(json: string) {
 
 export class TBPHandler {
     terminated: boolean;
+    private isActive;
     private impl;
     private createStartMessage;
     private routeSearcher;
@@ -106,6 +107,7 @@ export class TBPHandler {
     constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
         const VISIBLE_MINO_QUEUE_LENGTH = 5;
         this.terminated = false;
+        this.isActive = false;
         this.board = gameContext.cellBoard;
         this.impl = impl;
         this.impl.addListener(this.onMessage.bind(this));
@@ -117,20 +119,22 @@ export class TBPHandler {
 
     update(placed: boolean) {
         const { newMinoQueue, newPiece } = this.observer.check(placed);
-        if(newMinoQueue.length) {
-            for(const mino of newMinoQueue) this.impl.sendMessageObject({ "type" : "new_piece", "piece" : minoChar(mino) });
+        if(this.isActive) {
+            if(newMinoQueue.length) {
+                for(const mino of newMinoQueue) this.impl.sendMessageObject({ "type" : "new_piece", "piece" : minoChar(mino) });
+            }
+            if(newPiece) this.impl.sendMessageObject({ "type" : "suggest" });
         }
-        if(newPiece) this.impl.sendMessageObject({ "type" : "suggest" });
     }
 
     onMessage(message: TBP.BotMessage) {
-        console.log(message);
         switch(message.type) {
             case "info":
                 this.impl.sendMessageObject({ type: "rules" });
                 break;
             case "ready":
                 this.impl.sendMessageObject(this.createStartMessage());
+                this.isActive = true;
                 setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
                 break;
             case "suggestion":
@@ -147,6 +151,7 @@ export class TBPHandler {
         //terminate bot
         this.impl.terminate();
         this.terminated = true;
+        this.isActive = false;
     }
 }
 
