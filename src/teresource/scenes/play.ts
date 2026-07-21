@@ -78,6 +78,36 @@ type Player = {
     control: PlayerKeyboardControl | PlayerBotControl;
 };
 
+
+function createPlayer(scene: Phaser.Scene, matchConfig: MatchConfig, i: number, playerNumber: number) {
+    const playerConfig = matchConfig.players[i];
+    const controlOrderGateway = new ControlOrderGateway();
+    const game = new SingleGame(scene, playerConfig.game, controlOrderGateway);
+    const container = game.gameViewController.boardContainer;
+    container.scale = 4 / (playerNumber + 3);
+    container.x = scene.game.canvas.width * ((i + 0.5) / playerNumber);
+    container.y = scene.game.canvas.height / 2;
+    game.gameUpdator.setSessionFromConfig(matchConfig.session);
+
+    const control: Player["control"] = (() => {
+        switch (playerConfig.control.type) {
+            case "keyboard":
+                const controlOrderProvider = new HumanControlOrderProvider({ ...playerConfig.game.handling }, controlOrderGateway);
+                const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, controlOrderProvider);
+                return { keyInputProcessor, ...playerConfig.control };
+            case "bot":
+                const handler = createTBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext, controlOrderGateway);
+                return { handler, ...playerConfig.control };
+        }
+    })();
+    return { game, control };
+}
+
+function createPlayers(scene: Phaser.Scene, matchConfig: MatchConfig) {
+    const playerNumber = matchConfig.players.length;
+    return matchConfig.players.map((_, i) => createPlayer(scene, matchConfig, i, playerNumber));
+}
+
 export class PlayScene extends Phaser.Scene {
 
     //@ts-ignore
@@ -115,30 +145,8 @@ export class PlayScene extends Phaser.Scene {
         const configUIDataHandlerMap = this.game.configUIDataHandlerMap as { [key in ConfigCategory]: ConfigUIDataHandler };
 
         const matchConfig = data.matchConfig;
-        const playerNumber = matchConfig.players.length;
 
-        this.players = matchConfig.players.map((playerConfig, i) => {
-            const controlOrderGateway = new ControlOrderGateway();
-            const game = new SingleGame(this, playerConfig.game, controlOrderGateway);
-            const container = game.gameViewController.boardContainer;
-            container.scale = 4 / (playerNumber + 3);
-            container.x = this.game.canvas.width * ((i + 0.5) / playerNumber);
-            container.y = this.game.canvas.height / 2;
-            game.gameUpdator.setSessionFromConfig(matchConfig.session);
-
-            const control: Player["control"] = (() => {
-                switch (playerConfig.control.type) {
-                    case "keyboard":
-                        const controlOrderProvider = new HumanControlOrderProvider({ ...playerConfig.game.handling }, controlOrderGateway);
-                        const keyInputProcessor = new KeyInputProcessor(playerConfig.control.game, controlOrderProvider);
-                        return { keyInputProcessor, ...playerConfig.control };
-                    case "bot":
-                        const handler = createTBPHandler(playerConfig.control.botConfig, game.gameContext, game.gameHighContext, controlOrderGateway);
-                        return { handler, ...playerConfig.control };
-                }
-            })();
-            return { game, control };
-        });
+        this.players = createPlayers(this, matchConfig);
 
         this.sendAttackToMyself = matchConfig.sendAttackToMyself;
         this.sendAttackToOthers = matchConfig.sendAttackToOthers;

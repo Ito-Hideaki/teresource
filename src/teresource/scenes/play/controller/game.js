@@ -67,7 +67,7 @@ export class SingleGame {
 
     #gameReportStack;
 
-    /** @param {PlayScene} scene @param {GameConfig} gameConfig @param {ControlOrderGateway} controlOrderGateway*/
+    /** @param {Phaser.Scene} scene @param {GameConfig} gameConfig @param {ControlOrderGateway} controlOrderGateway*/
     constructor(scene, gameConfig, controlOrderGateway) {
         const boardSize = new BoardSize(gameConfig.boardHeight * 2, gameConfig.boardWidth);
         const currentMinoManager = new CurrentMinoManager(
