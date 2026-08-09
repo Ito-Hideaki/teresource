@@ -11,7 +11,10 @@ import { BotControlOrderProvider } from "./provider";
 import { GameObserver } from "./observer";
 import { BoardUpdateDiff } from "../controller/boardcontroller";
 
-export type BotConfig = { type: "test1" | "test2" };
+export type BotConfig = {
+    type: "test1" | "test2";
+    /** must be zero or positive integer */ interval: number;
+};
 
 interface TBPImpl {
     sendMessageObject: (message: any) => void,
