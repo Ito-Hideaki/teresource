@@ -1,7 +1,15 @@
 {
+  "include": ["src/**/*"],
+
   "compilerOptions": {
     "module": "es2022",
     "moduleResolution": "bundler",
-    "target": "esnext"
+    "target": "esnext",
+
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "./src",
+    "outDir": "dist"
   }
 }
