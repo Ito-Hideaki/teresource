@@ -3,11 +3,11 @@ import { createAndAddSettingsPanel } from "./menu/settingspanel";
 import { GameConfig, TYPICAL_GAME_CONFIG } from "./play/controller/game";
 import { KeyBindingConfig } from "./play/controller/controlorder";
 import { MINO_DATA_INDEX } from "./play/core/coredata";
-import { PlaySceneData } from "./play";
+import { PlayerKeyboardControlConfig, PlaySceneData } from "./play";
 import { GameSession, GameSessionConfig } from "./play/controller/gamesession";
 import { CustomGameTab } from "./menu/customgame";
 import { TEXT_LEFT } from "./menu/design";
-import { MenuObject } from "./menu/menuobject";
+import { ItemCommand, MenuObject } from "./menu/menuobject";
 
 export function createMenuTexture(scene: Phaser.Scene) {
     { //cursor
@@ -96,141 +96,39 @@ export class MenuScene extends Phaser.Scene {
             if (e.code === "ArrowUp") scene.menuObj.userUp();
         });
 
-        scene.menuObj.ee.on("play40linedemo", () => {
+        scene.menuObj.ee.on("itemcommand", (command: ItemCommand) => {
             const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
+            const playerKeyboardControlConfig = { type: "keyboard", ...keyBindingConfig } as PlayerKeyboardControlConfig;
 
-            const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
-            const playSceneData: PlaySceneData = {
-                matchConfig: {
-                    players: [{
-                        // @ts-ignore
-                        control: { type: "keyboard", ...keyBindingConfig },
-                        game: gameConfig
-                    }],
-                    session: { type: GameSession.SessionType.Line, targetLines: 40, timeLimit: 0 },
-                    sendAttackToMyself: false,
-                    sendAttackToOthers: false
-                }
-            };
-            scene.scene.start("play", playSceneData);
-        });
-
-        scene.menuObj.ee.on("playbackfiredemo", () => {
-            const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
-
-            const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
-            const playSceneData: PlaySceneData = {
-                matchConfig: {
-                    players: [{
-                        // @ts-ignore
-                        control: { type: "keyboard", ...keyBindingConfig },
-                        game: gameConfig
-                    }],
-                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
-                    sendAttackToMyself: true,
-                    sendAttackToOthers: false
-                }
-            };
-            scene.scene.start("play", playSceneData);
-        });
-
-        scene.menuObj.ee.on("play2pdemo", () => {
-            const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
-
-            const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
-            const playSceneData: PlaySceneData = {
-                matchConfig: {
-                    players: [{
-                        // @ts-ignore
-                        control: { type: "keyboard", ...keyBindingConfig },
-                        game: gameConfig
-                    }, {
-                        // @ts-ignore
-                        control: { type: "keyboard", ...keyBindingConfig },
-                        game: gameConfig
-                    }],
-                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
-                    sendAttackToMyself: false,
-                    sendAttackToOthers: true
-                }
-            };
-            scene.scene.start("play", playSceneData);
-        });
-
-        scene.menuObj.ee.on("playbotdemo", () => {
-            const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
-
-            const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
-            const playSceneData: PlaySceneData = {
-                matchConfig: {
-                    players: [{
-                        // @ts-ignore
-                        control: { type: "keyboard", ...keyBindingConfig },
-                        game: gameConfig
-                    }, {
-                        control: { type: "bot", botConfig: { type: "test1", interval: 1 } },
-                        game: gameConfig
-                    }],
-                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
-                    sendAttackToMyself: false,
-                    sendAttackToOthers: true
-                }
-            };
-            scene.scene.start("play", playSceneData);
-        });
-
-        scene.menuObj.ee.on("playbotdemo2", () => {
-            const keyBindingConfig = keyBindingConfigUIDataHandler.getConfig();
-
-            const gameConfig = structuredClone(TYPICAL_GAME_CONFIG); //clone before modify
-            const playSceneData: PlaySceneData = {
-                matchConfig: {
-                    players: [{
-                        // @ts-ignore
-                        control: { type: "keyboard", ...keyBindingConfig },
-                        game: gameConfig
-                    }, {
-                        control: { type: "bot", botConfig: { type: "test2", interval: 1 } },
-                        game: gameConfig
-                    }],
-                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
-                    sendAttackToMyself: false,
-                    sendAttackToOthers: true
-                }
-            };
-            scene.scene.start("play", playSceneData);
-        });
-
-        scene.menuObj.ee.on("opencustomgametab", () => {
-            if (!this.customGameTab) this.customGameTab = new CustomGameTab((data: PlaySceneData) => scene.scene.start("play", data));
-        });
-
-        scene.menuObj.ee.on("closecustomgametab", () => {
-            if (this.customGameTab) {
-                this.customGameTab.terminate();
-                this.customGameTab = null;
+            switch(command.type) {
+                case "play":
+                    scene.scene.start("play", command.createData(playerKeyboardControlConfig));
+                    break;
+                case "custom_play":
+                    this.customGameTab?.play(keyBindingConfig);
+                    break;
+                case "panel":
+                    switch(command.panel) {
+                        case "credits":
+                            this.creditsDOM.setVisible(command.open);
+                            break;
+                        case "customgametab":
+                            if (command.open) {
+                                if (!this.customGameTab) this.customGameTab = new CustomGameTab((data: PlaySceneData) => scene.scene.start("play", data));
+                            } else {
+                                if (this.customGameTab) {
+                                    this.customGameTab.terminate();
+                                    this.customGameTab = null;
+                                }
+                            }
+                            break;
+                        case "settings":
+                            setSettingsVisible(command.open);
+                            break;
+                    }
+                    break;
             }
         });
-
-        scene.menuObj.ee.on("playcustomgame", () => {
-            this.customGameTab?.play(keyBindingConfigUIDataHandler.getConfig());
-        });
-
-        scene.menuObj.ee.on("opensettings", () => {
-            setSettingsVisible(true);
-        });
-
-        scene.menuObj.ee.on("closesettings", () => {
-            setSettingsVisible(false);
-        });
-
-        scene.menuObj.ee.on("opencredits", () => {
-            this.creditsDOM.setVisible(true);
-        });
-
-        scene.menuObj.ee.on("closecredits", () => {
-            this.creditsDOM.setVisible(false);
-        })
 
         this.events.on("shutdown", () => {
             if (this.customGameTab) {

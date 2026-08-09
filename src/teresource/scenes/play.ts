@@ -41,7 +41,7 @@ export type PlaySceneData = {
     matchConfig: MatchConfig
 }
 
-type PlayerKeyboardControlConfig = {
+export type PlayerKeyboardControlConfig = {
     type: "keyboard";
     game: KeyBindingConfig;
     reload: string[];

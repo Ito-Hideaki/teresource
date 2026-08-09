@@ -1,11 +1,31 @@
+import { PlayerKeyboardControlConfig, PlaySceneData } from "../play";
 import { TEXT_LEFT } from "./design";
+import { TYPICAL_GAME_CONFIG } from "../play/controller/game";
+import { GameSession } from "../play/controller/gamesession";
+
+type PlayItemCommand = {
+    type: "play";
+    createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => PlaySceneData;
+}
+
+type CustomPlayItemCommand = {
+    type: "custom_play";
+}
+
+type PanelItemCommand = {
+    type: "panel";
+    panel: "customgametab" | "settings" | "credits";
+    open: boolean;
+}
+
+export type ItemCommand = PlayItemCommand | CustomPlayItemCommand | PanelItemCommand;
 
 type Item = {
     name: string;
     /** If the item has child items */ children?: Item[];
     /** If the item has an actual gameobject in the scene */ view?: Phaser.GameObjects.Text;
-    onEnter?: string;
-    onEscape?: string;
+    onEnter?: ItemCommand;
+    onEscape?: ItemCommand;
 }
 
 class ItemText extends Phaser.GameObjects.Text {
@@ -72,7 +92,7 @@ export class MenuObject {
 
     menu
     cursor
-    /** EVENTS: "playdemo", "opensettings", "closesettings" */
+    /** EVENTS: "itemcommand" */
     ee
 
     constructor(scene: Phaser.Scene) {
@@ -83,20 +103,104 @@ export class MenuObject {
         this.menu = new ItemMenu([
             {
                 name: "Play Demo", children: [
-                    { name: "40LINE", onEnter: "play40linedemo" },
-                    { name: "BACKFIRE", onEnter: "playbackfiredemo" },
-                    { name: "2P", onEnter: "play2pdemo" },
-                    { name: "BOT", onEnter: "playbotdemo" },
-                    { name: "BOT (INVINCIBLE)", onEnter: "playbotdemo2" },
+                    { name: "40LINE", onEnter: {
+                        type: "play",
+                        createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => {
+                            return ({
+                                matchConfig: {
+                                    players: [{
+                                        control: keyboardControlConfig,
+                                        game: TYPICAL_GAME_CONFIG
+                                    }],
+                                    session: { type: GameSession.SessionType.Line, targetLines: 40, timeLimit: 0 },
+                                    sendAttackToMyself: false,
+                                    sendAttackToOthers: false
+                                }
+                            });
+                        }
+                    }},
+                    { name: "BACKFIRE", onEnter: {
+                        type: "play",
+                        createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => {
+                            return {
+                                matchConfig: {
+                                    players: [{
+                                        control: keyboardControlConfig,
+                                        game: TYPICAL_GAME_CONFIG
+                                    }],
+                                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
+                                    sendAttackToMyself: true,
+                                    sendAttackToOthers: false
+                                }
+                            };
+                        }
+                    }},
+                    { name: "2P", onEnter: {
+                        type: "play",
+                        createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => {
+                            return {
+                                matchConfig: {
+                                    players: [{
+                                        control: keyboardControlConfig,
+                                        game: TYPICAL_GAME_CONFIG
+                                    }, {
+                                        control: keyboardControlConfig,
+                                        game: TYPICAL_GAME_CONFIG
+                                    }],
+                                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
+                                    sendAttackToMyself: false,
+                                    sendAttackToOthers: true
+                                }
+                            };
+                        }
+                    }},
+                    { name: "BOT", onEnter: {
+                        type: "play",
+                        createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => {
+                            return {
+                                matchConfig: {
+                                    players: [{
+                                        control: keyboardControlConfig,
+                                        game: TYPICAL_GAME_CONFIG
+                                    }, {
+                                        control: { type: "bot", botConfig: { type: "test1", interval: 1 } },
+                                        game: TYPICAL_GAME_CONFIG
+                                    }],
+                                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
+                                    sendAttackToMyself: false,
+                                    sendAttackToOthers: true
+                                }
+                            };
+                        }
+                    }},
+                    { name: "BOT (INVINCIBLE)", onEnter: {
+                        type: "play",
+                        createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => {
+                            return {
+                                matchConfig: {
+                                    players: [{
+                                        control: keyboardControlConfig,
+                                        game: TYPICAL_GAME_CONFIG
+                                    }, {
+                                        control: { type: "bot", botConfig: { type: "test2", interval: 1 } },
+                                        game: TYPICAL_GAME_CONFIG
+                                    }],
+                                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
+                                    sendAttackToMyself: false,
+                                    sendAttackToOthers: true
+                                }
+                            };
+                        }
+                    }},
                 ]
             },
             {
-                name: "Custom Game", onEnter: "opencustomgametab", onEscape: "closecustomgametab", children: [
-                    { name: "Play", onEnter: "playcustomgame" },
+                name: "Custom Game", onEnter: { type: "panel", open: true, panel: "customgametab" }, onEscape: { type: "panel", open: false, panel: "customgametab" }, children: [
+                    { name: "Play", onEnter: { type: "custom_play" } },
                 ]
             },
-            { name: "Settings", onEnter: "opensettings", onEscape: "closesettings" },
-            { name: "Credits", onEnter: "opencredits", onEscape: "closecredits" }
+            { name: "Settings", onEnter: { type: "panel", open: true, panel: "settings" }, onEscape: { type: "panel", open: false, panel: "settings" } },
+            { name: "Credits", onEnter: { type: "panel", open: true, panel: "credits" }, onEscape: { type: "panel", open: false, panel: "credits" } }
         ]);
 
         function createViewUnderItem(item: Item, i: number) {
@@ -145,21 +249,13 @@ export class MenuObject {
     userEnter() {
         const current = this.menu.current;
         const didEnter = this.menu.enter();
-        if (current && didEnter) {
-            if (current.onEnter) {
-                this.ee.emit(current.onEnter);
-            }
-        }
+        if(didEnter && current && current.onEnter) this.ee.emit("itemcommand", current.onEnter);
     }
 
     userEscape() {
         const didEscape = this.menu.escape();
         const current = this.menu.current;
-        if (current && didEscape) {
-            if (current.onEscape) {
-                this.ee.emit(current.onEscape);
-            }
-        }
+        if (didEscape && current && current.onEscape) this.ee.emit("itemcommand", current.onEscape);
     }
 
     userUp() {
