@@ -128,7 +128,7 @@ export class TBPHandler {
     private controlOrderProvider;
     private observer;
 
-    constructor(impl: TBPImpl, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
+    constructor(impl: TBPImpl, controlOrderProvider: BotControlOrderProvider, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
         const VISIBLE_MINO_QUEUE_LENGTH = 5;
         this.terminated = false;
         this.isActive = false;
@@ -137,7 +137,7 @@ export class TBPHandler {
         this.impl.addListener(this.onMessage.bind(this));
         this.startMessageCreator = new StartMessageCreator(gameContext, gameHighContext.gameAttackState, VISIBLE_MINO_QUEUE_LENGTH);
         this.routeSearcher = new RouteSearcher(gameContext);
-        this.controlOrderProvider = new BotControlOrderProvider(gameContext, controlOrderGateway);
+        this.controlOrderProvider = controlOrderProvider;
         this.observer = new GameObserver(gameContext, VISIBLE_MINO_QUEUE_LENGTH);
     }
 
@@ -185,5 +185,6 @@ function createImpl(type: BotConfig["type"]) {
 }
 
 export function createTBPHandler(config: BotConfig, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
-    return new TBPHandler(createImpl(config.type), gameContext, gameHighContext, controlOrderGateway);
+    const controlOrderProvider = new BotControlOrderProvider(gameContext, controlOrderGateway, config.interval);
+    return new TBPHandler(createImpl(config.type), controlOrderProvider, gameContext, gameHighContext, controlOrderGateway);
 };

@@ -1,8 +1,22 @@
 import { BoardUpdateDiff } from "../controller/boardcontroller";
 import { ControlOrder, ControlOrderGateway } from "../controller/controlorder";
 import { GameContext } from "../infra/context";
+import { BotConfig } from "./handler";
 import { BotOrder, Node, Path } from "./search";
 import * as TRS from "./trscore";
+
+class Counter {
+    value = 0;
+    constructor(private n: number) {}
+
+    count() {
+        this.value++;
+        if(this.value == this.n) {
+            this.value = 0;
+            return true;
+        } else return false;
+    }
+}
 
 export class BotControlOrderProvider {
 
@@ -10,10 +24,12 @@ export class BotControlOrderProvider {
     private currentNode: Node | undefined;
     private currentMinoManager;
     private reachedFirstNode = false;
+    private intervalCounter;
 
-    constructor(gameContext: GameContext, controlOrderGateway: ControlOrderGateway) {
+    constructor(gameContext: GameContext, controlOrderGateway: ControlOrderGateway, interval: number) {
         controlOrderGateway.setProvider(this);
         this.currentMinoManager = gameContext.currentMinoManager;
+        this.intervalCounter = new Counter(interval+1);
     }
 
     addPath(path: Path) {
@@ -50,9 +66,11 @@ export class BotControlOrderProvider {
     }
 
     provideControlOrder(): ControlOrder {
-        const order = this.provideControlOrderInner();
-        if(!order.get(ControlOrder.START_SOFT_DROP)) order.setTrue(ControlOrder.STOP_SOFT_DROP);
-        return order;
+        if(this.intervalCounter.count()) {
+            const order = this.provideControlOrderInner();
+            if(!order.get(ControlOrder.START_SOFT_DROP)) order.setTrue(ControlOrder.STOP_SOFT_DROP);
+            return order;
+        } else return new ControlOrder(0);
     }
 
     private provideControlOrderInner(): ControlOrder {
