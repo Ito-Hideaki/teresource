@@ -137,8 +137,8 @@ export class RouteSearcher {
         const nodes: [BotOrderValue, Node][] = [
             [BotOrder.MOVE_LEFT, this.nodes.getNode({ ...node.location, x: x+1 })],
             [BotOrder.MOVE_RIGHT, this.nodes.getNode({ ...node.location, x: x-1 })],
-            [BotOrder.ROTATE_CLOCK_WISE, this.nodes.getNode({ ...node.location, rotation: (rotation+90)%360 })],
-            [BotOrder.ROTATE_COUNTER_CLOCK, this.nodes.getNode({ ...node.location, rotation: (rotation+270)%360 })]
+            [BotOrder.ROTATE_CLOCK_WISE, this.nodes.getNode({ ...node.location, rotation: (rotation+270)%360 })],
+            [BotOrder.ROTATE_COUNTER_CLOCK, this.nodes.getNode({ ...node.location, rotation: (rotation+90)%360 })]
         ];
         //verify nodes if it's reachable
         const verified = nodes.filter(nodeTuple => {
