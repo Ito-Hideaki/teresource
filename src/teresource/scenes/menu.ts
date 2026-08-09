@@ -339,7 +339,7 @@ export class MenuScene extends Phaser.Scene {
                         control: { type: "keyboard", ...keyBindingConfig },
                         game: gameConfig
                     }, {
-                        control: { type: "bot", botConfig: { type: "test1" } },
+                        control: { type: "bot", botConfig: { type: "test1", interval: 1 } },
                         game: gameConfig
                     }],
                     session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
@@ -361,7 +361,7 @@ export class MenuScene extends Phaser.Scene {
                         control: { type: "keyboard", ...keyBindingConfig },
                         game: gameConfig
                     }, {
-                        control: { type: "bot", botConfig: { type: "test2" } },
+                        control: { type: "bot", botConfig: { type: "test2", interval: 1 } },
                         game: gameConfig
                     }],
                     session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
