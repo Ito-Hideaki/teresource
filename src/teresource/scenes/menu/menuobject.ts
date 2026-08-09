@@ -154,7 +154,7 @@ export class MenuObject {
                             };
                         }
                     }},
-                    { name: "BOT", onEnter: {
+                    { name: "CC (i=9)", onEnter: {
                         type: "play",
                         createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => {
                             return {
@@ -163,7 +163,7 @@ export class MenuObject {
                                         control: keyboardControlConfig,
                                         game: TYPICAL_GAME_CONFIG
                                     }, {
-                                        control: { type: "bot", botConfig: { type: "test1", interval: 1 } },
+                                        control: { type: "bot", botConfig: { type: "test2", interval: 9 } },
                                         game: TYPICAL_GAME_CONFIG
                                     }],
                                     session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
@@ -173,7 +173,26 @@ export class MenuObject {
                             };
                         }
                     }},
-                    { name: "BOT (INVINCIBLE)", onEnter: {
+                    { name: "CC (i=5)", onEnter: {
+                        type: "play",
+                        createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => {
+                            return {
+                                matchConfig: {
+                                    players: [{
+                                        control: keyboardControlConfig,
+                                        game: TYPICAL_GAME_CONFIG
+                                    }, {
+                                        control: { type: "bot", botConfig: { type: "test2", interval: 5 } },
+                                        game: TYPICAL_GAME_CONFIG
+                                    }],
+                                    session: { type: GameSession.SessionType.None, targetLines: 0, timeLimit: 0 },
+                                    sendAttackToMyself: false,
+                                    sendAttackToOthers: true
+                                }
+                            };
+                        }
+                    }},
+                    { name: "CC (i=1)", onEnter: {
                         type: "play",
                         createData: (keyboardControlConfig: PlayerKeyboardControlConfig) => {
                             return {
@@ -191,7 +210,7 @@ export class MenuObject {
                                 }
                             };
                         }
-                    }},
+                    }}
                 ]
             },
             {
