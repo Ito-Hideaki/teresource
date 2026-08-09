@@ -253,7 +253,6 @@ export class BoardUpdateCalculator {
  * Does not contain any primitive status itself, so the outcome is determined by external states and inputs */
 export class BoardUpdater {
 
-    /** @typedef {{horizontalMinoMove: number, verticalMinoMove: number }} minoMoves */
     /** @type {CurrentMinoManager} */
     #currentMinoManager;
     /** @type {CellBoard} */
