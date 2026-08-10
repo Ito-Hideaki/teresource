@@ -12,7 +12,7 @@ export const cellColorStr = [
 
 /** @typedef { { shape: import("./mechanics").MinoShape, color: string } } MinoData */
 /** @typedef { "s" | "j" | "l" | "t" | "i" | "o" | "z" } MinoType */
-/** @type {Object<MinoType, MinoData>} */
+/** @type {Record<MinoType, MinoData>} */
 export const MINO_DATA_INDEX = {
     "z" : {
         shape: {
