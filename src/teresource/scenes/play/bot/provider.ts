@@ -96,6 +96,8 @@ export class BotControlOrderProvider {
             switch (node.controlToParent) {
                 case BotOrder.ROTATE_CLOCK_WISE: return new ControlOrder(ControlOrder.ROTATE_CLOCK_WISE);
                 case BotOrder.ROTATE_COUNTER_CLOCK: return new ControlOrder(ControlOrder.ROTATE_COUNTER_CLOCK);
+                case BotOrder.MOVE_LEFT: return new ControlOrder(ControlOrder.MOVE_LEFT);
+                case BotOrder.MOVE_RIGHT: return new ControlOrder(ControlOrder.MOVE_RIGHT);
                 default: return new ControlOrder(0);
             }
         }
