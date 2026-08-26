@@ -1,5 +1,8 @@
+import { normalizeRotationInRange } from "#util";
 import { ControlOrder } from "../controller/controlorder";
-import { Mino } from "../core/mechanics";
+import { CellBoard, Mino } from "../core/mechanics";
+import { RotationHandler } from "../core/rotationhandler";
+import { RotationSystem, RotationSystem_Standard } from "../core/rotationsystem";
 import { GameContext } from "../infra/context";
 import * as TRS from "./trscore";
 
@@ -84,17 +87,43 @@ class CollisionUtil {
     }
 }
 
+class LocationBeforeRotationFinder {
+    private rotationSystem;
+    private rotationHandler;
+
+    constructor(gameContext: GameContext) {
+        this.rotationSystem = gameContext.rotationSystem;
+        this.rotationHandler = new RotationHandler(this.rotationSystem, gameContext.cellBoard);
+    }
+
+    find(rotated: TRS.Location, rotation: number): TRS.Location[] {
+        const startingRotation = normalizeRotationInRange(rotated.rotation - rotation, 360);
+        const rotationMap = this.rotationSystem.getMap(rotated.type, startingRotation, rotation);
+        const reversedLocations: TRS.Location[] = rotationMap.map(movement => {
+            return { rotation: startingRotation, type: rotated.type, x: rotated.x - movement.column, y: rotated.y - movement.row };
+        });
+        const startingLocations = reversedLocations.filter(location => {
+            const mino = new Mino(location.type, location.rotation);
+            const translation = this.rotationHandler.simulateRotation(location.y, location.x, mino, rotation);
+            return translation && location.x + translation.column === rotated.x && location.y + translation.row === rotated.y;
+        });
+        return startingLocations;
+    }
+}
+
 export class RouteSearcher {
     private spawnRow;
     private spawnColumn;
     private nodes;
     private collision;
+    private locationBeforeRotationFinder;
 
     constructor(gameContext: GameContext) {
         this.spawnRow = gameContext.currentMinoManager.getSpawnRow();
         this.spawnColumn = gameContext.currentMinoManager.getSpawnColumn();
         this.nodes = new NodeUtility(gameContext);
         this.collision = new CollisionUtil(gameContext);
+        this.locationBeforeRotationFinder = new LocationBeforeRotationFinder(gameContext);
     }
 
     search(location: TRS.Location): Path {
@@ -134,11 +163,16 @@ export class RouteSearcher {
 
     private getEachChildNode(node: Node) {
         const { x, y, rotation } = node.location;
+
+        const cwRotationStartingLocations = this.locationBeforeRotationFinder.find(node.location, 90);
+        const cwNodes: [BotOrderValue, Node][] = cwRotationStartingLocations.map(location => ([BotOrder.ROTATE_CLOCK_WISE, this.nodes.getNode(location)]));
+        const ccwRotationStartingLocations = this.locationBeforeRotationFinder.find(node.location, 270);
+        const ccwNodes: [BotOrderValue, Node][] = ccwRotationStartingLocations.map(location => [BotOrder.ROTATE_COUNTER_CLOCK, this.nodes.getNode(location)]);
         const nodes: [BotOrderValue, Node][] = [
             [BotOrder.MOVE_LEFT, this.nodes.getNode({ ...node.location, x: x+1 })],
             [BotOrder.MOVE_RIGHT, this.nodes.getNode({ ...node.location, x: x-1 })],
-            [BotOrder.ROTATE_CLOCK_WISE, this.nodes.getNode({ ...node.location, rotation: (rotation+270)%360 })],
-            [BotOrder.ROTATE_COUNTER_CLOCK, this.nodes.getNode({ ...node.location, rotation: (rotation+90)%360 })]
+            ...cwNodes,
+            ...ccwNodes,
         ];
         //verify nodes if it's reachable
         const verified = nodes.filter(nodeTuple => {
