@@ -182,7 +182,7 @@ export class TBPHandler {
     private start() {
         this.impl.sendMessageObject(this.startMessageCreator.create());
         this.recievedGarbageSinceLastBoot = 0;
-        setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
+        setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 100);
     }
 
     onGarbage(lines: number) {
