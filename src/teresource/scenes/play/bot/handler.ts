@@ -94,7 +94,7 @@ class StartMessageCreator {
     create() {
         const heldMino = this.heldMinoManager.getMino();
         const board = new Array(40).fill(0).map((_, i) => {
-            const cellRow = this.cellBoard.table.at(-i);
+            const cellRow = this.cellBoard.table.at(-i-1);
             if(cellRow) {
                 return new Array(10).fill(0).map((_, j) => {
                     const cell = cellRow.at(j);
