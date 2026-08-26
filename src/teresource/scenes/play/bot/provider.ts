@@ -76,28 +76,32 @@ export class BotControlOrderProvider {
     private provideControlOrderInner(): ControlOrder {
         if(!this.pathQueue.length) return new ControlOrder(0);
 
+        //hold
         const node = this.currentNode ?? this.initCurrentNode();
         if(node.location.type !== this.currentMinoManager.mino.type) return new ControlOrder(ControlOrder.HOLD);
 
+        //sky
         const firstNode = this.pathQueue[0].route.at(0) ?? this.pathQueue[0].goal;
-        if(!this.reachedFirstNode) {
-            if (this.isOnLocation(firstNode.location)) this.reachedFirstNode = true;
-            else return this.provide_reachSkyNode(firstNode);
+        this.reachedFirstNode ||= this.isOnLocation(firstNode.location);
+        if(!this.reachedFirstNode) return this.provide_reachSkyNode(firstNode);
+
+        //move to an unreached node
+        if (node.parent && this.isOnLocation(node.parent.location)) {
+            this.currentNode = node.parent;
+            return this.provideControlOrderInner();
         }
 
+        //underground
         if(node.parent) {
-            if(this.isOnLocation(node.parent.location)) {
-                this.currentNode = node.parent;
-                return this.provideControlOrder();
-            } else switch (node.controlToParent) {
+            switch (node.controlToParent) {
                 case BotOrder.ROTATE_CLOCK_WISE: return new ControlOrder(ControlOrder.ROTATE_CLOCK_WISE);
                 case BotOrder.ROTATE_COUNTER_CLOCK: return new ControlOrder(ControlOrder.ROTATE_COUNTER_CLOCK);
+                default: return new ControlOrder(0);
             }
-        } else {
-            return this.place();
         }
 
-        return new ControlOrder(0);
+        //hard drop
+        return this.place();
     }
 
     advanceTime(deltaTime: number) {
