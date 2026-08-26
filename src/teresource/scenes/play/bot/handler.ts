@@ -165,7 +165,6 @@ export class TBPHandler {
                 break;
             case "suggestion":
                 const move = message.moves[0];
-                console.log(move.location);
 
                 if(this.recievedGarbageSinceLastBoot > 0) {
                     this.start();
