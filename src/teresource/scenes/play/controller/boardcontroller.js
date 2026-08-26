@@ -5,6 +5,7 @@ import { CellBoard } from "../core/mechanics";
 import { GameContext } from "../infra/context";
 import { RotationSystem } from "../core/rotationsystem";
 import { ControlOrder } from "./controlorder";
+import { RotationHandler } from "../core/rotationhandler";
 const CO = ControlOrder;
 
 /** Contains BoardUpdater primitive status */
@@ -37,40 +38,6 @@ export class BoardUpdateDiff {
     /** @type {BoardUpdateState} */ newState = new BoardUpdateState();
 }
 
-class RotationHandler {
-    /** @type {RotationSystem} */
-    #rotationSystem
-    /** @type {CellBoard} */
-    #cellBoard
-    /** @type {CurrentMinoManager} */
-    #currentMinoManager
-
-    /** @param {GameContext} gameContext */
-    constructor(gameContext) {
-        this.#rotationSystem = gameContext.rotationSystem;
-        this.#cellBoard = gameContext.cellBoard;
-        this.#currentMinoManager = gameContext.currentMinoManager;
-    }
-
-    /** Try mino rotation and return the resulting translation from the current position @param {number} angle @return {{row: number, column: number } | false} */
-    simulateRotation(angle) {
-        if (angle === 0) return false;
-
-        const minoMng = this.#currentMinoManager;
-
-        const rotationMap = this.#rotationSystem.getMapFromMino(minoMng.mino, angle);
-        const rotatedMino = minoMng.mino.copyRotated(angle);
-
-        for (let i = 0; i < rotationMap.length; i++) {
-            const movedRow = minoMng.row + rotationMap[i].row;
-            const movedColumn = minoMng.column + rotationMap[i].column;
-            if (!this.#cellBoard.doesMinoCollides(rotatedMino, movedRow, movedColumn)) {
-                return structuredClone(rotationMap[i]);
-            }
-        }
-        return false;
-    }
-}
 
 /** @typedef {{horizontalMinoMove: number, verticalMinoMove: number }} minoMoves */
 /** @typedef {{ cellBoard: CellBoard, currentMinoManager: CurrentMinoManager, boardUpdateState: BoardUpdateState }} BoardUpdateCalculatorParams */
@@ -85,7 +52,7 @@ export class BoardUpdateCalculator {
      *  @param { GameContext } context
     */
     constructor(context) {
-        this.#rotationHandler = new RotationHandler(context);
+        this.#rotationHandler = new RotationHandler(context.rotationSystem, context.cellBoard);
     }
 
     /** calculate next frame state and actions
@@ -221,7 +188,7 @@ export class BoardUpdateCalculator {
         if (controlRotationFlag & CO.ROTATE_CLOCK_WISE) rotation = 90;
         else if (controlRotationFlag & CO.ROTATE_COUNTER_CLOCK) rotation = 270;
 
-        const resultTranslation = this.#rotationHandler.simulateRotation(rotation);
+        const resultTranslation = this.#rotationHandler.simulateRotation(minoMng.row, minoMng.column, minoMng.mino, rotation);
         if (resultTranslation) {
             minoMng.rotateMino(rotation);
             minoMng.row += resultTranslation.row;
