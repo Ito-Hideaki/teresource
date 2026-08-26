@@ -127,6 +127,7 @@ export class TBPHandler {
     private board;
     private controlOrderProvider;
     private observer;
+    private recievedGarbageSinceLastBoot = 0;
 
     constructor(impl: TBPImpl, controlOrderProvider: BotControlOrderProvider, gameContext: GameContext, gameHighContext: GameHighContext, controlOrderGateway: ControlOrderGateway) {
         const VISIBLE_MINO_QUEUE_LENGTH = 5;
@@ -139,6 +140,8 @@ export class TBPHandler {
         this.routeSearcher = new RouteSearcher(gameContext);
         this.controlOrderProvider = controlOrderProvider;
         this.observer = new GameObserver(gameContext, VISIBLE_MINO_QUEUE_LENGTH);
+
+        gameContext.eventEmitter.addListener("garbage_to_board", this.onGarbage.bind(this));
     }
 
     update(placed: boolean) {
@@ -157,18 +160,33 @@ export class TBPHandler {
                 this.impl.sendMessageObject({ type: "rules" });
                 break;
             case "ready":
-                this.impl.sendMessageObject(this.startMessageCreator.create());
                 this.isActive = true;
-                setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
+                this.start();
                 break;
             case "suggestion":
                 const move = message.moves[0];
-                this.impl.sendMessageObject({ "type" : "play", "move" : move });
-                const trsLocation = translateLocation(move.location, this.board);
-                const path = this.routeSearcher.search(trsLocation);
-                this.controlOrderProvider.addPath(path);
+                console.log(move.location);
+
+                if(this.recievedGarbageSinceLastBoot > 0) {
+                    this.start();
+                } else {
+                    this.impl.sendMessageObject({ "type" : "play", "move" : move });
+                    const trsLocation = translateLocation(move.location, this.board);
+                    const path = this.routeSearcher.search(trsLocation);
+                    this.controlOrderProvider.addPath(path);
+                }
                 break;
         }
+    }
+
+    private start() {
+        this.impl.sendMessageObject(this.startMessageCreator.create());
+        this.recievedGarbageSinceLastBoot = 0;
+        setTimeout(() => { this.impl.sendMessageObject({ "type" : "suggest" }); }, 1000);
+    }
+
+    onGarbage(lines: number) {
+        if(this.isActive) this.recievedGarbageSinceLastBoot += lines;
     }
 
     quit() {

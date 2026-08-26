@@ -26,6 +26,7 @@ import { MINO_DATA_INDEX } from "../teresource/scenes/play/core/coredata";
 import { TYPICAL_GAME_CONFIG } from "../teresource/scenes/play/controller/game";
 import { GameSession } from "../teresource/scenes/play/controller/gamesession";
 import { createTBPHandler } from "../teresource/scenes/play/bot/handler";
+import { EventEmitter } from "../teresource/scenes/play/infra/singlegameevent";
 
 class MenuScene extends Phaser.Scene {
     constructor() {
@@ -57,7 +58,7 @@ class SingleGameCustomed {
         const boardUpdateState = new BoardUpdateState();
         const gameReportStack = new GameReportStack();
         const gameContext = new GameContext({
-            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, gameReportStack, rotationSystem: new RotationSystem_Standard()
+            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, gameReportStack, rotationSystem: new RotationSystem_Standard(), eventEmitter: new EventEmitter()
         });
 
         const lineClearManager = new LineClearManager(gameContext);
