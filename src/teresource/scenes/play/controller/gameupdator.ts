@@ -113,7 +113,7 @@ class Simulator {
             while (scheduledDamage && scheduledDamage.arrived) {
                 damageStack.splice(0, 1);
                 this.garbageGenerator.addGarbage(scheduledDamage.length);
-                this.eventEmitter.emit("garbage_to_board");
+                this.eventEmitter.emit("garbage_to_board", scheduledDamage.length);
 
                 scheduledDamage = damageStack[0];
             }

@@ -4,7 +4,7 @@ const EVENTS = ["none", "garbage_to_board"] as const;
 type Event = typeof EVENTS[number];
 type Params = {
     "none": [],
-    "garbage_to_board": []
+    "garbage_to_board": [number]
 };
 
 export class EventEmitter {
