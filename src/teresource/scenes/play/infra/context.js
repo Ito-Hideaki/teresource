@@ -8,6 +8,7 @@ import { GameStats, GameStatsManager } from "../controller/stats";
 import { GameAttackState } from "../core/attack";
 import { LineClearManager } from "../core/lineclear";
 import { GameScheduledDamageState } from "../core/garbage";
+import { EventEmitter } from "./singlegameevent";
 
 /** @param {{}} source @return GameContext */
 export class GameContext {
@@ -21,7 +22,8 @@ export class GameContext {
      * heldMinoManager   : HeldMinoManager,
      * boardUpdateState  : BoardUpdateState,
      * rotationSystem    : RotationSystem,
-     * gameReportStack   : GameReportStack
+     * gameReportStack   : GameReportStack,
+     * eventEmitter      : EventEmitter,
      * }} source
      * */
     constructor(source) {
@@ -33,6 +35,7 @@ export class GameContext {
         this.boardUpdateState   = source.boardUpdateState;
         this.rotationSystem     = source.rotationSystem;
         this.gameReportStack    = source.gameReportStack;
+        this.eventEmitter       = source.eventEmitter;
     }
 }
 

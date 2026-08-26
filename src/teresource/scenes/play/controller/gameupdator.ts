@@ -67,6 +67,7 @@ class Simulator {
     lineClearManager;
     gameAttackState;
     private garbageGenerator;
+    private eventEmitter;
 
     //Instantiated
     private boardUpdater;
@@ -86,6 +87,7 @@ class Simulator {
         this.lineClearManager = gameHighContext.lineClearManager;
         this.gameAttackState = gameHighContext.gameAttackState;
         this.garbageGenerator = gameHighContext.garbageGenerator;
+        this.eventEmitter = gameContext.eventEmitter;
 
         this.scheduledDamageState = gameHighContext.scheduledDamageState;
 
@@ -111,6 +113,7 @@ class Simulator {
             while (scheduledDamage && scheduledDamage.arrived) {
                 damageStack.splice(0, 1);
                 this.garbageGenerator.addGarbage(scheduledDamage.length);
+                this.eventEmitter.emit("garbage_to_board");
 
                 scheduledDamage = damageStack[0];
             }

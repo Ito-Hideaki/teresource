@@ -21,6 +21,7 @@ import { GameScheduledDamageState, GarbageGenerator, LinearDamageProvider } from
 import { ScheduledDamageView } from "../view/scheduleddamageview";
 import { MINO_DATA_INDEX } from "../core/coredata";
 import { GameAudioPlayer } from "../audio/gameaudioplayer";
+import { EventEmitter } from "../infra/singlegameevent";
 
 /** 
  * @typedef {{
@@ -80,7 +81,7 @@ export class SingleGame {
         const boardUpdateState = new BoardUpdateState();
         const gameReportStack = new GameReportStack();
         const gameContext = new GameContext({
-            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, gameReportStack, rotationSystem: new RotationSystem_Standard()
+            cellBoard, boardSize, currentMinoManager, minoQueueManager, heldMinoManager, boardUpdateState, gameReportStack, rotationSystem: new RotationSystem_Standard(), eventEmitter: new EventEmitter()
         });
 
         const lineClearManager = new LineClearManager(gameContext);
