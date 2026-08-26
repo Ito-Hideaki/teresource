@@ -265,7 +265,7 @@ export class GameUpdator {
             }
 
             if(amountRemain) {
-                result.outgoingAttack = { amount: amountRemain, delay_s: 2 };
+                result.outgoingAttack = { amount: amountRemain, delay_s: 0.5 };
             }
         }
 
