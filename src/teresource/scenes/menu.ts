@@ -66,6 +66,7 @@ export class MenuScene extends Phaser.Scene {
 <tr><th style="width:50%;">画像</th><th>hide</th style="width:50%;"></tr>
 <tr><th>プログラム</th><th>hide</th></tr>
 <tr><th>効果音</th><th>ike</th></tr>
+<tr><th><a href="https://github.com/MinusKelvin/cold-clear-2">Cold Clear 2</a></th><th><a href="https://github.com/MinusKelvin">MinusKelvin</a></th></tr>
 </table>
 `;
         creditsElm.style.fontSize = "30px";
